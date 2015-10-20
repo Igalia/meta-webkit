@@ -1,0 +1,68 @@
+SUMMARY = "WebKit web rendering engine for the GTK+ platform"
+HOMEPAGE = "http://www.webkitgtk.org/"
+BUGTRACKER = "http://bugs.webkit.org/"
+LICENSE = "BSD & LGPLv2+"
+LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf8b8a7c36b6eec80 "
+
+# you need harfbuzz with icu enabled, you can add this to your config:
+# PACKAGECONFIG_append_pn-harfbuzz = " icu"
+DEPENDS = "zlib enchant libsoup-2.4 curl libxml2 cairo libxslt libidn gnutls \
+           gtk+3 gstreamer1.0 gstreamer1.0-plugins-base flex-native icu \
+           gperf-native perl-native perl-native-runtime ruby-native sqlite3 \
+           libwebp harfbuzz"
+
+DEPENDS += " ${@base_contains('DISTRO_FEATURES', 'x11', 'gtk+ libxt', '', d)}"
+DEPENDS += " ${@base_contains('DISTRO_FEATURES', 'opengl', 'virtual/libgl', '', d)}"
+
+
+inherit cmake lib_package pkgconfig perlnative pythonnative distro_features_check
+
+S = "${WORKDIR}/webkitgtk-${PV}/"
+
+PACKAGECONFIG ??= "x11 gles2"
+PACKAGECONFIG[wayland] = "-DENABLE_WAYLAND_TARGET=ON,-DENABLE_WAYLAND_TARGET=OFF,wayland"
+PACKAGECONFIG[x11] = "-DENABLE_X11_TARGET=ON,-DENABLE_X11_TARGET=OFF,virtual/libx11"
+PACKAGECONFIG[geoclue] = "-DENABLE_GEOLOCATION=ON,-DENABLE_GEOLOCATION=OFF,geoclue"
+PACKAGECONFIG[enchant] = "-DENABLE_SPELLCHECK=ON,-DENABLE_SPELLCHECK=OFF,enchant"
+PACKAGECONFIG[gtk2] = "-DENABLE_PLUGIN_PROCESS_GTK2=ON,-DENABLE_PLUGIN_PROCESS_GTK2=OFF,gtk+"
+PACKAGECONFIG[gles2] = "-DENABLE_GLES2=ON,-DENABLE_GLES2=OFF,virtual/libgles2"
+PACKAGECONFIG[webgl] = "-DENABLE_WEBGL=ON,-DENABLE_WEBGL=OFF,virtual/libgl"
+PACKAGECONFIG[libsecret] = "-DENABLE_CREDENTIAL_STORAGE=ON,-DENABLE_CREDENTIAL_STORAGE=OFF,libsecret"
+PACKAGECONFIG[libnotify] = "-DUSE_LIBNOTIFY=ON,-DUSE_LIBNOTIFY=OFF,libnotify"
+PACKAGECONFIG[libhyphen] = "-DUSE_LIBHYPHEN=ON,-DUSE_LIBHYPHEN=OFF,libhyphen"
+
+
+WEBKIT_BUILD_TYPE ??= "Release"
+
+EXTRA_OECMAKE = " \
+                 -DPORT=GTK \
+                 -DCMAKE_BUILD_TYPE=${WEBKIT_BUILD_TYPE} \
+                 -DENABLE_INTROSPECTION=OFF \
+                 -DENABLE_GTKDOC=OFF \
+                 -DENABLE_CREDENTIAL_STORAGE=OFF \
+                 -DENABLE_MINIBROWSER=ON \
+                 -DENABLE_DRAG_SUPPORT=OFF \
+                 -DUSE_REDIRECTED_XCOMPOSITE_WINDOW=OFF \
+                "
+
+# Javascript JIT is not supported on powerpc
+EXTRA_OECMAKE_append_powerpc = " -DENABLE_JIT=OFF "
+EXTRA_OECMAKE_append_powerpc64 = " -DENABLE_JIT=OFF "
+
+# ARM JIT code does not build on ARMv5/6 anymore, apparently they test only on v7 onwards
+EXTRA_OECMAKE_append_armv5 = " -DENABLE_JIT=OFF "
+EXTRA_OECMAKE_append_armv6 = " -DENABLE_JIT=OFF "
+
+# binutils 2.25.1 has a bug on aarch64:
+# https://sourceware.org/bugzilla/show_bug.cgi?id=18430
+EXTRA_OECMAKE_append_aarch64 = " -DUSE_LD_GOLD=OFF "
+
+# JIT not supported on MIPS either
+EXTRA_OECMAKE_append_mips = " -DENABLE_JIT=OFF "
+EXTRA_OECMAKE_append_mips64 = " -DENABLE_JIT=OFF "
+
+FILES_${PN} += "${libdir}/webkit2gtk-4.0/injected-bundle/libwebkit2gtkinjectedbundle.so"
+FILES_${PN}-dbg += "${libdir}/webkit2gtk-4.0/injected-bundle/.debug/libwebkit2gtkinjectedbundle.so"
+FILES_${PN}-dbg += "${libdir}/webkitgtk/webkit2gtk-4.0/.debug/*"
+
+RRECOMMENDS_${PN} += "ca-certificates"

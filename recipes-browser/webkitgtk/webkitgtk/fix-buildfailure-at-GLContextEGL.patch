@@ -1,0 +1,35 @@
+From e54f9b7ccb125959ce303f97a34e06143d909ba9 Mon Sep 17 00:00:00 2001
+From: Carlos Alberto Lopez Perez <clopez@igalia.com>
+Date: Fri, 11 Sep 2015 14:58:31 +0200
+Subject: [PATCH] [GTK] [Stable] Build failure at GLContextEGL.cpp on 2.8.5
+ https://bugs.webkit.org/show_bug.cgi?id=149063
+
+Reviewed by NOBODY (OOPS!).
+
+This fix is already included on trunk as part of r185620.
+
+No new tests, no behavior changes.
+
+* platform/graphics/egl/GLContextEGL.cpp:
+---
+ Source/WebCore/platform/graphics/egl/GLContextEGL.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/Source/WebCore/platform/graphics/egl/GLContextEGL.cpp b/Source/WebCore/platform/graphics/egl/GLContextEGL.cpp
+index 2aeb936..4338b56 100644
+--- a/Source/WebCore/platform/graphics/egl/GLContextEGL.cpp
++++ b/Source/WebCore/platform/graphics/egl/GLContextEGL.cpp
+@@ -42,6 +42,10 @@
+ #endif
+ #endif
+ 
++#if PLATFORM(X11)
++#include <X11/Xlib.h>
++#endif
++
+ #if ENABLE(ACCELERATED_2D_CANVAS)
+ // cairo-gl.h includes some definitions from GLX that conflict with
+ // the ones provided by us. Since GLContextEGL doesn't use any GLX
+-- 
+2.1.4
+
