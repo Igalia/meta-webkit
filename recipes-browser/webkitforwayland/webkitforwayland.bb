@@ -23,6 +23,7 @@ S = "${WORKDIR}/webkit-${PV}/"
 
 SRC_URI = "\
    https://github.com/WebKitForWayland/webkit/archive/${PV}.tar.gz \
+   file://Downgrade-xdg-shell-protocol-for-Weston-1.6.patch \
 "
 
 SRC_URI[md5sum] = "7a2c029d687e6eebb3ea1916a38e7484"
