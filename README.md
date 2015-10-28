@@ -7,9 +7,13 @@ use with OpenEmbedded and/or Yocto.
 This layer depends on:
 
     URI: git://git.openembedded.org/openembedded-core
-    branch: master
+    branch: fido
     revision: HEAD
 
+    URI: git://git.openembedded.org/meta-openembedded
+    branch: fido
+    revision: HEAD
+    directory: meta-ruby
 
 
 Building the WebKitForWayland engine.
