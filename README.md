@@ -43,7 +43,7 @@ requiring any kind of web integration, from hybrid HTML/CSS applications to full
 web browsers. It offers WebKit’s full functionality and is useful in a wide range of
 systems from desktop computers to embedded systems like phones, tablets, and televisions.
 
-When creating an image with with WebkitGTK+, thake into account:
+When creating an image with with WebkitGTK+, take into account:
 
   * The package webkitgtk contains the shared libraries and the webkitgtk runtime.
   * The package webkitgtk-bin contains the MiniBrowser executable (a very basic browser
@@ -60,7 +60,7 @@ When creating an image with with WebkitGTK+, thake into account:
 
         DISTRO_FEATURES_append = " opengl x11"
         IMAGE_INSTALL_append = " webkitgtk-bin"
-        PREFERRED_VERSION_webkitgtk = "2.10.3"
+        PREFERRED_VERSION_webkitgtk = "2.10.7"
 
   * Then build the X11 image
 
@@ -68,6 +68,29 @@ When creating an image with with WebkitGTK+, thake into account:
 
   * Run MiniBrowser (or another browser based on webkitgtk+) from an X terminal.
 
+
+Note about the recipe of webkitgtk in oe-core
+---------------------------------------------
+
+The oe-core repository (since jethro release) already includes a recipe for WebKit2GTK+
+with the very same name than the one included here.
+
+The purpose of this layer is:
+
+  * To ship a WebKitforWayland recipe.
+  * To provide WebKit2GTK+ recipes newer or different than the ones included in oe-core.
+    For example, people with releases older than jethro can use this layer for
+    easily building WebKit2GTK+. And people using jethro can use this layer to get more
+    recent WebKit2GTK+ recipes.
+
+
+Using the same name for the webkitgtk recipe than in oe-core is done on purpose.
+The idea is that you can select between the webkitgtk recipe from oe-core or from
+this layer by selecting the version with the variable PREFERRED_VERSION_webkitgtk
+in local.conf.
+
+If you don't want to use or experiment with the webkitgtk recipes from this layer,
+then the best thing to do is to simply ignore this layer and don't try to use it.
 
 Contributing
 ------------
