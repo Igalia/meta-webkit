@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf
 # PACKAGECONFIG_append_pn-harfbuzz = " icu"
 DEPENDS = "zlib enchant libsoup-2.4 curl libxml2 cairo libxslt libidn gnutls \
            gtk+3 gstreamer1.0 gstreamer1.0-plugins-base flex-native icu \
-           gperf-native perl-native perl-native-runtime ruby-native sqlite3 \
+           gperf-native perl-native ruby-native sqlite3 \
            libwebp harfbuzz"
 
 DEPENDS += " ${@base_contains('DISTRO_FEATURES', 'x11', 'gtk+ libxt', '', d)}"
