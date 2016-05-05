@@ -18,15 +18,15 @@ REQUIRED_DISTRO_FEATURES = "wayland"
 
 inherit cmake pkgconfig perlnative pythonnative
 
-PV = "wpe-20151019"
+PV = "wpe-20160428"
 S = "${WORKDIR}/webkit-${PV}/"
 
 SRC_URI = "\
    https://github.com/WebKitForWayland/webkit/archive/${PV}.tar.gz \
 "
 
-SRC_URI[md5sum] = "7a2c029d687e6eebb3ea1916a38e7484"
-SRC_URI[sha256sum] = "ff8e5c357206359365231a376e479de8f348dd6b6de9de397fa4047cef382e03"
+SRC_URI[md5sum] = "fdb1f882aa77127decfab3bf2f23c17a"
+SRC_URI[sha256sum] = "c5224a150f590a8a82d0fdd04ca9f0fb7d8c4bea69cdb3bed0819a2d9dd4f0cf"
 
 EXTRA_OECMAKE = " \
                  -DPORT=WPE \
