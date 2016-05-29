@@ -11,8 +11,8 @@ DEPENDS = "zlib enchant libsoup-2.4 curl libxml2 cairo libxslt libidn gnutls \
            gperf-native perl-native ruby-native sqlite3 \
            libwebp harfbuzz"
 
-DEPENDS += " ${@base_contains('DISTRO_FEATURES', 'x11', 'gtk+ libxt', '', d)}"
-DEPENDS += " ${@base_contains('DISTRO_FEATURES', 'opengl', 'virtual/libgl', '', d)}"
+DEPENDS += " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'gtk+ libxt', '', d)}"
+DEPENDS += " ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'virtual/libgl', '', d)}"
 
 
 inherit cmake lib_package pkgconfig perlnative pythonnative distro_features_check
