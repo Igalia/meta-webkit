@@ -55,12 +55,13 @@ EXTRA_OECMAKE_append_mips64 = " -DENABLE_JIT=OFF "
 # the .so file in the binary package instead of the dev one.
 FILES_${PN}-dev = " \
 ${includedir} \
+${libdir}/libWPE.so \
 ${libdir}/libWPEWebKit.so \
 ${libdir}/pkgconfig \
 "
 FILES_${PN} = " \
 ${bindir} \
-${libdir}/libWPE.so \
+${libdir}/libWPE.so.* \
 ${libdir}/libWPEWebInspectorResources.so \
 ${libdir}/libWPEWebKit.so.* \
 "
