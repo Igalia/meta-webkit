@@ -18,7 +18,12 @@ REQUIRED_DISTRO_FEATURES = "wayland"
 
 inherit cmake pkgconfig perlnative pythonnative
 
-PV = "wpe-20160428"
+#
+# We download a tarball from github instead of cloning the git repository because
+# requires less resources (network bandwidth and disk space) on the build machine.
+#
+# PV is the release or tag version (from https://github.com/WebKitForWayland/webkit/releases)
+PV = "wpe-20160526"
 S = "${WORKDIR}/webkit-${PV}/"
 
 SRC_URI = "\
@@ -26,8 +31,8 @@ SRC_URI = "\
    file://Downgrade-xdg-shell-protocol-for-Weston-1.6.patch \
 "
 
-SRC_URI[md5sum] = "fdb1f882aa77127decfab3bf2f23c17a"
-SRC_URI[sha256sum] = "c5224a150f590a8a82d0fdd04ca9f0fb7d8c4bea69cdb3bed0819a2d9dd4f0cf"
+SRC_URI[md5sum] = "1c004d643a16562eb4c54fef63365b4f"
+SRC_URI[sha256sum] = "01ceafd5cfb07566e7c110bce4bf7fa9ad3e932939324e046de1d39dd7f10ee5"
 
 EXTRA_OECMAKE = " \
                  -DPORT=WPE \
