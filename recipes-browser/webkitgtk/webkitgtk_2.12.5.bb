@@ -2,6 +2,7 @@ require webkitgtk.inc
 
 SRC_URI = "\
    https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz \
+   file://0001-WebKitMacros-Append-to-I-and-not-to-isystem.patch \
 "
 
 SRC_URI[md5sum] = "7a9ea00ec195488db90fdeb2d174ddaf"
