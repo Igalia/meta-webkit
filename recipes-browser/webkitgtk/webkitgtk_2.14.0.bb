@@ -1,5 +1,7 @@
 require webkitgtk.inc
 
+DEPENDS += " gnutls"
+
 SRC_URI = "\
    https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz \
    file://CMake-Build-failure-with-GCC-6.patch \
