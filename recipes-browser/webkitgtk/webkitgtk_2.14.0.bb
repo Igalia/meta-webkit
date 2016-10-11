@@ -4,7 +4,6 @@ DEPENDS += " gnutls"
 
 SRC_URI = "\
    https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz \
-   file://CMake-Build-failure-with-GCC-6.patch \
    file://Fix-GTK-build-with-USE_REDIRECTED_XCOMPO.patch \
 "
 
