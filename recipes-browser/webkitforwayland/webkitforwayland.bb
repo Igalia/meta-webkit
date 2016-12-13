@@ -28,6 +28,7 @@ S = "${WORKDIR}/webkit-${PV}/"
 
 SRC_URI = "\
    https://github.com/WebKitForWayland/webkit/archive/${PV}.tar.gz \
+   file://0001-CMake-Build-failure-with-GCC-6-fatal-error-stdlib.h-.patch \
 "
 
 SRC_URI[md5sum] = "1c004d643a16562eb4c54fef63365b4f"
