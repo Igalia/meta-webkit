@@ -4,6 +4,7 @@ DEPENDS += " libgcrypt gettext-native glib-2.0-native"
 
 SRC_URI = "\
    https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz \
+   file://eglplatform.h-does-not-support-Wayland.patch \
 "
 
 SRC_URI[md5sum] = "fce72dc89cd310a663d9eb97133861fe"
