@@ -8,31 +8,36 @@ LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf
 # you need harfbuzz with icu enabled, you can add this to your config:
 # PACKAGECONFIG_append_pn-harfbuzz = " icu" if you are having problems
 # with the do_configure step and harfbuzz.
-DEPENDS = "zlib enchant libsoup-2.4 curl libxml2 cairo libxslt libidn gnutls \
+DEPENDS = "zlib enchant libsoup-2.4 curl libxml2 cairo libxslt libidn libgcrypt \
            gtk+3 gstreamer1.0 gstreamer1.0-plugins-base flex-native icu \
            gperf-native perl-native ruby-native sqlite3 \
-           libwebp harfbuzz virtual/libgles2 wayland weston mesa"
+           libwebp harfbuzz virtual/libgles2 wpebackend"
 
 
 REQUIRED_DISTRO_FEATURES = "wayland"
 
 inherit cmake pkgconfig perlnative pythonnative
 
+
+
 #
-# We download a tarball from github instead of cloning the git repository because
-# requires less resources (network bandwidth and disk space) on the build machine.
+# We download a tarball from github instead of cloning the upstream git repository
+# because requires less resources (network bandwidth and disk space) on the build machine.
 #
-# PV is the release or tag version (from https://github.com/WebKitForWayland/webkit/releases)
-PV = "wpe-20160526"
-S = "${WORKDIR}/webkit-${PV}/"
+
+SVNREV = "219185"
+GITHASH = "4d19a0464b217b8a66b9028367cf0a4b5e7782f9"
+
+S = "${WORKDIR}/webkit-${GITHASH}/"
+PV = "svn-${SVNREV}"
 
 SRC_URI = "\
-   https://github.com/WebKitForWayland/webkit/archive/${PV}.tar.gz \
-   file://0001-CMake-Build-failure-with-GCC-6-fatal-error-stdlib.h-.patch \
+   https://github.com/webkit/webkit/archive/${GITHASH}.tar.gz \
+   file://0001-Merge-219823-CMake-libtasn1-should-not-be-required-w.patch \
 "
 
-SRC_URI[md5sum] = "1c004d643a16562eb4c54fef63365b4f"
-SRC_URI[sha256sum] = "01ceafd5cfb07566e7c110bce4bf7fa9ad3e932939324e046de1d39dd7f10ee5"
+SRC_URI[md5sum] = "40c4863fe9398d550e32a00813eee67d"
+SRC_URI[sha256sum] = "5c59a7922ca649980098fb27d10a50240deff8af81caeeff9a94de79baf1f52e"
 
 EXTRA_OECMAKE = " \
                  -DPORT=WPE \
@@ -88,3 +93,4 @@ ${libdir}/libWPEWebKit.so.* \
 "
 
 RRECOMMENDS_${PN} += "ca-certificates"
+RCONFLICTS_${PN} += "wpewebkit"
