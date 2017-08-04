@@ -1,11 +1,12 @@
 LICENSE = "CLOSED"
 
-DEPENDS = "wpebackend glib-2.0 libinput libudev"
+#DEPENDS = "wpebackend glib-2.0 libinput libudev"
+DEPENDS = "wpebackend glib-2.0 libinput"
 
 SRCREV = "bff65cea966b10bfb90c4d666a0daffa2cfbc4b8"
 
 #SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=http;branch=master"
-SRC_URI = "git://github.com/clopez/WPEBackend-rdk.git;protocol=http;branch=find-egl"	
+SRC_URI = "git://github.com/clopez/WPEBackend-rdk.git;protocol=http;branch=find-egl"
 
 S = "${WORKDIR}/git"
 
