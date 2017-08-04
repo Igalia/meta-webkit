@@ -22,6 +22,7 @@ SRC_URI = "${BASE_URI}"
 SRC_URI += "file://0001-WebKitMacros-Append-to-I-and-not-to-isystem.patch \
             file://0001-Reduce-the-default-thread-stack-size-to-32KB.patch \
             file://0001-Reduce-stack-limits.patch \
+            file://0001-Find-gl-cflags-webkit2.patch \
 "
 
 S = "${WORKDIR}/git"
