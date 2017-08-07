@@ -15,14 +15,13 @@ DEPENDS += " \
 
 PV = "0.1+git${SRCPV}"
 
-SRCREV ?= "4ff934a322a46bf9b42284467735ebf9e588ba29"
+SRCREV ?= "ca5a5bbda49b841736c35b31da81ba786861b953"
 BASE_URI ?= "git://github.com/WebPlatformForEmbedded/WPEWebKit.git;protocol=http;branch=master"
 SRC_URI = "${BASE_URI}"
 
 SRC_URI += "file://0001-WebKitMacros-Append-to-I-and-not-to-isystem.patch \
             file://0001-Reduce-the-default-thread-stack-size-to-32KB.patch \
             file://0001-Reduce-stack-limits.patch \
-            file://0001-Find-gl-cflags-webkit2.patch \
 "
 
 S = "${WORKDIR}/git"
