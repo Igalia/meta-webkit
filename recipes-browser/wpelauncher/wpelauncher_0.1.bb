@@ -8,10 +8,6 @@ SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEWebKitLauncher.git;protoco
 
 S = "${WORKDIR}/git"
 
-FULL_OPTIMIZATION_remove = "-g"
-
-CXXFLAGS += "-D_GLIBCXX_USE_CXX11_ABI=0"
-
 inherit cmake
 
 FILES_SOLIBSDEV = ""

@@ -22,6 +22,7 @@ SRC_URI = "${BASE_URI}"
 SRC_URI += "file://0001-WebKitMacros-Append-to-I-and-not-to-isystem.patch \
             file://0001-Reduce-the-default-thread-stack-size-to-32KB.patch \
             file://0001-Reduce-stack-limits.patch \
+            file://lower-gstreamer-gl-version-requirement.patch \
 "
 
 S = "${WORKDIR}/git"
@@ -30,7 +31,7 @@ inherit cmake pkgconfig perlnative pythonnative
 
 TOOLCHAIN = "gcc"
 
-PACKAGECONFIG ?= "deviceorientation fullscreenapi fetchapi gamepad geolocation indexeddb libinput logs mediasource notifications nativevideo sampling-profiler shadowdom subtitle subtlecrypto udev video webaudio wayland"
+PACKAGECONFIG ?= "deviceorientation fullscreenapi fetchapi gamepad geolocation indexeddb libinput logs mediasource notifications sampling-profiler shadowdom subtitle subtlecrypto udev video webaudio wayland touch"
 
 # Mesa only offscreen target support for Westeros backend
 # FIXME Needs to be moved to mesa backend
@@ -56,7 +57,7 @@ PACKAGECONFIG[geolocation] = "-DENABLE_GEOLOCATION=ON,-DENABLE_GEOLOCATION=OFF,"
 PACKAGECONFIG[indexeddb] = "-DENABLE_DATABASE_PROCESS=ON -DENABLE_INDEXED_DATABASE=ON,-DENABLE_DATABASE_PROCESS=OFF -DENABLE_INDEXED_DATABASE=OFF,"
 PACKAGECONFIG[libinput] = "-DUSE_WPEWEBKIT_INPUT_LIBINPUT=ON,-DUSE_WPEWEBKIT_INPUT_LIBINPUT=OFF,libinput"
 PACKAGECONFIG[logs] = "-DLOG_DISABLED=OFF,-DLOG_DISABLED=ON,"
-PACKAGECONFIG[mediasource] = "-DENABLE_MEDIA_SOURCE=ON,-DENABLE_MEDIA_SOURCE=OFF,gstreamer1.0 gstreamer1.0-plugins-good,${RDEPS_MEDIASOURCE}"
+PACKAGECONFIG[mediasource] = "-DENABLE_MEDIA_SOURCE=ON,-DENABLE_MEDIA_SOURCE=OFF,gstreamer1.0 gstreamer1.0-plugins-good"
 PACKAGECONFIG[mediastream] = "-DENABLE_MEDIA_STREAM=ON,-DENABLE_MEDIA_STREAM=OFF,openwebrtc"
 PACKAGECONFIG[nativevideo] = "-DENABLE_NATIVE_VIDEO=ON,-DENABLE_NATIVE_VIDEO=OFF,"
 PACKAGECONFIG[notifications] = "-DENABLE_NOTIFICATIONS=ON,-DENABLE_NOTIFICATIONS=OFF,"
@@ -66,8 +67,8 @@ PACKAGECONFIG[subtlecrypto] = "-DENABLE_SUBTLE_CRYPTO=ON,-DENABLE_SUBTLE_CRYPTO=
 PACKAGECONFIG[subtitle] = "-DENABLE_TEXT_SINK=ON,-DENABLE_TEXT_SINK=OFF,"
 PACKAGECONFIG[touch] = "-DENABLE_TOUCH_EVENTS=ON,-DENABLE_TOUCH_EVENTS=OFF,"
 PACKAGECONFIG[udev] = "-DUSE_WPEWEBKIT_INPUT_UDEV=ON,-DUSE_WPEWEBKIT_INPUT_UDEV=OFF,udev"
-PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON -DENABLE_VIDEO_TRACK=ON,-DENABLE_VIDEO=OFF -DENABLE_VIDEO_TRACK=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad,${RDEPS_VIDEO}"
-PACKAGECONFIG[webaudio] = "-DENABLE_WEB_AUDIO=ON,-DENABLE_WEB_AUDIO=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good,${RDEPS_WEBAUDIO}"
+PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON -DENABLE_VIDEO_TRACK=ON,-DENABLE_VIDEO=OFF -DENABLE_VIDEO_TRACK=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad"
+PACKAGECONFIG[webaudio] = "-DENABLE_WEB_AUDIO=ON,-DENABLE_WEB_AUDIO=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good"
 
 # DRM
 PACKAGECONFIG[opencdm] = "-DENABLE_OCDM=ON,-DENABLE_OCDM=OFF,opencdm"
@@ -91,7 +92,10 @@ FULL_OPTIMIZATION_remove = "-g"
 
 # WPEWebProcess crashes when built with ARM mode on RPi
 ARM_INSTRUCTION_SET_armv7a = "thumb"
+ARM_INSTRUCTION_SET_armv7r = "thumb"
+ARM_INSTRUCTION_SET_armv7m = "thumb"
 ARM_INSTRUCTION_SET_armv7ve = "thumb"
+
 
 do_compile() {
     ${STAGING_BINDIR_NATIVE}/ninja ${PARALLEL_MAKE} libWPEWebKit.so libWPEWebInspectorResources.so WPEWebProcess WPENetworkProcess WPEDatabaseProcess
@@ -107,7 +111,6 @@ do_install() {
     install -m 0755 ${B}/lib/libWPEWebInspectorResources.so ${D}${libdir}/
     # Hack: Remove the RPATH embedded in libWPEWebKit.so
     chrpath --delete ${D}${libdir}/libWPE*
-    ln -sf libWPEBackend-rdk.so ${D}${libdir}/libWPEBackend-default.so
 
     install -d ${D}${bindir}
     install -m755 ${B}/bin/WPEWebProcess ${D}${bindir}/
@@ -162,30 +165,29 @@ RDEPS_EXTRA = " \
     gstreamer1.0-plugins-good-deinterlace \
     gstreamer1.0-plugins-good-interleave \
     gstreamer1.0-plugins-bad-dashdemux \
-    gstreamer1.0-plugins-bad-hls \
     gstreamer1.0-plugins-bad-mpegtsdemux \
     gstreamer1.0-plugins-bad-smoothstreaming \
     gstreamer1.0-plugins-bad-videoparsersbad \
-    gstreamer1.0-plugins-ugly-mpg123 \
 "
 
-RDEPS_EXTRA_append_rpi = " \
+RDEPS_VIDEOGL = " \
     gstreamer1.0-omx \
-    gstreamer1.0-plugins-bad-faad \
     gstreamer1.0-plugins-bad-opengl \
 "
+#fixme
+#    gstreamer1.0-plugins-bad-faad (videogl=> aac)
+#    gstreamer1.0-plugins-bad-hls
+#    gstreamer1.0-plugins-ugly-mpg123
 
-# The RDEPS_EXTRA plugins are all required for certain media playback use cases,
-# but have not yet been classified as being specific dependencies for video,
-# webaudio or mediasource. Until that classification is done, add them all to
-# each of the three groups...
 
-#RDEPS_MEDIASOURCE += "${RDEPS_EXTRA}"
-#RDEPS_VIDEO += "${RDEPS_EXTRA}"
-#RDEPS_WEBAUDIO += "${RDEPS_EXTRA}"
+RDEPS_MEDIASOURCE += "${RDEPS_EXTRA}"
+RDEPS_VIDEO += "${RDEPS_EXTRA}"
+RDEPS_WEBAUDIO += "${RDEPS_EXTRA}"
 
 RRECOMMENDS_${PN} += " \
     ca-certificates \
     ttf-bitstream-vera \
     ${PN}-platform-plugin \
 "
+# FIXME: add this conditionally based on selected pkconfig entries
+RDEPENDS_${PN} = " ${RDEPS_MEDIASOURCE} ${RDEPS_VIDEO} ${RDEPS_VIDEOGL} ${RDEPS_WEBAUDIO} ${RDEPS_EXTRA} "
