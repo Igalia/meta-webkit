@@ -15,14 +15,13 @@ DEPENDS += " \
 
 PV = "0.1+git${SRCPV}"
 
-SRCREV ?= "ca5a5bbda49b841736c35b31da81ba786861b953"
+SRCREV ?= "c7df008590dde472c9efc5d4ddd56d7a9b9eaca5"
 BASE_URI ?= "git://github.com/WebPlatformForEmbedded/WPEWebKit.git;protocol=http;branch=master"
 SRC_URI = "${BASE_URI}"
 
 SRC_URI += "file://0001-WebKitMacros-Append-to-I-and-not-to-isystem.patch \
             file://0001-Reduce-the-default-thread-stack-size-to-32KB.patch \
             file://0001-Reduce-stack-limits.patch \
-            file://lower-gstreamer-gl-version-requirement.patch \
 "
 
 S = "${WORKDIR}/git"
@@ -186,6 +185,7 @@ RDEPS_WEBAUDIO += "${RDEPS_EXTRA}"
 
 RRECOMMENDS_${PN} += " \
     ca-certificates \
+    shared-mime-info \
     ttf-bitstream-vera \
     ${PN}-platform-plugin \
 "
