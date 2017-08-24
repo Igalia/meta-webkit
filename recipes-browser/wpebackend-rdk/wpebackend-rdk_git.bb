@@ -1,12 +1,20 @@
-LICENSE = "CLOSED"
+SUMMARY = "Backend for WPE with specific support for embedded devices used on the RDK"
+HOMEPAGE = "https://github.com/WebPlatformForEmbedded/WPEBackend-rdk"
+BUGTRACKER = "https://github.com/WebPlatformForEmbedded/WPEBackend-rdk/issues"
+
+LICENSE = "BSD"
+LIC_FILES_CHKSUM = "file://src/wayland/display.h;;beginline=5;endline=24;md5=b1c8cb6b0857048a21b33611f01c575a"
 
 DEPENDS = "wpebackend glib-2.0 libinput"
 
-PV="0.2"
-SRCREV = "daf733268d8b44a58b86f1d6f72ef435126bd2c9"
+PV = "1.20170824"
+SRCREV = "f2aec84648dc9eb10c6aafbaf888151a9d120fce"
 
-#SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=http;branch=master"
-SRC_URI = "git://github.com/clopez/WPEBackend-rdk.git;protocol=http;branch=wayland-egl_fake-touch"
+SRC_URI = " \
+            git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=https;branch=master \
+            file://PR12.patch \
+            file://PR13.patch \
+          "
 
 S = "${WORKDIR}/git"
 

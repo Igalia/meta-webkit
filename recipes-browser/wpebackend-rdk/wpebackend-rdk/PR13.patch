@@ -1,0 +1,158 @@
+https://github.com/WebPlatformForEmbedded/WPEBackend-rdk/pull/13
+
+diff --git a/src/wayland-egl/view-backend.cpp b/src/wayland-egl/view-backend.cpp
+index 6c44d76..b4d5a56 100644
+--- a/src/wayland-egl/view-backend.cpp
++++ b/src/wayland-egl/view-backend.cpp
+@@ -90,6 +90,13 @@ void ViewBackend::handleMessage(char* data, size_t size)
+         wpe_view_backend_dispatch_touch_event(backend, event);
+         break;
+     }
++    case Wayland::EventDispatcher::MsgType::TOUCHSIMPLE:
++    {
++        struct wpe_input_touch_event_raw * touchpoint = reinterpret_cast<wpe_input_touch_event_raw*>(std::addressof(message.messageData));
++        struct wpe_input_touch_event event = { touchpoint, sizeof(struct wpe_input_touch_event_raw), touchpoint->type, touchpoint->id, touchpoint->time };
++        wpe_view_backend_dispatch_touch_event(backend, &event);
++        break;
++    }
+     case Wayland::EventDispatcher::MsgType::KEYBOARD:
+     {
+         struct wpe_input_keyboard_event * event = reinterpret_cast<wpe_input_keyboard_event*>(std::addressof(message.messageData));
+diff --git a/src/wayland/display.cpp b/src/wayland/display.cpp
+index eb7b732..90f8d57 100644
+--- a/src/wayland/display.cpp
++++ b/src/wayland/display.cpp
+@@ -389,22 +389,23 @@ static const struct wl_touch_listener g_touchListener = {
+         if (id < 0 || id >= arraySize)
+             return;
+ 
+-        auto& target = seatData.touch.targets[id];
+-        assert(!target.first && !target.second);
+-
+-        auto it = seatData.inputClients.find(surface);
+-        if (it == seatData.inputClients.end())
+-            return;
+-
+-        target = { surface, it->second };
+-
+         auto& touchPoints = seatData.touch.touchPoints;
+         touchPoints[id] = { wpe_input_touch_event_type_down, time, id, wl_fixed_to_int(x), wl_fixed_to_int(y) };
+ 
+-        struct wpe_input_touch_event event = { touchPoints.data(), touchPoints.size(), wpe_input_touch_event_type_down, id, time };
++        auto& target = seatData.touch.targets[id];
++        assert(!target.first && !target.second);
+ 
+-        struct wpe_view_backend* backend = target.second;
+-        wpe_view_backend_dispatch_touch_event(backend, &event);
++        auto it = seatData.inputClients.find(surface);
++        if (it == seatData.inputClients.end()) {
++            // no surface properly registered, fallback to event_touch_simple
++            struct wpe_input_touch_event_raw event_touch_simple = { wpe_input_touch_event_type_down, time, id, wl_fixed_to_int(x), wl_fixed_to_int(y) };
++            EventDispatcher::singleton().sendEvent( event_touch_simple );
++        } else {
++            target = { surface, it->second };
++            struct wpe_input_touch_event event = { touchPoints.data(), touchPoints.size(), wpe_input_touch_event_type_down, id, time };
++            struct wpe_view_backend* backend = target.second;
++            wpe_view_backend_dispatch_touch_event(backend, &event);
++        }
+     },
+     // up
+     [](void* data, struct wl_touch*, uint32_t serial, uint32_t time, int32_t id)
+@@ -416,20 +417,24 @@ static const struct wl_touch_listener g_touchListener = {
+         if (id < 0 || id >= arraySize)
+             return;
+ 
+-        auto& target = seatData.touch.targets[id];
+-        assert(target.first && target.second);
+-
+         auto& touchPoints = seatData.touch.touchPoints;
+         auto& point = touchPoints[id];
+-        point = { wpe_input_touch_event_type_up, time, id, point.x, point.y };
++        auto& target = seatData.touch.targets[id];
+ 
+-        struct wpe_input_touch_event event = { touchPoints.data(), touchPoints.size(), wpe_input_touch_event_type_up, id, time };
++        if (target.first && target.second) {
++            point = { wpe_input_touch_event_type_up, time, id, point.x, point.y };
++            struct wpe_input_touch_event event = { touchPoints.data(), touchPoints.size(), wpe_input_touch_event_type_up, id, time };
+ 
+-        struct wpe_view_backend* backend = target.second;
+-        wpe_view_backend_dispatch_touch_event(backend, &event);
++            struct wpe_view_backend* backend = target.second;
++            wpe_view_backend_dispatch_touch_event(backend, &event);
+ 
+-        point = { wpe_input_touch_event_type_null, 0, 0, 0, 0 };
+-        target = { nullptr, nullptr };
++            point = { wpe_input_touch_event_type_null, 0, 0, 0, 0 };
++            target = { nullptr, nullptr };
++        } else {
++            // no surface registered
++            struct wpe_input_touch_event_raw event_touch_simple = { wpe_input_touch_event_type_up, time, id, point.x, point.y };
++            EventDispatcher::singleton().sendEvent( event_touch_simple );
++        }
+     },
+     // motion
+     [](void* data, struct wl_touch*, uint32_t time, int32_t id, wl_fixed_t x, wl_fixed_t y)
+@@ -440,16 +445,19 @@ static const struct wl_touch_listener g_touchListener = {
+         if (id < 0 || id >= arraySize)
+             return;
+ 
+-        auto& target = seatData.touch.targets[id];
+-        assert(target.first && target.second);
+-
+         auto& touchPoints = seatData.touch.touchPoints;
+         touchPoints[id] = { wpe_input_touch_event_type_motion, time, id, wl_fixed_to_int(x), wl_fixed_to_int(y) };
++        auto& target = seatData.touch.targets[id];
+ 
+-        struct wpe_input_touch_event event = { touchPoints.data(), touchPoints.size(), wpe_input_touch_event_type_motion, id, time };
+-
+-        struct wpe_view_backend* backend = target.second;
+-        wpe_view_backend_dispatch_touch_event(backend, &event);
++        if (target.first && target.second) {
++            struct wpe_input_touch_event event = { touchPoints.data(), touchPoints.size(), wpe_input_touch_event_type_motion, id, time };
++            struct wpe_view_backend* backend = target.second;
++            wpe_view_backend_dispatch_touch_event(backend, &event);
++        } else {
++            // no surface registered
++            struct wpe_input_touch_event_raw event_touch_simple = { wpe_input_touch_event_type_motion, time, id, wl_fixed_to_int(x), wl_fixed_to_int(y) };
++            EventDispatcher::singleton().sendEvent( event_touch_simple );
++        }
+     },
+     // frame
+     [](void*, struct wl_touch*)
+@@ -678,6 +686,17 @@ void EventDispatcher::sendEvent( wpe_input_keyboard_event& event )
+     }
+ }
+ 
++void EventDispatcher::sendEvent( wpe_input_touch_event_raw& event )
++{
++    if ( m_ipc != nullptr )
++    {
++        IPC::Message message;
++        message.messageCode = MsgType::TOUCHSIMPLE;
++        memcpy( message.messageData, &event, sizeof(event) );
++        m_ipc->sendMessage(IPC::Message::data(message), IPC::Message::size);
++    }
++}
++
+ void EventDispatcher::setIPC( IPC::Client& ipcClient )
+ {
+     m_ipc = &ipcClient;
+diff --git a/src/wayland/display.h b/src/wayland/display.h
+index 65d0ac1..9543877 100644
+--- a/src/wayland/display.h
++++ b/src/wayland/display.h
+@@ -63,12 +63,14 @@ class EventDispatcher
+     void sendEvent( wpe_input_pointer_event& event );
+     void sendEvent( wpe_input_touch_event& event );
+     void sendEvent( wpe_input_keyboard_event& event );
++    void sendEvent( wpe_input_touch_event_raw& event );
+     void setIPC( IPC::Client& ipcClient );
+     enum MsgType
+     {
+ 	AXIS = 0x30,
+ 	POINTER,
+ 	TOUCH,
++	TOUCHSIMPLE,
+ 	KEYBOARD
+     };
+ private:
