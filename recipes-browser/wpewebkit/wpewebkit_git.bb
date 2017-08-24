@@ -13,16 +13,14 @@ DEPENDS += " \
     virtual/egl virtual/libgles2 \
 "
 
-PV = "0.1+git${SRCPV}"
+PV = "1.20170824"
+SRCREV = "aaab302388b1e75c8c085b184b1c0800557e3a6b"
 
-SRCREV ?= "c7df008590dde472c9efc5d4ddd56d7a9b9eaca5"
-BASE_URI ?= "git://github.com/WebPlatformForEmbedded/WPEWebKit.git;protocol=http;branch=master"
-SRC_URI = "${BASE_URI}"
 
-SRC_URI += "file://0001-WebKitMacros-Append-to-I-and-not-to-isystem.patch \
-            file://0001-Reduce-the-default-thread-stack-size-to-32KB.patch \
-            file://0001-Reduce-stack-limits.patch \
-"
+SRC_URI = " git://github.com/WebPlatformForEmbedded/WPEWebKit.git;protocol=https;branch=master \
+            file://0001-WebKitMacros-Append-to-I-and-not-to-isystem.patch \
+            file://0001-WPE-Some-event-handlers-not-working.patch \
+          "
 
 S = "${WORKDIR}/git"
 
