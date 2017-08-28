@@ -1,0 +1,84 @@
+From 816bcdcf69dbe31ff94c8e3879baa9c8936ce121 Mon Sep 17 00:00:00 2001
+From: Carlos Alberto Lopez Perez <clopez@igalia.com>
+Date: Mon, 28 Aug 2017 19:44:52 +0200
+Subject: [PATCH] Better support for video playback with gstreamer holepunch
+ and imxeglvivsink
+
+---
+ .../graphics/gstreamer/MediaPlayerPrivateGStreamer.cpp     |  9 ++++++++-
+ .../graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp | 14 ++++++++++++++
+ Source/cmake/OptionsWPE.cmake                              |  2 ++
+ 3 files changed, 24 insertions(+), 1 deletion(-)
+
+diff --git a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamer.cpp b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamer.cpp
+index b1380c2f05f..a4c1c654288 100644
+--- a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamer.cpp
++++ b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamer.cpp
+@@ -2254,7 +2254,14 @@ void MediaPlayerPrivateGStreamer::createGSTPlayBin()
+     g_object_set(G_OBJECT(m_videoSink.get()), "zorder",0.0f, nullptr);
+ #endif
+ 
+-#if !USE(WESTEROS_SINK) && !USE(FUSION_SINK)
++#if USE(IMX_SINK) && USE(HOLE_PUNCH_GSTREAMER)
++    GRefPtr<GstElementFactory> westerosfactory = adoptGRef(gst_element_factory_find("imxeglvivsink"));
++    m_videoSink = gst_element_factory_create(westerosfactory.get(), "IMXVideoSink");
++    g_object_set(m_pipeline.get(), "video-sink", m_videoSink.get(), nullptr);
++    g_object_set(G_OBJECT(m_videoSink.get()), "borderless-window", TRUE, "force-aspect-ratio", FALSE, nullptr);
++#endif
++
++#if !USE(WESTEROS_SINK) && !USE(FUSION_SINK) && !USE(IMX_SINK)
+     g_object_set(m_pipeline.get(), "audio-sink", createAudioSink(), nullptr);
+ #endif
+     configurePlaySink();
+diff --git a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
+index 2af65fd3dea..c40de1c8c42 100644
+--- a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
++++ b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
+@@ -1075,10 +1075,24 @@ void MediaPlayerPrivateGStreamerBase::updateVideoRectangle()
+     if(!sinkElement)
+         return;
+ 
++    if (m_size.width() <= 0 || m_size.height() <= 0) {
++        GST_WARNING("Ignoring impossible video size request with width width=%d, height=%d", m_size.width(), m_size.height());
++        return;
++    }
++
+     GST_INFO("Setting video sink size and position to x:%d y:%d, width=%d, height=%d", m_position.x(), m_position.y(), m_size.width(), m_size.height());
+ 
++#if USE(IMX_SINK)
++    g_object_set(sinkElement.get(),
++        "window-x-coord", m_position.x(),
++        "window-y-coord", m_position.y(),
++        "window-width", m_size.width(),
++        "window-height", m_size.height(),
++        nullptr);
++#else
+     GUniquePtr<gchar> rectString(g_strdup_printf("%d,%d,%d,%d", m_position.x(), m_position.y(), m_size.width(),m_size.height()));
+     g_object_set(sinkElement.get(), "rectangle", rectString.get(), nullptr);
++#endif
+ }
+ #endif
+ 
+diff --git a/Source/cmake/OptionsWPE.cmake b/Source/cmake/OptionsWPE.cmake
+index ab5169b8b48..26ce5ccd6a8 100644
+--- a/Source/cmake/OptionsWPE.cmake
++++ b/Source/cmake/OptionsWPE.cmake
+@@ -53,6 +53,7 @@ WEBKIT_OPTION_DEFINE(USE_GSTREAMER_WEBKIT_HTTP_SRC "Whether to enable support fo
+ WEBKIT_OPTION_DEFINE(USE_HOLE_PUNCH_EXTERNAL "Transparent hole for the video player, rendering done by external application" PRIVATE OFF)
+ WEBKIT_OPTION_DEFINE(USE_HOLE_PUNCH_GSTREAMER "Transparent hole for the video player, rendering done by GStreamer and platform dependant sink" PRIVATE OFF)
+ WEBKIT_OPTION_DEFINE(USE_WESTEROS_SINK "Westeros-Sink to be used as video-sink for GStreamer video player" PUBLIC OFF)
++WEBKIT_OPTION_DEFINE(USE_IMX_SINK "IMX-Sink to be used as video-sink for GStreamer video player" PUBLIC OFF)
+ WEBKIT_OPTION_DEFINE(USE_FUSION_SINK "Fusion-Sink to be used as video-sink for GStreamer video player" PUBLIC OFF)
+ 
+ WEBKIT_OPTION_DEPEND(ENABLE_WEB_AUDIO USE_GSTREAMER)
+@@ -61,6 +62,7 @@ WEBKIT_OPTION_DEPEND(USE_GSTREAMER_WEBKIT_HTTP_SRC USE_GSTREAMER)
+ WEBKIT_OPTION_DEPEND(USE_HOLE_PUNCH_GSTREAMER USE_GSTREAMER)
+ WEBKIT_OPTION_DEPEND(USE_WESTEROS_SINK USE_GSTREAMER)
+ WEBKIT_OPTION_DEPEND(USE_FUSION_SINK USE_GSTREAMER)
++WEBKIT_OPTION_DEPEND(USE_IMX_SINK USE_HOLE_PUNCH_GSTREAMER)
+ 
+ WEBKIT_OPTION_END()
+ 
+-- 
+2.11.0
+

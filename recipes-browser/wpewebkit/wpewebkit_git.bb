@@ -13,13 +13,14 @@ DEPENDS += " \
     virtual/egl virtual/libgles2 \
 "
 
-PV = "1.20170824"
+PV = "1.20170828"
 SRCREV = "aaab302388b1e75c8c085b184b1c0800557e3a6b"
 
 
 SRC_URI = " git://github.com/WebPlatformForEmbedded/WPEWebKit.git;protocol=https;branch=master \
             file://0001-WebKitMacros-Append-to-I-and-not-to-isystem.patch \
             file://0001-WPE-Some-event-handlers-not-working.patch \
+            file://0001-Better-support-for-video-playback-with-gstreamer-hol.patch \
           "
 
 S = "${WORKDIR}/git"
@@ -76,6 +77,7 @@ PACKAGECONFIG[provisioning] = "-DENABLE_PROVISIONING=ON,-DENABLE_PROVISIONING=OF
 PACKAGECONFIG[gst_gl] = "-DUSE_GSTREAMER_GL=ON,,"
 PACKAGECONFIG[gst_httpsrc] = "-DUSE_GSTREAMER_WEBKIT_HTTP_SRC=ON,,"
 PACKAGECONFIG[gst_holepunch] = "-DUSE_HOLE_PUNCH_GSTREAMER=ON,,"
+PACKAGECONFIG[gst_imx_holepunch] = "-DUSE_HOLE_PUNCH_GSTREAMER=ON -DUSE_IMX_SINK=ON,,"
 
 EXTRA_OECMAKE += " \
     -DCMAKE_BUILD_TYPE=Release \
