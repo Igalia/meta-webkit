@@ -3,12 +3,14 @@ LICENSE = "CLOSED"
 DEPENDS = "webkitwpe glib-2.0 luajit-native luajit"
 RDEPENDS_${PN} = "glib-2.0-dev webkitwpe-dev"
 
-SRCREV = "6a3574e8e924e2d4c85bbee1dd7d821a87b72d2b"
-SRC_URI = "git://github.com/clopez/dyz.git;protocol=https;branch=crossbuild"
+SRCREV = "ec7a8b93e2c6afb04a7f7feb76d28bfddffaaea0"
+SRC_URI = "git://github.com/Igalia/dyz.git;protocol=https;branch=master"
 
 inherit autotools
 
 S = "${WORKDIR}/git"
 B = "${S}"
+
+LDFLAGS="-ldl -lm"
 
 INSANE_SKIP_${PN} = "dev-deps"
