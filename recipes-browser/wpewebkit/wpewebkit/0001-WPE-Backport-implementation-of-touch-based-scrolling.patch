@@ -1,0 +1,308 @@
+From 26106ba12e506b9b7654ec5924bf52db8e2d63d2 Mon Sep 17 00:00:00 2001
+From: Carlos Alberto Lopez Perez <clopez@igalia.com>
+Date: Wed, 20 Sep 2017 18:30:12 +0200
+Subject: [PATCH] [WPE] Backport implementation of touch based scrolling from
+ trunk
+
+---
+ Source/WebKit2/PlatformWPE.cmake                   |  1 +
+ Source/WebKit2/Shared/wpe/WebEventFactory.cpp      | 27 ++++---
+ .../WebKit2/UIProcess/API/wpe/PageClientImpl.cpp   | 15 +++-
+ Source/WebKit2/UIProcess/API/wpe/PageClientImpl.h  |  3 +
+ .../UIProcess/API/wpe/ScrollGestureController.cpp  | 83 ++++++++++++++++++++++
+ .../UIProcess/API/wpe/ScrollGestureController.h    | 56 +++++++++++++++
+ 6 files changed, 173 insertions(+), 12 deletions(-)
+ create mode 100644 Source/WebKit2/UIProcess/API/wpe/ScrollGestureController.cpp
+ create mode 100644 Source/WebKit2/UIProcess/API/wpe/ScrollGestureController.h
+
+diff --git a/Source/WebKit2/PlatformWPE.cmake b/Source/WebKit2/PlatformWPE.cmake
+index 80633bb23f9..bcbc1af18af 100644
+--- a/Source/WebKit2/PlatformWPE.cmake
++++ b/Source/WebKit2/PlatformWPE.cmake
+@@ -113,6 +113,7 @@ list(APPEND WebKit2_SOURCES
+     UIProcess/API/wpe/CompositingManagerProxy.cpp
+     UIProcess/API/wpe/DrawingAreaProxyWPE.cpp
+     UIProcess/API/wpe/PageClientImpl.cpp
++    UIProcess/API/wpe/ScrollGestureController.cpp
+     UIProcess/API/wpe/WPEView.cpp
+     UIProcess/API/wpe/WPEViewClient.cpp
+     UIProcess/API/wpe/WPEWebAutomation.cpp
+diff --git a/Source/WebKit2/Shared/wpe/WebEventFactory.cpp b/Source/WebKit2/Shared/wpe/WebEventFactory.cpp
+index fdda9181adb..a48e0d0b032 100644
+--- a/Source/WebKit2/Shared/wpe/WebEventFactory.cpp
++++ b/Source/WebKit2/Shared/wpe/WebEventFactory.cpp
+@@ -126,26 +126,30 @@ WebWheelEvent WebEventFactory::createWebWheelEvent(struct wpe_input_axis_event*
+     // FIXME: We shouldn't hard-code this.
+     enum Axis {
+         Vertical,
+-        Horizontal
++        Horizontal,
++        Smooth
+     };
+ 
+     WebCore::FloatSize wheelTicks;
++    WebCore::FloatSize delta;
+     switch (event->axis) {
+     case Vertical:
+-        wheelTicks = WebCore::FloatSize(0, 1);
++        wheelTicks = WebCore::FloatSize(0, event->value / std::abs(event->value));
++        delta = wheelTicks;
++        delta.scale(WebCore::Scrollbar::pixelsPerLineStep());
+         break;
+     case Horizontal:
+-        wheelTicks = WebCore::FloatSize(1, 0);
++        wheelTicks = WebCore::FloatSize(event->value / std::abs(event->value), 0);
++        delta = wheelTicks;
++        delta.scale(WebCore::Scrollbar::pixelsPerLineStep());
+         break;
++    case Smooth:
++        wheelTicks = WebCore::FloatSize(0, event->value);
++        delta = wheelTicks;
+     default:
+         ASSERT_NOT_REACHED();
+     };
+ 
+-    wheelTicks.scale(event->value / std::abs(event->value));
+-
+-    WebCore::FloatSize delta = wheelTicks;
+-    delta.scale(WebCore::Scrollbar::pixelsPerLineStep());
+-
+     WebCore::IntPoint position(event->x, event->y);
+     return WebWheelEvent(WebEvent::Wheel, position, position,
+         delta, wheelTicks, WebWheelEvent::ScrollByPixelWheelEvent, static_cast<WebEvent::Modifiers>(0), event->time);
+@@ -197,8 +201,11 @@ WebTouchEvent WebEventFactory::createWebTouchEvent(struct wpe_input_touch_event*
+         if (point.type == wpe_input_touch_event_type_null)
+             continue;
+ 
+-        touchPoints.uncheckedAppend(WebKit::WebPlatformTouchPoint(point.id, stateForTouchPoint(event->id, &point),
+-            WebCore::IntPoint(point.x, point.y), WebCore::IntPoint(point.x, point.y)));
++        WebCore::IntPoint pointCoordinates(point.x, point.y);
++
++        touchPoints.uncheckedAppend(
++            WebKit::WebPlatformTouchPoint(point.id, stateForTouchPoint(event->id, &point),
++            pointCoordinates, pointCoordinates));
+     }
+ 
+     return WebTouchEvent(type, WTFMove(touchPoints), WebEvent::Modifiers(0), event->time);
+diff --git a/Source/WebKit2/UIProcess/API/wpe/PageClientImpl.cpp b/Source/WebKit2/UIProcess/API/wpe/PageClientImpl.cpp
+index 360171acce5..aafd51e43a7 100644
+--- a/Source/WebKit2/UIProcess/API/wpe/PageClientImpl.cpp
++++ b/Source/WebKit2/UIProcess/API/wpe/PageClientImpl.cpp
+@@ -28,6 +28,7 @@
+ 
+ #include "DrawingAreaProxyWPE.h"
+ #include "NativeWebMouseEvent.h"
++#include "NativeWebWheelEvent.h"
+ #include "WPEView.h"
+ #include "WebContextMenuProxy.h"
+ #include <WebCore/NotImplemented.h>
+@@ -37,6 +38,7 @@ namespace WebKit {
+ 
+ PageClientImpl::PageClientImpl(WKWPE::View& view)
+     : m_view(view)
++    , m_scrollGestureController(std::make_unique<ScrollGestureController>())
+ {
+ }
+ 
+@@ -173,7 +175,16 @@ void PageClientImpl::doneWithTouchEvent(const NativeWebTouchEvent& touchEvent, b
+     if (touchPoint->type == wpe_input_touch_event_type_null)
+         return;
+ 
+-    struct wpe_input_pointer_event pointerEvent{
++    auto& page = m_view.page();
++
++    if (m_scrollGestureController->handleEvent(touchPoint)) {
++        struct wpe_input_axis_event* axisEvent = m_scrollGestureController->axisEvent();
++        if (axisEvent->type != wpe_input_axis_event_type_null)
++            page.handleWheelEvent(WebKit::NativeWebWheelEvent(axisEvent));
++        return;
++    }
++
++    struct wpe_input_pointer_event pointerEvent {
+         wpe_input_pointer_event_type_null, touchPoint->time,
+         touchPoint->x, touchPoint->y,
+         1, 0
+@@ -197,7 +208,7 @@ void PageClientImpl::doneWithTouchEvent(const NativeWebTouchEvent& touchEvent, b
+         return;
+     }
+ 
+-    m_view.page().handleMouseEvent(NativeWebMouseEvent(&pointerEvent));
++    page.handleMouseEvent(NativeWebMouseEvent(&pointerEvent));
+ }
+ #endif
+ 
+diff --git a/Source/WebKit2/UIProcess/API/wpe/PageClientImpl.h b/Source/WebKit2/UIProcess/API/wpe/PageClientImpl.h
+index 39d8921d7be..83cfa113a33 100644
+--- a/Source/WebKit2/UIProcess/API/wpe/PageClientImpl.h
++++ b/Source/WebKit2/UIProcess/API/wpe/PageClientImpl.h
+@@ -27,6 +27,7 @@
+ #define PageClientImpl_h
+ 
+ #include "PageClient.h"
++#include "ScrollGestureController.h"
+ #include "WebFullScreenManagerProxy.h"
+ 
+ namespace WKWPE {
+@@ -133,6 +134,8 @@ private:
+ #endif
+ 
+     WKWPE::View& m_view;
++
++    std::unique_ptr<ScrollGestureController> m_scrollGestureController;
+ };
+ 
+ } // namespace WebKit
+diff --git a/Source/WebKit2/UIProcess/API/wpe/ScrollGestureController.cpp b/Source/WebKit2/UIProcess/API/wpe/ScrollGestureController.cpp
+new file mode 100644
+index 00000000000..8607df8a28a
+--- /dev/null
++++ b/Source/WebKit2/UIProcess/API/wpe/ScrollGestureController.cpp
+@@ -0,0 +1,83 @@
++/*
++ * Copyright (C) 2017 Igalia S.L.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY APPLE INC. AND ITS CONTRIBUTORS ``AS IS''
++ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
++ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL APPLE INC. OR ITS CONTRIBUTORS
++ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
++ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
++ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
++ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
++ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
++ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
++ * THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#include "config.h"
++#include "ScrollGestureController.h"
++
++#include <WebCore/Scrollbar.h>
++
++namespace WebKit {
++
++bool ScrollGestureController::handleEvent(const struct wpe_input_touch_event_raw* touchPoint)
++{
++    // FIXME: We shouldn't hard-code this.
++    enum Axis { Vertical, Horizontal, Smooth };
++
++    switch (touchPoint->type) {
++    case wpe_input_touch_event_type_down:
++        m_start.time = touchPoint->time;
++        m_start.x = touchPoint->x;
++        m_start.y = touchPoint->y;
++        m_offset.x = touchPoint->x;
++        m_offset.y = touchPoint->y;
++        return false;
++    case wpe_input_touch_event_type_motion:
++        if (!m_handling) {
++            int32_t deltaX = touchPoint->x - m_start.x;
++            int32_t deltaY = touchPoint->y - m_start.y;
++            uint32_t deltaTime = touchPoint->time - m_start.time;
++
++            int pixelsPerLineStep = WebCore::Scrollbar::pixelsPerLineStep();
++            m_handling = std::abs(deltaX) >= pixelsPerLineStep
++                || std::abs(deltaY) >= pixelsPerLineStep
++                || deltaTime >= 200;
++        }
++        if (m_handling) {
++            m_axisEvent = {
++                wpe_input_axis_event_type_motion,
++                touchPoint->time, m_start.x, m_start.y,
++                Smooth, (touchPoint->y - m_offset.y)
++            };
++            m_offset.x = touchPoint->x;
++            m_offset.y = touchPoint->y;
++            return true;
++        }
++        return false;
++    case wpe_input_touch_event_type_up:
++        if (m_handling) {
++            m_handling = false;
++            m_axisEvent = {
++                wpe_input_axis_event_type_null,
++                0, 0, 0, 0, 0
++            };
++            return true;
++        }
++        return false;
++    default:
++        return false;
++    }
++}
++
++} // namespace WebKit
+diff --git a/Source/WebKit2/UIProcess/API/wpe/ScrollGestureController.h b/Source/WebKit2/UIProcess/API/wpe/ScrollGestureController.h
+new file mode 100644
+index 00000000000..664e443c506
+--- /dev/null
++++ b/Source/WebKit2/UIProcess/API/wpe/ScrollGestureController.h
+@@ -0,0 +1,56 @@
++/*
++ * Copyright (C) 2017 Igalia S.L.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY APPLE INC. AND ITS CONTRIBUTORS ``AS IS''
++ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
++ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL APPLE INC. OR ITS CONTRIBUTORS
++ * BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
++ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
++ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
++ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
++ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
++ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
++ * THE POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#pragma once
++
++#include <wpe/input.h>
++
++namespace WebKit {
++
++class ScrollGestureController {
++public:
++    ScrollGestureController() = default;
++
++    struct wpe_input_axis_event* axisEvent() { return &m_axisEvent; }
++
++    bool handleEvent(const struct wpe_input_touch_event_raw*);
++
++private:
++    struct {
++        uint32_t time { 0 };
++        int32_t x { 0 };
++        int32_t y { 0 };
++    } m_start;
++
++    struct {
++        int32_t x { 0 };
++        int32_t y { 0 };
++    } m_offset;
++
++    bool m_handling { false };
++    struct wpe_input_axis_event m_axisEvent;
++};
++
++} // namespace WebKit
+-- 
+2.11.0
+

@@ -13,13 +13,14 @@ DEPENDS += " \
     virtual/egl virtual/libgles2 \
 "
 
-PV = "1.20170901"
-SRCREV = "4508db9f63a282e16e6f7b17902bcfb482be0d06"
+PV = "1.20170920"
+SRCREV = "42b65f9477d40e6b0c558229e4dd63112eaddc06"
 
 
 SRC_URI = " git://github.com/WebPlatformForEmbedded/WPEWebKit.git;protocol=https;branch=master \
             file://0001-WebKitMacros-Append-to-I-and-not-to-isystem.patch \
             file://0001-WPE-Some-event-handlers-not-working.patch \
+            file://0001-WPE-Backport-implementation-of-touch-based-scrolling.patch \
           "
 
 S = "${WORKDIR}/git"
@@ -28,7 +29,7 @@ inherit cmake pkgconfig perlnative pythonnative
 
 TOOLCHAIN = "gcc"
 
-PACKAGECONFIG ?= "deviceorientation fullscreenapi fetchapi gamepad geolocation indexeddb libinput logs mediasource notifications sampling-profiler shadowdom subtitle subtlecrypto udev video webaudio wayland touch"
+PACKAGECONFIG ?= "deviceorientation fullscreenapi fetchapi gamepad geolocation indexeddb libinput logs mediasource notifications sampling-profiler shadowdom subtitle subtlecrypto udev video webaudio wayland touch gst_gl"
 
 # Mesa only offscreen target support for Westeros backend
 # FIXME Needs to be moved to mesa backend
@@ -73,7 +74,7 @@ PACKAGECONFIG[playready] = "-DENABLE_PLAYREADY=ON,-DENABLE_PLAYREADY=OFF,playrea
 PACKAGECONFIG[provisioning] = "-DENABLE_PROVISIONING=ON,-DENABLE_PROVISIONING=OFF,libprovision,libprovision"
 
 # GStreamer
-PACKAGECONFIG[gst_gl] = "-DUSE_GSTREAMER_GL=ON,,"
+PACKAGECONFIG[gst_gl] = "-DUSE_GSTREAMER_GL=ON,-DUSE_GSTREAMER_GL=OFF,gstreamer1.0-plugins-bad"
 PACKAGECONFIG[gst_httpsrc] = "-DUSE_GSTREAMER_WEBKIT_HTTP_SRC=ON,,"
 PACKAGECONFIG[gst_holepunch] = "-DUSE_HOLE_PUNCH_GSTREAMER=ON,,"
 

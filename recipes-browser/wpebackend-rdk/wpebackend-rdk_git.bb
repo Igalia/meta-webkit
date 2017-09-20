@@ -7,13 +7,11 @@ LIC_FILES_CHKSUM = "file://src/wayland/display.h;;beginline=5;endline=24;md5=b1c
 
 DEPENDS = "wpebackend glib-2.0 libinput"
 
-PV = "1.20170824"
-SRCREV = "f2aec84648dc9eb10c6aafbaf888151a9d120fce"
+PV = "1.20170920"
+SRCREV = "faf66440d43e7b4bf741a0b3a765982704827f7b"
 
 SRC_URI = " \
             git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=https;branch=master \
-            file://PR12.patch \
-            file://PR13.patch \
           "
 
 S = "${WORKDIR}/git"
