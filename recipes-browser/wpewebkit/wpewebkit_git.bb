@@ -13,14 +13,14 @@ DEPENDS += " \
     virtual/egl virtual/libgles2 \
 "
 
-PV = "1.20170920"
-SRCREV = "42b65f9477d40e6b0c558229e4dd63112eaddc06"
+PV = "1.20170926"
+SRCREV = "60a107da98ed8484705966e63f5467ac673dd743"
 
 
 SRC_URI = " git://github.com/WebPlatformForEmbedded/WPEWebKit.git;protocol=https;branch=master \
             file://0001-WebKitMacros-Append-to-I-and-not-to-isystem.patch \
             file://0001-WPE-Some-event-handlers-not-working.patch \
-            file://0001-WPE-Backport-implementation-of-touch-based-scrolling.patch \
+            file://revert_image_decoders-198781.patch \
           "
 
 S = "${WORKDIR}/git"
