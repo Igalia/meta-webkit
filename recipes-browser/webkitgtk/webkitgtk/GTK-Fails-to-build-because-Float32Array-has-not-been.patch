@@ -1,0 +1,36 @@
+From e9f949c7641844e131e2dea0d5f465e13893dd90 Mon Sep 17 00:00:00 2001
+From: "clopez@igalia.com"
+ <clopez@igalia.com@268f45cc-cd09-0410-ab3c-d52691b4dbfc>
+Date: Wed, 13 Sep 2017 20:17:35 +0000
+Subject: [PATCH] [GTK] Fails to build because 'Float32Array' has not been
+ declared in AudioContext.h https://bugs.webkit.org/show_bug.cgi?id=176870
+
+Reviewed by Konstantin Tokarev.
+
+Add missing include of Float32Array.h
+
+No new tests, its a build fix.
+
+* Modules/webaudio/AudioContext.h:
+
+
+git-svn-id: http://svn.webkit.org/repository/webkit/trunk@221989 268f45cc-cd09-0410-ab3c-d52691b4dbfc
+---
+ Source/WebCore/Modules/webaudio/AudioContext.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Source/WebCore/Modules/webaudio/AudioContext.h b/Source/WebCore/Modules/webaudio/AudioContext.h
+index 577317d2e82..474e687abc8 100644
+--- a/Source/WebCore/Modules/webaudio/AudioContext.h
++++ b/Source/WebCore/Modules/webaudio/AudioContext.h
+@@ -36,6 +36,7 @@
+ #include "PlatformMediaSession.h"
+ #include "VisibilityChangeClient.h"
+ #include <atomic>
++#include <runtime/Float32Array.h>
+ #include <wtf/HashSet.h>
+ #include <wtf/MainThread.h>
+ #include <wtf/RefPtr.h>
+-- 
+2.11.0
+

@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf
 DEPENDS = "zlib enchant libsoup-2.4 curl libxml2 cairo libxslt libidn gnutls \
            gtk+3 gstreamer1.0 gstreamer1.0-plugins-base flex-native icu \
            gperf-native perl-native ruby-native sqlite3 \
-           libwebp harfbuzz"
+           libwebp harfbuzz glib-2.0"
 
 DEPENDS += " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'gtk+ libxt', '', d)}"
 DEPENDS += " ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'virtual/libgl', '', d)}"
@@ -20,7 +20,7 @@ inherit cmake lib_package pkgconfig perlnative pythonnative distro_features_chec
 S = "${WORKDIR}/webkitgtk-${PV}/"
 
 PACKAGECONFIG ??= "x11 opengl gles2"
-PACKAGECONFIG[wayland] = "-DENABLE_WAYLAND_TARGET=ON,-DENABLE_WAYLAND_TARGET=OFF,wayland"
+PACKAGECONFIG[wayland] = "-DENABLE_WAYLAND_TARGET=ON,-DENABLE_WAYLAND_TARGET=OFF,wayland wayland-native"
 PACKAGECONFIG[x11] = "-DENABLE_X11_TARGET=ON,-DENABLE_X11_TARGET=OFF,virtual/libx11"
 PACKAGECONFIG[geoclue] = "-DENABLE_GEOLOCATION=ON,-DENABLE_GEOLOCATION=OFF,geoclue"
 PACKAGECONFIG[enchant] = "-DENABLE_SPELLCHECK=ON,-DENABLE_SPELLCHECK=OFF,enchant"
@@ -28,7 +28,7 @@ PACKAGECONFIG[gtk2] = "-DENABLE_PLUGIN_PROCESS_GTK2=ON,-DENABLE_PLUGIN_PROCESS_G
 PACKAGECONFIG[gles2] = "-DENABLE_GLES2=ON,-DENABLE_GLES2=OFF,virtual/libgles2"
 PACKAGECONFIG[webgl] = "-DENABLE_WEBGL=ON,-DENABLE_WEBGL=OFF,virtual/libgl"
 PACKAGECONFIG[opengl] = "-DENABLE_OPENGL=ON,-DENABLE_OPENGL=OFF,virtual/libgl"
-PACKAGECONFIG[libsecret] = "-DENABLE_CREDENTIAL_STORAGE=ON,-DENABLE_CREDENTIAL_STORAGE=OFF,libsecret"
+PACKAGECONFIG[libsecret] = "-DUSE_LIBSECRET=ON,-DUSE_LIBSECRET=OFF,libsecret"
 PACKAGECONFIG[libnotify] = "-DUSE_LIBNOTIFY=ON,-DUSE_LIBNOTIFY=OFF,libnotify"
 PACKAGECONFIG[libhyphen] = "-DUSE_LIBHYPHEN=ON,-DUSE_LIBHYPHEN=OFF,libhyphen"
 

@@ -8,36 +8,46 @@ LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf
 # you need harfbuzz with icu enabled, you can add this to your config:
 # PACKAGECONFIG_append_pn-harfbuzz = " icu" if you are having problems
 # with the do_configure step and harfbuzz.
-DEPENDS = "zlib enchant libsoup-2.4 curl libxml2 cairo libxslt libidn gnutls \
+DEPENDS = "zlib enchant libsoup-2.4 curl libxml2 cairo libxslt libidn libgcrypt \
            gtk+3 gstreamer1.0 gstreamer1.0-plugins-base flex-native icu \
            gperf-native perl-native ruby-native sqlite3 \
-           libwebp harfbuzz virtual/libgles2 wayland weston mesa"
+           libwebp harfbuzz virtual/libgles2 wpebackend glib-2.0-native"
 
 
 REQUIRED_DISTRO_FEATURES = "wayland"
 
 inherit cmake pkgconfig perlnative pythonnative
 
+
+
 #
-# We download a tarball from github instead of cloning the git repository because
-# requires less resources (network bandwidth and disk space) on the build machine.
+# We download a tarball from github instead of cloning the upstream git repository
+# because requires less resources (network bandwidth and disk space) on the build machine.
 #
-# PV is the release or tag version (from https://github.com/WebKitForWayland/webkit/releases)
-PV = "wpe-20160526"
-S = "${WORKDIR}/webkit-${PV}/"
+
+SVNREV = "222017"
+GITHASH = "be476896877f8e2efa98486fb398e374ea900425"
+
+S = "${WORKDIR}/webkit-${GITHASH}/"
+PV = "svn-${SVNREV}"
 
 SRC_URI = "\
-   https://github.com/WebKitForWayland/webkit/archive/${PV}.tar.gz \
-   file://0001-CMake-Build-failure-with-GCC-6-fatal-error-stdlib.h-.patch \
+   https://github.com/webkit/webkit/archive/${GITHASH}.tar.gz \
 "
 
-SRC_URI[md5sum] = "1c004d643a16562eb4c54fef63365b4f"
-SRC_URI[sha256sum] = "01ceafd5cfb07566e7c110bce4bf7fa9ad3e932939324e046de1d39dd7f10ee5"
+SRC_URI[md5sum] = "de1391d7286a466176f90f25f0ca50bc"
+SRC_URI[sha256sum] = "d1fa8cdfc7f075144b6bb8df8ea2fb92b102ca1e05433b272ed3a78d358c219f"
 
 EXTRA_OECMAKE = " \
                  -DPORT=WPE \
                  -DCMAKE_BUILD_TYPE=Release \
                 "
+
+
+PACKAGECONFIG ?= "webcrypto gst_gl"
+PACKAGECONFIG[webcrypto] = "-DENABLE_WEB_CRYPTO=ON,-DENABLE_WEB_CRYPTO=OFF,libgcrypt libtasn1"
+PACKAGECONFIG[gst_gl] = "-DUSE_GSTREAMER_GL=ON,-DUSE_GSTREAMER_GL=OFF,gstreamer1.0-plugins-bad"
+
 
 # Javascript JIT is not supported on powerpc
 EXTRA_OECMAKE_append_powerpc = " -DENABLE_JIT=OFF "
@@ -87,4 +97,5 @@ ${libdir}/libWPEWebInspectorResources.so \
 ${libdir}/libWPEWebKit.so.* \
 "
 
-RRECOMMENDS_${PN} += "ca-certificates"
+RRECOMMENDS_${PN} += "ca-certificates shared-mime-info ttf-bitstream-vera"
+RCONFLICTS_${PN} += "wpewebkit"
