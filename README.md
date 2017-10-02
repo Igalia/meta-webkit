@@ -12,22 +12,24 @@ This layer depends on:
 
 
 
-Building the WebKitForWayland engine.
--------------------------------------
+Building the WPE engine (former WebKitForWayland).
+---------------------------------------------------
 
 
-WebKit for Wayland port pairs the WebKit engine with the Wayland display protocol,
-allowing embedders to create simple and performant systems based on Web platform technologies.
-It is designed with hardware acceleration in mind, relying on EGL, the Wayland EGL platform, and OpenGL ES.
+WPE is a WebKit port intended to allow embedders to create simple and performant
+systems based on Web platform technologies.
+It is designed with hardware acceleration in mind, leveraging common 3D graphics
+APIs for best performance.
 
-The usual way to create an image with webkitforwayland is:
 
-  * Checkout the branch of this repository that matches your Yocto/OE version (for example: fido)
+The usual way to create an image with wpe is:
+
+  * Checkout the branch of this repository that matches your Yocto/OE version (for example: krogoth)
   * Add this layer to bblayers.conf
   * Add the following to local.conf:
 
         DISTRO_FEATURES_append = " opengl wayland"
-        IMAGE_INSTALL_append = " webkitforwayland"
+        IMAGE_INSTALL_append = " wpebackend-rdk wpelauncher wpewebkit"
 
   * Then build the target image, for example:
 
