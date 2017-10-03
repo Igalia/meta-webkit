@@ -29,7 +29,7 @@ inherit cmake pkgconfig perlnative pythonnative
 
 TOOLCHAIN = "gcc"
 
-PACKAGECONFIG ?= "deviceorientation fullscreenapi fetchapi gamepad geolocation indexeddb libinput logs mediasource notifications sampling-profiler shadowdom subtitle subtlecrypto udev video webaudio wayland touch gst_gl"
+PACKAGECONFIG ?= "deviceorientation fullscreenapi fetchapi gamepad geolocation indexeddb libinput mediasource notifications sampling-profiler shadowdom subtitle subtlecrypto udev video webaudio wayland touch gst_gl"
 
 # Mesa only offscreen target support for Westeros backend
 # FIXME Needs to be moved to mesa backend
@@ -54,7 +54,6 @@ PACKAGECONFIG[gamepad] = "-DENABLE_GAMEPAD=ON,-DENABLE_GAMEPAD=OFF,"
 PACKAGECONFIG[geolocation] = "-DENABLE_GEOLOCATION=ON,-DENABLE_GEOLOCATION=OFF,"
 PACKAGECONFIG[indexeddb] = "-DENABLE_DATABASE_PROCESS=ON -DENABLE_INDEXED_DATABASE=ON,-DENABLE_DATABASE_PROCESS=OFF -DENABLE_INDEXED_DATABASE=OFF,"
 PACKAGECONFIG[libinput] = "-DUSE_WPEWEBKIT_INPUT_LIBINPUT=ON,-DUSE_WPEWEBKIT_INPUT_LIBINPUT=OFF,libinput"
-PACKAGECONFIG[logs] = "-DLOG_DISABLED=OFF,-DLOG_DISABLED=ON,"
 PACKAGECONFIG[mediasource] = "-DENABLE_MEDIA_SOURCE=ON,-DENABLE_MEDIA_SOURCE=OFF,gstreamer1.0 gstreamer1.0-plugins-good"
 PACKAGECONFIG[mediastream] = "-DENABLE_MEDIA_STREAM=ON,-DENABLE_MEDIA_STREAM=OFF,openwebrtc"
 PACKAGECONFIG[nativevideo] = "-DENABLE_NATIVE_VIDEO=ON,-DENABLE_NATIVE_VIDEO=OFF,"
@@ -67,6 +66,11 @@ PACKAGECONFIG[touch] = "-DENABLE_TOUCH_EVENTS=ON,-DENABLE_TOUCH_EVENTS=OFF,"
 PACKAGECONFIG[udev] = "-DUSE_WPEWEBKIT_INPUT_UDEV=ON,-DUSE_WPEWEBKIT_INPUT_UDEV=OFF,udev"
 PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON -DENABLE_VIDEO_TRACK=ON,-DENABLE_VIDEO=OFF -DENABLE_VIDEO_TRACK=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad"
 PACKAGECONFIG[webaudio] = "-DENABLE_WEB_AUDIO=ON,-DENABLE_WEB_AUDIO=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good"
+
+# This enables fatal, error and channel logs. Useful when you want to see some logs on a Release build.
+# Use WEBKIT_DEBUG env var to check specific log channel. Check the channel names at Source/WebCore/platform/Logging.h
+# Use WEBKIT_DEBUG=all to enable all channels.
+PACKAGECONFIG[logs] ="-DENABLE_LOGS=ON,-DENABLE_LOGS=OFF,"
 
 # DRM
 PACKAGECONFIG[opencdm] = "-DENABLE_OCDM=ON,-DENABLE_OCDM=OFF,opencdm"

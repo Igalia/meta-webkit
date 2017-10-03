@@ -674,20 +674,8 @@ index 9c592f374b3..60a619acda1 100644
  
      return IntPoint();
  }
-diff --git a/Source/WebCore/platform/Logging.h b/Source/WebCore/platform/Logging.h
-index 04cf7116b12..38ed50278f1 100644
---- a/Source/WebCore/platform/Logging.h
-+++ b/Source/WebCore/platform/Logging.h
-@@ -53,7 +53,6 @@ namespace WebCore {
-     M(Gamepad) \
-     M(History) \
-     M(IconDatabase) \
--    M(Images) \
-     M(IndexedDB) \
-     M(Layers) \
-     M(Layout) \
 diff --git a/Source/WebCore/platform/graphics/BitmapImage.cpp b/Source/WebCore/platform/graphics/BitmapImage.cpp
-index 5ee9765180e..7743ff95536 100644
+index 5ee9765180e..8d2ef6e4fa3 100644
 --- a/Source/WebCore/platform/graphics/BitmapImage.cpp
 +++ b/Source/WebCore/platform/graphics/BitmapImage.cpp
 @@ -21,7 +21,7 @@
@@ -699,15 +687,7 @@ index 5ee9765180e..7743ff95536 100644
   */
  
  #include "config.h"
-@@ -32,7 +32,6 @@
- #include "ImageBuffer.h"
- #include "ImageObserver.h"
- #include "IntRect.h"
--#include "Logging.h"
- #include "MIMETypeRegistry.h"
- #include "TextStream.h"
- #include "Timer.h"
-@@ -48,13 +47,34 @@ namespace WebCore {
+@@ -48,13 +48,34 @@ namespace WebCore {
  
  BitmapImage::BitmapImage(ImageObserver* observer)
      : Image(observer)
@@ -749,7 +729,7 @@ index 5ee9765180e..7743ff95536 100644
  {
  }
  
-@@ -64,273 +84,497 @@ BitmapImage::~BitmapImage()
+@@ -64,273 +85,509 @@ BitmapImage::~BitmapImage()
      stopAnimation();
  }
  
@@ -850,8 +830,10 @@ index 5ee9765180e..7743ff95536 100644
  
 -    // Fallback to the first frame image if we can't find the right size
 -    return frameImageAtIndex(0, SubsamplingLevel::Default, targetContext);
-+    if (allFrameBytes > largeAnimationCutoff)
++    if (allFrameBytes > largeAnimationCutoff) {
++        LOG(Images, "BitmapImage %p destroyDecodedDataIfNecessary destryingData: allFrameBytes=%u cutoff=%u", this, allFrameBytes, largeAnimationCutoff);
 +        destroyDecodedData(destroyAll);
++    }
  }
  
 -Vector<NativeImagePtr> BitmapImage::framesNativeImages()
@@ -862,13 +844,13 @@ index 5ee9765180e..7743ff95536 100644
 +    m_isSolidColor = false;
 +    m_checkedForSolidColor = false;
 +    invalidatePlatformData();
-+
-+    ASSERT(m_decodedSize >= frameBytesCleared);
-+    m_decodedSize -= frameBytesCleared;
  
 -    for (size_t i = 0; i < count; ++i) {
 -        if (auto image = frameImageAtIndex(i))
 -            images.append(image);
++    ASSERT(m_decodedSize >= frameBytesCleared);
++    m_decodedSize -= frameBytesCleared;
++
 +    // Clearing the ImageSource destroys the extra decoded data used for determining image properties.
 +    if (clearedSource == ClearedSource::Yes) {
 +        frameBytesCleared += m_decodedPropertiesSize;
@@ -912,6 +894,8 @@ index 5ee9765180e..7743ff95536 100644
 +    const IntSize frameSize(index ? m_source.frameSizeAtIndex(index, subsamplingLevel) : m_size);
 +    if (!subsamplingLevel && frameSize != m_size)
 +        m_hasUniformFrameSize = false;
++
++    LOG(Images, "BitmapImage %p cacheFrame %lu (%s%u bytes, complete %d)", this, index, frameCaching == CacheMetadataOnly ? "metadata only, " : "", m_frames[index].m_frameBytes, m_frames[index].m_isComplete);
 +
 +    if (m_frames[index].m_image) {
 +        int deltaBytes = safeCast<int>(m_frames[index].m_frameBytes);
@@ -1270,11 +1254,6 @@ index 5ee9765180e..7743ff95536 100644
      }
 +    return m_repetitionCount;
 +}
-+
-+bool BitmapImage::shouldAnimate()
-+{
-+    return (repetitionCount(false) != cAnimationNone && !m_animationFinished && imageObserver());
-+}
  
 -    // When looping on an animation, destroy de decoded data when in the first frame instead of the last one.
 -    // If it's done in the last one and a redraw happens before the animation advances, we need to decode all
@@ -1282,11 +1261,16 @@ index 5ee9765180e..7743ff95536 100644
 -    // while in the first one, we only need to decode a single frame.
 -    if (m_currentFrame == 0)
 -        destroyDecodedDataIfNecessary(true);
++bool BitmapImage::shouldAnimate()
++{
++    return (repetitionCount(false) != cAnimationNone && !m_animationFinished && imageObserver());
++}
+ 
 +void BitmapImage::startAnimation(CatchUpAnimation catchUpIfNecessary)
 +{
 +    if (m_frameTimer || !shouldAnimate() || frameCount() <= 1)
 +        return;
- 
++
 +    // If we aren't already animating, set now as the animation start time.
 +    const double time = monotonicallyIncreasingTime();
 +    if (!m_desiredFrameStartTime)
@@ -1298,8 +1282,7 @@ index 5ee9765180e..7743ff95536 100644
 +    size_t nextFrame = (m_currentFrame + 1) % frameCount();
 +    if (!m_allDataReceived && !frameIsCompleteAtIndex(nextFrame))
 +        return;
- 
--    double time = monotonicallyIncreasingTime();
++
 +    // Don't advance past the last frame if we haven't decoded the whole image
 +    // yet and our repetition count is potentially unset. The repetition count
 +    // in a GIF can potentially come after all the rest of the image data, so
@@ -1307,8 +1290,7 @@ index 5ee9765180e..7743ff95536 100644
 +    if (!m_allDataReceived && repetitionCount(false) == cAnimationLoopOnce && m_currentFrame >= (frameCount() - 1))
 +        return;
  
--    // Handle initial state.
--    if (!m_desiredFrameStartTime)
+-    double time = monotonicallyIncreasingTime();
 +    // Determine time for next frame to start. By ignoring paint and timer lag
 +    // in this calculation, we make the animation appear to run at its desired
 +    // rate regardless of how fast it's being repainted.
@@ -1327,7 +1309,9 @@ index 5ee9765180e..7743ff95536 100644
 +    // maintaining absolute animation timing, so reset the timings each frame.
 +    m_desiredFrameStartTime = time + currentDuration;
 +#endif
-+
+ 
+-    // Handle initial state.
+-    if (!m_desiredFrameStartTime)
 +    // The image may load more slowly than it's supposed to animate, so that by
 +    // the time we reach the end of the first repetition, we're well behind.
 +    // Clamp the desired frame start time in this case, so that we don't skip
@@ -1362,10 +1346,14 @@ index 5ee9765180e..7743ff95536 100644
 -    startTimer(m_desiredFrameStartTime - time);
 -    return StartAnimationResult::Started;
 -}
--
+ 
 -void BitmapImage::advanceAnimation()
 -{
 -    clearTimer();
++    // We've already reached or passed the time for the next frame to start.
++    // See if we've also passed the time for frames after that to start, in
++    // case we need to skip some frames entirely. Remember not to advance
++    // to an incomplete frame.
  
 -    // Pretend as if decoding nextFrame has taken m_frameDecodingDurationForTesting from
 -    // the time this decoding was requested.
@@ -1374,10 +1362,10 @@ index 5ee9765180e..7743ff95536 100644
 -        // Start a timer with the remaining time from now till the m_desiredFrameDecodeTime.
 -        if (m_desiredFrameDecodeTimeForTesting > std::max(time, m_desiredFrameStartTime)) {
 -            startTimer(m_desiredFrameDecodeTimeForTesting - time);
-+    // We've already reached or passed the time for the next frame to start.
-+    // See if we've also passed the time for frames after that to start, in
-+    // case we need to skip some frames entirely. Remember not to advance
-+    // to an incomplete frame.
++#if !LOG_DISABLED
++    size_t startCatchupFrameIndex = nextFrame;
++#endif
++
 +    for (size_t frameAfterNext = (nextFrame + 1) % frameCount(); frameIsCompleteAtIndex(frameAfterNext); frameAfterNext = (nextFrame + 1) % frameCount()) {
 +        // Should we skip the next frame?
 +        double frameAfterNextStartTime = m_desiredFrameStartTime + frameDurationAtIndex(nextFrame);
@@ -1389,6 +1377,7 @@ index 5ee9765180e..7743ff95536 100644
 +        if (!internalAdvanceAnimation(SkippingFramesToCatchUp)) {
 +            m_animationFinishedWhenCatchingUp = true;
 +            startTimer(0);
++            LOG(Images, "BitmapImage %p startAnimation catching up from frame %lu, ended", this, startCatchupFrameIndex);
              return;
          }
 +        m_desiredFrameStartTime = frameAfterNextStartTime;
@@ -1411,7 +1400,8 @@ index 5ee9765180e..7743ff95536 100644
 -{
 -    m_currentFrame = (m_currentFrame + 1) % frameCount();
 -    ASSERT(!frameIsBeingDecodedAtIndex(m_currentFrame));
--
++    LOG(Images, "BitmapImage %p startAnimation catching up jumped from from frame %lu to %d", this, startCatchupFrameIndex, (int)nextFrame - 1);
+ 
 -    destroyDecodedDataIfNecessary(false);
 -
 -    if (imageObserver())
@@ -1423,7 +1413,7 @@ index 5ee9765180e..7743ff95536 100644
  }
  
  void BitmapImage::stopAnimation()
-@@ -338,41 +582,143 @@ void BitmapImage::stopAnimation()
+@@ -338,41 +595,143 @@ void BitmapImage::stopAnimation()
      // This timer is used to animate all occurrences of this image. Don't invalidate
      // the timer unless all renderers have stopped drawing.
      clearTimer();
@@ -1447,17 +1437,10 @@ index 5ee9765180e..7743ff95536 100644
 -void BitmapImage::newFrameNativeImageAvailableAtIndex(size_t index)
 +void BitmapImage::drawPattern(GraphicsContext& ctxt, const FloatRect& tileRect, const AffineTransform& transform,
 +    const FloatPoint& phase, const FloatSize& spacing, CompositeOperator op, const FloatRect& destRect, BlendMode blendMode)
- {
--    UNUSED_PARAM(index);
--    ASSERT(index == (m_currentFrame + 1) % frameCount());
++{
 +    if (tileRect.isEmpty())
 +        return;
- 
--    // Don't advance to nextFrame unless the timer was fired before its decoding finishes.
--    if (canAnimate() && !m_frameTimer)
--        internalAdvanceAnimation();
--    else
--        LOG(Images, "BitmapImage %p %s - earlyFrameCount %ld nextFrame %ld", this, __FUNCTION__, ++m_earlyFrameCount, index);
++
 +    if (!ctxt.drawLuminanceMask()) {
 +        Image::drawPattern(ctxt, tileRect, transform, phase, spacing, op, destRect, blendMode);
 +        return;
@@ -1497,7 +1480,9 @@ index 5ee9765180e..7743ff95536 100644
 +}
 +
 +bool BitmapImage::internalAdvanceAnimation(AnimationAdvancement advancement)
-+{
+ {
+-    UNUSED_PARAM(index);
+-    ASSERT(index == (m_currentFrame + 1) % frameCount());
 +    clearTimer();
 +
 +    if (m_animationFinishedWhenCatchingUp) {
@@ -1511,7 +1496,12 @@ index 5ee9765180e..7743ff95536 100644
 +    bool destroyAll = false;
 +    if (m_currentFrame >= frameCount()) {
 +        ++m_repetitionsComplete;
-+
+ 
+-    // Don't advance to nextFrame unless the timer was fired before its decoding finishes.
+-    if (canAnimate() && !m_frameTimer)
+-        internalAdvanceAnimation();
+-    else
+-        LOG(Images, "BitmapImage %p %s - earlyFrameCount %ld nextFrame %ld", this, __FUNCTION__, ++m_earlyFrameCount, index);
 +        // Get the repetition count again. If we weren't able to get a
 +        // repetition count before, we should have decoded the whole image by
 +        // now, so it should now be available.
@@ -5448,45 +5438,10 @@ index c3cb78bc2bd..99f09db67ba 100644
          if (!decoder.frameCount())
              return false;
 diff --git a/Source/WebCore/platform/graphics/cg/GraphicsContextCG.cpp b/Source/WebCore/platform/graphics/cg/GraphicsContextCG.cpp
-index c2d227b4fb5..6e5f6eaa2ea 100644
+index c2d227b4fb5..ebf481e4095 100644
 --- a/Source/WebCore/platform/graphics/cg/GraphicsContextCG.cpp
 +++ b/Source/WebCore/platform/graphics/cg/GraphicsContextCG.cpp
-@@ -36,15 +36,12 @@
- #include "GraphicsContextPlatformPrivateCG.h"
- #include "ImageBuffer.h"
- #include "ImageOrientation.h"
--#include "Logging.h"
- #include "Path.h"
- #include "Pattern.h"
- #include "ShadowBlur.h"
- #include "SubimageCacheWithTimer.h"
--#include "TextStream.h"
- #include "Timer.h"
- #include "URL.h"
--#include <wtf/CurrentTime.h>
- #include <wtf/MathExtras.h>
- #include <wtf/RetainPtr.h>
- 
-@@ -199,9 +196,6 @@ void GraphicsContext::drawNativeImage(const RetainPtr<CGImageRef>& image, const
-         return;
-     }
- 
--#if !LOG_DISABLED
--    double startTime = currentTime();
--#endif
-     RetainPtr<CGImageRef> subImage(image);
- 
-     float currHeight = orientation.usesWidthAsHeight() ? CGImageGetWidth(subImage.get()) : CGImageGetHeight(subImage.get());
-@@ -302,8 +296,6 @@ void GraphicsContext::drawNativeImage(const RetainPtr<CGImageRef>& image, const
-         CGContextSetShouldAntialias(context, wasAntialiased);
- #endif
-     }
--
--    LOG_WITH_STREAM(Images, stream << "GraphicsContext::drawNativeImage " << image.get() << " size " << imageSize << " into " << destRect << " took " << 1000.0 * (currentTime() - startTime) << "ms");
- }
- 
- static void drawPatternCallback(void* info, CGContextRef context)
-@@ -324,13 +316,13 @@ static void patternReleaseCallback(void* info)
+@@ -324,13 +324,13 @@ static void patternReleaseCallback(void* info)
      });
  }
  
