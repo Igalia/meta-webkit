@@ -1,0 +1,46 @@
+From 5c42a24e6242d6c4422cc3e362c454128d577fd0 Mon Sep 17 00:00:00 2001
+From: "carlosgc@webkit.org"
+ <carlosgc@webkit.org@268f45cc-cd09-0410-ab3c-d52691b4dbfc>
+Date: Mon, 30 Jan 2017 08:47:30 +0000
+Subject: [PATCH] [Threaded Compositor] Crash in
+ GraphicsContext3D::deleteTexture when destroying
+ TextureMapperPlatformLayerProxy
+ https://bugs.webkit.org/show_bug.cgi?id=167575
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Reviewed by Žan Doberšek.
+
+We should clear all the buffers on invalidate to ensure we don't have textures alive after CoordinatedGraphicsScene::purgeGLResources().
+
+Fix crash in media/video-poster-background.html.
+
+* platform/graphics/texmap/TextureMapperPlatformLayerProxy.cpp:
+(WebCore::TextureMapperPlatformLayerProxy::invalidate): Clear current, pending and all used buffers.
+
+git-svn-id: http://svn.webkit.org/repository/webkit/trunk@211358 268f45cc-cd09-0410-ab3c-d52691b4dbfc
+---
+ .../platform/graphics/texmap/TextureMapperPlatformLayerProxy.cpp    | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/Source/WebCore/platform/graphics/texmap/TextureMapperPlatformLayerProxy.cpp b/Source/WebCore/platform/graphics/texmap/TextureMapperPlatformLayerProxy.cpp
+index c9ba01c66ed..c3e61a2586f 100644
+--- a/Source/WebCore/platform/graphics/texmap/TextureMapperPlatformLayerProxy.cpp
++++ b/Source/WebCore/platform/graphics/texmap/TextureMapperPlatformLayerProxy.cpp
+@@ -85,6 +85,12 @@ void TextureMapperPlatformLayerProxy::invalidate()
+     LockHolder locker(m_lock);
+     m_compositor = nullptr;
+     m_targetLayer = nullptr;
++
++    m_currentBuffer = nullptr;
++    m_pendingBuffer = nullptr;
++    m_releaseUnusedBuffersTimer.stop();
++    m_usedBuffers.clear();
++
+     m_compositorThreadUpdateTimer = nullptr;
+     m_compositorThreadUpdateFunction = nullptr;
+ }
+-- 
+2.11.0
+

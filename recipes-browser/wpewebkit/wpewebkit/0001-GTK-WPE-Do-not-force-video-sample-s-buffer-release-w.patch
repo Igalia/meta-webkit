@@ -1,0 +1,55 @@
+From 63175185bdd2bc51e6bfdc9f92a8162c080ad9fa Mon Sep 17 00:00:00 2001
+From: "magomez@igalia.com"
+ <magomez@igalia.com@268f45cc-cd09-0410-ab3c-d52691b4dbfc>
+Date: Mon, 5 Jun 2017 12:33:31 +0000
+Subject: [PATCH] [GTK][WPE] Do not force video sample's buffer release when
+ the platformLayerProxy is inactive
+ https://bugs.webkit.org/show_bug.cgi?id=172916
+
+Reviewed by Carlos Garcia Campos.
+
+When MediaPlayerPrivateGStreamerBase's plarformLayerProxy was inactive, a copy of the video sample
+was being done (without the buffer) and set, causing the sample's buffer to get freed. This was done
+to avoid stalling the gstreamer pipeline in situations where the video was set to display:none, as the
+platformLayerProxy would keep all the available buffers. But this can't happen nowadays as setting
+the video to display:none invalidates the proxy, causing it to release the references to the
+gstreamer buffers it's using. Also, the current code is causing a crash when using gstreamer-gl and
+the video is hidden but its contents are being painted through webgl or an accelerated canvas. So,
+remove this sample copy as it's not necessary anymore.
+
+Covered by existent tests.
+
+* platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp:
+(WebCore::MediaPlayerPrivateGStreamerBase::pushTextureToCompositor):
+
+
+git-svn-id: http://svn.webkit.org/repository/webkit/trunk@217780 268f45cc-cd09-0410-ab3c-d52691b4dbfc
+---
+ .../graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp     | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
+
+diff --git a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
+index df06e051c49..8efe678f421 100644
+--- a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
++++ b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
+@@ -709,16 +709,8 @@ void MediaPlayerPrivateGStreamerBase::pushTextureToCompositor()
+ 
+     LockHolder holder(m_platformLayerProxy->lock());
+ 
+-    if (!m_platformLayerProxy->isActive()) {
+-        // Consume the buffer (so it gets eventually unreffed) but keep the rest of the info.
+-        const GstStructure* info = gst_sample_get_info(m_sample.get());
+-        GstStructure* infoCopy = nullptr;
+-        if (info)
+-            infoCopy = gst_structure_copy(info);
+-        m_sample = adoptGRef(gst_sample_new(nullptr, gst_sample_get_caps(m_sample.get()),
+-            gst_sample_get_segment(m_sample.get()), infoCopy));
++    if (!m_platformLayerProxy->isActive())
+         return;
+-    }
+ 
+ #if USE(GSTREAMER_GL)
+     std::unique_ptr<GstVideoFrameHolder> frameHolder = std::make_unique<GstVideoFrameHolder>(m_sample.get(), texMapFlagFromOrientation(m_videoSourceOrientation));
+-- 
+2.11.0
+
