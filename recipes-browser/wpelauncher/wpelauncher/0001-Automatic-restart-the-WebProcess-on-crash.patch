@@ -1,0 +1,29 @@
+From 748f450a9a2ffc3b00550e2c818d2829ec73441c Mon Sep 17 00:00:00 2001
+From: Carlos Alberto Lopez Perez <clopez@igalia.com>
+Date: Mon, 16 Oct 2017 17:36:06 +0200
+Subject: [PATCH] Automatic restart the WebProcess on crash
+
+---
+ launcher/main.cpp | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/launcher/main.cpp b/launcher/main.cpp
+index 74307ed..4a648f9 100644
+--- a/launcher/main.cpp
++++ b/launcher/main.cpp
+@@ -69,7 +69,11 @@ WKPageNavigationClientV0 s_navigationClient = {
+     nullptr, // renderingProgressDidChange
+     nullptr, // canAuthenticateAgainstProtectionSpace
+     nullptr, // didReceiveAuthenticationChallenge
+-    nullptr, // webProcessDidCrash
++    // webProcessDidCrash
++    [](WKPageRef page, const void*) {
++        fprintf(stderr, "WARNING: WebProcess crashed: restarting it ...\n");
++        WKPageReload(page);
++    },
+     nullptr, // copyWebCryptoMasterKey
+     nullptr, // didBeginNavigationGesture
+     nullptr, // willEndNavigationGesture
+-- 
+2.11.0
+
