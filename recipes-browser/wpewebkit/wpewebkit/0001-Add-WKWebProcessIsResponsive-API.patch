@@ -1,0 +1,41 @@
+From 8fb324dd3edc2829493f6250fe1c5583f5e25962 Mon Sep 17 00:00:00 2001
+From: Carlos Alberto Lopez Perez <clopez@igalia.com>
+Date: Tue, 17 Oct 2017 17:39:25 +0200
+Subject: [PATCH] Add WKWebProcessIsResponsive API
+
+---
+ Source/WebKit2/UIProcess/API/C/WKPage.cpp | 5 +++++
+ Source/WebKit2/UIProcess/API/C/WKPage.h   | 1 +
+ 2 files changed, 6 insertions(+)
+
+diff --git a/Source/WebKit2/UIProcess/API/C/WKPage.cpp b/Source/WebKit2/UIProcess/API/C/WKPage.cpp
+index c0aee9849a4..f92f90593e7 100644
+--- a/Source/WebKit2/UIProcess/API/C/WKPage.cpp
++++ b/Source/WebKit2/UIProcess/API/C/WKPage.cpp
+@@ -435,6 +435,11 @@ void WKPageTerminate(WKPageRef pageRef)
+     toImpl(pageRef)->terminateProcess();
+ }
+ 
++bool WKWebProcessIsResponsive(WKPageRef pageRef)
++{
++    return toImpl(pageRef)->process().responsivenessTimer().isResponsive();
++}
++
+ WKStringRef WKPageGetSessionHistoryURLValueType()
+ {
+     static API::String& sessionHistoryURLValueType = API::String::create("SessionHistoryURL").leakRef();
+diff --git a/Source/WebKit2/UIProcess/API/C/WKPage.h b/Source/WebKit2/UIProcess/API/C/WKPage.h
+index 3155ba02a26..93bc2a22104 100644
+--- a/Source/WebKit2/UIProcess/API/C/WKPage.h
++++ b/Source/WebKit2/UIProcess/API/C/WKPage.h
+@@ -136,6 +136,7 @@ WK_EXPORT WKStringRef WKPageCopyCustomTextEncodingName(WKPageRef page);
+ WK_EXPORT void WKPageSetCustomTextEncodingName(WKPageRef page, WKStringRef encodingName);
+ 
+ WK_EXPORT void WKPageTerminate(WKPageRef page);
++WK_EXPORT bool WKWebProcessIsResponsive(WKPageRef page);
+ 
+ WK_EXPORT WKStringRef WKPageGetSessionHistoryURLValueType(void);
+ WK_EXPORT WKStringRef WKPageGetSessionBackForwardListItemValueType(void);
+-- 
+2.11.0
+

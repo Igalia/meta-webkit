@@ -13,7 +13,7 @@ DEPENDS += " \
     virtual/egl virtual/libgles2 \
 "
 
-PV = "1.20170928"
+PV = "1.20170929"
 SRCREV = "60a107da98ed8484705966e63f5467ac673dd743"
 
 
@@ -23,6 +23,7 @@ SRC_URI = " git://github.com/WebPlatformForEmbedded/WPEWebKit.git;protocol=https
             file://revert_image_decoders-198781.patch \
             file://0001-GTK-WPE-Do-not-force-video-sample-s-buffer-release-w.patch \
             file://0001-Threaded-Compositor-Crash-in-GraphicsContext3D-delet.patch \
+            file://0001-Add-WKWebProcessIsResponsive-API.patch \
           "
 
 S = "${WORKDIR}/git"
