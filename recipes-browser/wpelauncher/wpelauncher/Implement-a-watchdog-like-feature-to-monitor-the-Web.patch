@@ -1,0 +1,93 @@
+From f658e97ca74da1832538a834c589343767c0b9f5 Mon Sep 17 00:00:00 2001
+From: Carlos Alberto Lopez Perez <clopez@igalia.com>
+Date: Wed, 18 Oct 2017 15:17:28 +0200
+Subject: [PATCH] Implement a watchdog-like feature to monitor the WebProcess
+
+---
+ launcher/main.cpp | 49 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
+
+diff --git a/launcher/main.cpp b/launcher/main.cpp
+index 4a648f9..6d6cb2a 100644
+--- a/launcher/main.cpp
++++ b/launcher/main.cpp
+@@ -81,6 +81,8 @@ WKPageNavigationClientV0 s_navigationClient = {
+     nullptr, // didRemoveNavigationGestureSnapshot
+ };
+ 
++static gint64 stampLastFrameUpdate = 0;
++
+ WKViewClientV0 s_viewClient = {
+     { 0, nullptr },
+     // frameDisplayed
+@@ -88,6 +90,8 @@ WKViewClientV0 s_viewClient = {
+         static unsigned s_frameCount = 0;
+         static gint64 lastDumpTime = g_get_monotonic_time();
+ 
++        stampLastFrameUpdate = g_get_monotonic_time();
++
+         if (!g_getenv("WPE_DISPLAY_FPS"))
+           return;
+ 
+@@ -102,6 +106,50 @@ WKViewClientV0 s_viewClient = {
+     },
+ };
+ 
++// Check each second if the webprocess is still responding.
++guint responsinessPageChecker(WKPageRef page) {
++
++    static int responsivinessCounter = 0;
++
++    // first check: responsiveness timer.
++    if (WKWebProcessIsResponsive(page)) {
++        responsivinessCounter = 0;
++        // Dont return here. We want to run also the second check of frames.
++    } else  {
++        responsivinessCounter++;
++        if (responsivinessCounter > 10 ) {
++            responsivinessCounter = 0;
++            fprintf(stderr, "WARNING: Forcing restart of non-responsive WebProcess after waiting more than 10 seconds.\n");
++            WKPageTerminate(page);
++            WKPageReload(page);
++            return TRUE;
++        }
++    }
++
++    // second check: frame display.
++    if (stampLastFrameUpdate <= 0)
++        return TRUE;
++
++    gint64 lastUpdateAgo = g_get_monotonic_time() - stampLastFrameUpdate;
++
++    if (lastUpdateAgo > 20 * G_USEC_PER_SEC) {
++        fprintf(stderr, "WARNING: Forcing restart of WebProcess after 20 seconds without frame updates.\n");
++        WKPageTerminate(page);
++        WKPageReload(page);
++        stampLastFrameUpdate = g_get_monotonic_time();
++        return TRUE;
++    }
++
++    if (lastUpdateAgo > 10 * G_USEC_PER_SEC) {
++        fprintf(stderr, "WARNING: No frame updates for more than 10 seconds. Forcing a repaint.\n");
++        WKPageForceRepaint(page, 0, [](WKErrorRef, void*) { stampLastFrameUpdate = g_get_monotonic_time(); } );
++    }
++
++    // keep checking each second.
++    return TRUE;
++}
++
++
+ int main(int argc, char* argv[])
+ {
+     GMainLoop* loop = g_main_loop_new(nullptr, FALSE);
+@@ -170,6 +218,7 @@ int main(int argc, char* argv[])
+     WKPageLoadURL(page, shellURL);
+     WKRelease(shellURL);
+ 
++    g_timeout_add_seconds(1, (GSourceFunc)responsinessPageChecker, const_cast<OpaqueWKPage*>(page));
+     g_main_loop_run(loop);
+ 
+     WKRelease(view);
+-- 
+2.11.0
+

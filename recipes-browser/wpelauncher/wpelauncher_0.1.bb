@@ -2,11 +2,11 @@ LICENSE = "CLOSED"
 
 DEPENDS += "wpewebkit glib-2.0"
 
-SRCREV = "734991a2f851899adbdb1be7df7a27ccfe20c7d4"
+SRCREV = "25aac1d84313262dc31298376796ac54a4bc536b"
 
 SRC_URI = " \
     git://github.com/WebPlatformForEmbedded/WPEWebKitLauncher.git;protocol=http;branch=master \
-    file://0001-Automatic-restart-the-WebProcess-on-crash.patch \
+    file://Implement-a-watchdog-like-feature-to-monitor-the-Web.patch \
     "
 
 S = "${WORKDIR}/git"
