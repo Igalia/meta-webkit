@@ -1,0 +1,86 @@
+From 61c4277cec170fdf721ba7f6c9cfa36acbd87d3f Mon Sep 17 00:00:00 2001
+From: Carlos Alberto Lopez Perez <clopez@igalia.com>
+Date: Tue, 28 Nov 2017 21:53:07 +0100
+Subject: [PATCH] Revert "[GStreamer] Notify player private (PlatformLayer)
+ destruction to the CoordinatedGraphicsLayer"
+
+This reverts commit c99d5ee10f77dd02094d91d4645943e5c186c1bf.
+---
+ .../graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp     |  2 +-
+ .../platform/graphics/texmap/TextureMapperPlatformLayerProxy.h |  8 --------
+ .../graphics/texmap/coordinated/CoordinatedGraphicsLayer.cpp   | 10 +---------
+ 3 files changed, 2 insertions(+), 18 deletions(-)
+
+diff --git a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
+index 1ebe2af708a..8e28d36ff32 100644
+--- a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
++++ b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
+@@ -326,7 +326,7 @@ MediaPlayerPrivateGStreamerBase::~MediaPlayerPrivateGStreamerBase()
+ #endif
+ 
+ 
+-#if USE(TEXTURE_MAPPER_GL)
++#if USE(TEXTURE_MAPPER_GL) && !USE(COORDINATED_GRAPHICS)
+     if (client())
+         client()->platformLayerWillBeDestroyed();
+ #endif
+diff --git a/Source/WebCore/platform/graphics/texmap/TextureMapperPlatformLayerProxy.h b/Source/WebCore/platform/graphics/texmap/TextureMapperPlatformLayerProxy.h
+index 30391079b62..ed9a1264c54 100644
+--- a/Source/WebCore/platform/graphics/texmap/TextureMapperPlatformLayerProxy.h
++++ b/Source/WebCore/platform/graphics/texmap/TextureMapperPlatformLayerProxy.h
+@@ -30,7 +30,6 @@
+ 
+ #include "GraphicsContext3D.h"
+ #include "TextureMapper.h"
+-#include "TextureMapperPlatformLayer.h"
+ #include "TransformationMatrix.h"
+ #include <wtf/Condition.h>
+ #include <wtf/Function.h>
+@@ -54,13 +53,6 @@ class TextureMapperPlatformLayerProxyProvider {
+ public:
+     virtual RefPtr<TextureMapperPlatformLayerProxy> proxy() const = 0;
+     virtual void swapBuffersIfNeeded() = 0;
+-    virtual ~TextureMapperPlatformLayerProxyProvider() { m_client = nullptr; }
+-
+-    void setClient(TextureMapperPlatformLayer::Client* client) { m_client = client; };
+-    TextureMapperPlatformLayer::Client* client() { return m_client; }
+-
+-private:
+-    TextureMapperPlatformLayer::Client* m_client = nullptr;
+ };
+ 
+ class TextureMapperPlatformLayerProxy : public ThreadSafeRefCounted<TextureMapperPlatformLayerProxy> {
+diff --git a/Source/WebCore/platform/graphics/texmap/coordinated/CoordinatedGraphicsLayer.cpp b/Source/WebCore/platform/graphics/texmap/coordinated/CoordinatedGraphicsLayer.cpp
+index e2bf3e961d3..b82b83ea057 100644
+--- a/Source/WebCore/platform/graphics/texmap/coordinated/CoordinatedGraphicsLayer.cpp
++++ b/Source/WebCore/platform/graphics/texmap/coordinated/CoordinatedGraphicsLayer.cpp
+@@ -417,17 +417,10 @@ void CoordinatedGraphicsLayer::setContentsToPlatformLayer(PlatformLayer* platfor
+ 
+     notifyFlushRequired();
+ #elif USE(COORDINATED_GRAPHICS_THREADED)
+-    if (m_platformLayer != platformLayer) {
+-        if (m_platformLayer)
+-            m_platformLayer->setClient(nullptr);
++    if (m_platformLayer != platformLayer)
+         m_shouldSyncPlatformLayer = true;
+-    }
+ 
+     m_platformLayer = platformLayer;
+-
+-    if (m_platformLayer)
+-        m_platformLayer->setClient(this);
+-
+     notifyFlushRequired();
+ #else
+     UNUSED_PARAM(platformLayer);
+@@ -1257,7 +1250,6 @@ void CoordinatedGraphicsLayer::animationStartedTimerFired()
+ #if USE(COORDINATED_GRAPHICS_THREADED)
+ void CoordinatedGraphicsLayer::platformLayerWillBeDestroyed()
+ {
+-    setContentsToPlatformLayer(nullptr, NoContentsLayer);
+ }
+ 
+ void CoordinatedGraphicsLayer::setPlatformLayerNeedsDisplay()
+-- 
+2.11.0
+
