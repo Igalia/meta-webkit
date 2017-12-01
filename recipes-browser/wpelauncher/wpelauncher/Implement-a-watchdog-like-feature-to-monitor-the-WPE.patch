@@ -1,0 +1,120 @@
+From 6119d58a9fe16132b4a8395c611864bc1d8f9145 Mon Sep 17 00:00:00 2001
+From: Carlos Alberto Lopez Perez <clopez@igalia.com>
+Date: Fri, 1 Dec 2017 15:29:02 +0100
+Subject: [PATCH] Implement a watchdog-like feature to monitor the WPE
+ WebProcess
+
+ * Make the values configurable:
+     MAX_SECONDS_WAIT_USER_INPUT
+     MAX_SECONDS_ASK_FOR_REFRESH
+     MAX_SECONDS_KILL_NO_REFRESH
+---
+ launcher/main.cpp | 71 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 71 insertions(+)
+
+diff --git a/launcher/main.cpp b/launcher/main.cpp
+index 4a648f9..3ffa61e 100644
+--- a/launcher/main.cpp
++++ b/launcher/main.cpp
+@@ -81,6 +81,8 @@ WKPageNavigationClientV0 s_navigationClient = {
+     nullptr, // didRemoveNavigationGestureSnapshot
+ };
+ 
++static gint64 stampLastFrameUpdate = 0;
++
+ WKViewClientV0 s_viewClient = {
+     { 0, nullptr },
+     // frameDisplayed
+@@ -88,6 +90,8 @@ WKViewClientV0 s_viewClient = {
+         static unsigned s_frameCount = 0;
+         static gint64 lastDumpTime = g_get_monotonic_time();
+ 
++        stampLastFrameUpdate = g_get_monotonic_time();
++
+         if (!g_getenv("WPE_DISPLAY_FPS"))
+           return;
+ 
+@@ -102,6 +106,72 @@ WKViewClientV0 s_viewClient = {
+     },
+ };
+ 
++
++// This defines how much seconds to wait for WPE to come back when it fails to respond to user input.
++// Minimum value allowed is 1. Recommended is 4.
++#define MAX_SECONDS_WAIT_USER_INPUT 4
++
++// This defines how much seconds to wait for WPE to generate a frame update.
++// Some pages (for example an static website) won't produce new frames unless the users scrolls, etc
++// So if we detect that the last frame was MAX_SECONDS_ASK_FOR_REFRESH ago, then we ask WPE to do a
++// refresh (generate a new frame) and then wait up to MAX_SECONDS_KILL_NO_REFRESH (since we got the
++// last frame) to forcefully restart WPE.
++
++// Minimum value allowed is 1 for ask and 2 for kill. Recommended are 2 and 4.
++#define MAX_SECONDS_ASK_FOR_REFRESH 2
++#define MAX_SECONDS_KILL_NO_REFRESH 4
++
++// Check that the values make sense (at build time)
++#if (MAX_SECONDS_WAIT_USER_INPUT < 1) || (MAX_SECONDS_ASK_FOR_REFRESH < 1) ||  (MAX_SECONDS_KILL_NO_REFRESH <= MAX_SECONDS_ASK_FOR_REFRESH)
++#error "The values configured for the WPE restart thresolds are wrong."
++#endif
++
++// This function is executed each second in the Glib man loop.
++// It checks that the WPEWebProces is still responding (not freezed).
++// The function should always return TRUE to keep the timer that executes it each second alive.
++guint responsinessPageChecker(WKPageRef page) {
++
++    static int responsivinessCounter = 0;
++
++    // first check: responsiveness timer.
++    if (WKWebProcessIsResponsive(page)) {
++        responsivinessCounter = 0;
++        // Dont return here. We want to run also the second check of frames.
++    } else  {
++        responsivinessCounter++;
++        if (responsivinessCounter > MAX_SECONDS_WAIT_USER_INPUT ) {
++            responsivinessCounter = 0;
++            fprintf(stderr, "WARNING: Forcing restart of non-responsive WebProcess after waiting more than %d seconds.\n", MAX_SECONDS_WAIT_USER_INPUT);
++            WKPageTerminate(page);
++            WKPageReload(page);
++            return TRUE;
++        }
++    }
++
++    // second check: frame display.
++    if (stampLastFrameUpdate <= 0)
++        return TRUE;
++
++    gint64 lastUpdateAgo = g_get_monotonic_time() - stampLastFrameUpdate;
++
++    if (lastUpdateAgo > MAX_SECONDS_KILL_NO_REFRESH * G_USEC_PER_SEC) {
++        fprintf(stderr, "WARNING: Forcing restart of WebProcess after %d seconds without frame updates.\n", MAX_SECONDS_KILL_NO_REFRESH);
++        WKPageTerminate(page);
++        WKPageReload(page);
++        stampLastFrameUpdate = g_get_monotonic_time();
++        return TRUE;
++    }
++
++    if (lastUpdateAgo > MAX_SECONDS_ASK_FOR_REFRESH * G_USEC_PER_SEC) {
++        fprintf(stderr, "WARNING: No frame updates for more than %d seconds. Forcing a repaint.\n", MAX_SECONDS_ASK_FOR_REFRESH);
++        WKPageForceRepaint(page, 0, [](WKErrorRef, void*) { stampLastFrameUpdate = g_get_monotonic_time(); } );
++    }
++
++    // keep checking each second.
++    return TRUE;
++}
++
++
+ int main(int argc, char* argv[])
+ {
+     GMainLoop* loop = g_main_loop_new(nullptr, FALSE);
+@@ -170,6 +240,7 @@ int main(int argc, char* argv[])
+     WKPageLoadURL(page, shellURL);
+     WKRelease(shellURL);
+ 
++    g_timeout_add_seconds(1, (GSourceFunc)responsinessPageChecker, const_cast<OpaqueWKPage*>(page));
+     g_main_loop_run(loop);
+ 
+     WKRelease(view);
+-- 
+2.11.0
+
