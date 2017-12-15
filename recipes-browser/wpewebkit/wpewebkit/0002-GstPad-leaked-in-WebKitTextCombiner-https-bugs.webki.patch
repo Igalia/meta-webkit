@@ -1,0 +1,52 @@
+From 1d810d01bd305ef2377ce62e59bbf5394cfe1239 Mon Sep 17 00:00:00 2001
+From: "carlosgc@webkit.org" <carlosgc@webkit.org>
+Date: Sun, 3 Dec 2017 09:08:42 +0000
+Subject: [PATCH 2/3] GstPad leaked in WebKitTextCombiner
+ https://bugs.webkit.org/show_bug.cgi?id=180314
+
+Reviewed by Michael Catanzaro.
+
+gst_element_get_static_pad() returns a full reference that si never freed, because gst_ghost_pad_new doesn't
+take the ownership of the given pad.
+
+* platform/graphics/gstreamer/TextCombinerGStreamer.cpp:
+(webkit_text_combiner_init):
+
+git-svn-id: http://svn.webkit.org/repository/webkit/trunk@225459 268f45cc-cd09-0410-ab3c-d52691b4dbfc
+---
+ .../WebCore/platform/graphics/gstreamer/TextCombinerGStreamer.cpp | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/Source/WebCore/platform/graphics/gstreamer/TextCombinerGStreamer.cpp b/Source/WebCore/platform/graphics/gstreamer/TextCombinerGStreamer.cpp
+index 339ca37eb8d..a9e3c0e36ec 100644
+--- a/Source/WebCore/platform/graphics/gstreamer/TextCombinerGStreamer.cpp
++++ b/Source/WebCore/platform/graphics/gstreamer/TextCombinerGStreamer.cpp
+@@ -24,9 +24,11 @@
+  */
+ 
+ #include "config.h"
++#include "TextCombinerGStreamer.h"
++
+ #if ENABLE(VIDEO) && USE(GSTREAMER) && ENABLE(VIDEO_TRACK)
+ 
+-#include "TextCombinerGStreamer.h"
++#include "GRefPtrGStreamer.h"
+ 
+ static GstStaticPadTemplate sinkTemplate =
+     GST_STATIC_PAD_TEMPLATE("sink_%u", GST_PAD_SINK, GST_PAD_REQUEST,
+@@ -83,10 +85,10 @@ static void webkit_text_combiner_init(WebKitTextCombiner* combiner)
+     UNUSED_PARAM(ret);
+     ASSERT(ret);
+ 
+-    GstPad* pad = gst_element_get_static_pad(combiner->funnel, "src");
++    GRefPtr<GstPad> pad = adoptGRef(gst_element_get_static_pad(combiner->funnel, "src"));
+     ASSERT(pad);
+ 
+-    ret = gst_element_add_pad(GST_ELEMENT(combiner), gst_ghost_pad_new("src", pad));
++    ret = gst_element_add_pad(GST_ELEMENT(combiner), gst_ghost_pad_new("src", pad.get()));
+     ASSERT(ret);
+ }
+ 
+-- 
+2.11.0
+
