@@ -1,0 +1,40 @@
+From 02cbe9dbbf9d5577f3ade4656493dd04d3e5ef56 Mon Sep 17 00:00:00 2001
+From: Carlos Alberto Lopez Perez <clopez@igalia.com>
+Date: Tue, 19 Dec 2017 13:12:38 +0100
+Subject: [PATCH 2/3] [GStreamer] g_mutex_clear() called on uninitialised or
+ locked mutex https://bugs.webkit.org/show_bug.cgi?id=173952
+
+This is a backport of r219681.
+---
+ .../graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp        | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
+index 85ffd03c6f2..a5f41aed647 100644
+--- a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
++++ b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
+@@ -322,10 +322,6 @@ MediaPlayerPrivateGStreamerBase::~MediaPlayerPrivateGStreamerBase()
+ #endif
+     }
+ 
+-    g_mutex_clear(&m_sampleMutex);
+-
+-    m_player = nullptr;
+-
+     if (m_volumeElement)
+         g_signal_handlers_disconnect_matched(m_volumeElement.get(), G_SIGNAL_MATCH_DATA, 0, 0, nullptr, nullptr, this);
+ 
+@@ -341,6 +337,10 @@ MediaPlayerPrivateGStreamerBase::~MediaPlayerPrivateGStreamerBase()
+ 
+     if (m_pipeline)
+         gst_element_set_state(m_pipeline.get(), GST_STATE_NULL);
++
++    g_mutex_clear(&m_sampleMutex);
++
++    m_player = nullptr;
+ }
+ 
+ void MediaPlayerPrivateGStreamerBase::setPipeline(GstElement* pipeline)
+-- 
+2.11.0
+

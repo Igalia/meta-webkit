@@ -1,0 +1,86 @@
+From bf75d3ec62d7e28fc8b5cc9428084ce87ecd0264 Mon Sep 17 00:00:00 2001
+From: Carlos Alberto Lopez Perez <clopez@igalia.com>
+Date: Tue, 19 Dec 2017 13:17:05 +0100
+Subject: [PATCH 3/3] [GLIB] Periodically clean memory allocated via glibc
+ malloc
+
+Altought WebKit uses a custom memory allocator (bmalloc), some of
+the WebKit dependecies use standard glibc malloc. For example,
+this is the case of GStreamer.
+
+This may lead to memory fragmentation issues that will end causing
+leaks if not cleared. To fix this we add a timer that trims the
+glibc-malloc Heap of the WebProcess each 30 seconds.
+
+This patch will not longer be needed after the one comitted on
+https://bugs.webkit.org/show_bug.cgi?id=180861 where this feature
+has been integrated into the WebProcess memory monitor instead.
+---
+ Source/WebCore/platform/MemoryPressureHandler.cpp           |  3 +++
+ Source/WebCore/platform/MemoryPressureHandler.h             |  4 ++++
+ .../WebCore/platform/linux/MemoryPressureHandlerLinux.cpp   | 13 +++++++++++++
+ 3 files changed, 20 insertions(+)
+
+diff --git a/Source/WebCore/platform/MemoryPressureHandler.cpp b/Source/WebCore/platform/MemoryPressureHandler.cpp
+index 63c53733475..6c733730017 100644
+--- a/Source/WebCore/platform/MemoryPressureHandler.cpp
++++ b/Source/WebCore/platform/MemoryPressureHandler.cpp
+@@ -46,6 +46,9 @@ MemoryPressureHandler& MemoryPressureHandler::singleton()
+ MemoryPressureHandler::MemoryPressureHandler()
+ #if OS(LINUX)
+     : m_holdOffTimer(RunLoop::main(), this, &MemoryPressureHandler::holdOffTimerFired)
++#if __GLIBC__
++    , m_glibcMemoryTrimTimer(RunLoop::main(), this, &MemoryPressureHandler::glibcMemoryTrimTimer)
++#endif
+ #endif
+ {
+ }
+diff --git a/Source/WebCore/platform/MemoryPressureHandler.h b/Source/WebCore/platform/MemoryPressureHandler.h
+index bd6c4c3f167..4ca256dd448 100644
+--- a/Source/WebCore/platform/MemoryPressureHandler.h
++++ b/Source/WebCore/platform/MemoryPressureHandler.h
+@@ -170,6 +170,10 @@ private:
+     Optional<int> m_pressureLevelFD;
+     std::unique_ptr<EventFDPoller> m_eventFDPoller;
+     RunLoop::Timer<MemoryPressureHandler> m_holdOffTimer;
++#if __GLIBC__
++    RunLoop::Timer<MemoryPressureHandler> m_glibcMemoryTrimTimer;
++    void glibcMemoryTrimTimer();
++#endif
+     void holdOffTimerFired();
+     void logErrorAndCloseFDs(const char* error);
+     bool tryEnsureEventFD();
+diff --git a/Source/WebCore/platform/linux/MemoryPressureHandlerLinux.cpp b/Source/WebCore/platform/linux/MemoryPressureHandlerLinux.cpp
+index 7edeaf1037a..09eed56ab8c 100644
+--- a/Source/WebCore/platform/linux/MemoryPressureHandlerLinux.cpp
++++ b/Source/WebCore/platform/linux/MemoryPressureHandlerLinux.cpp
+@@ -374,6 +374,12 @@ void MemoryPressureHandler::install()
+     if (m_installed || m_holdOffTimer.isActive())
+         return;
+ 
++#if __GLIBC__
++    if (!m_glibcMemoryTrimTimer.isActive() && getProcessName().containsIgnoringASCIICase("WebProcess")) {
++        m_glibcMemoryTrimTimer.startRepeating(30.0);
++    }
++#endif
++
+     if (!tryEnsureEventFD())
+         return;
+ 
+@@ -421,6 +427,13 @@ void MemoryPressureHandler::uninstall()
+     m_installed = false;
+ }
+ 
++#if __GLIBC__
++void MemoryPressureHandler::glibcMemoryTrimTimer()
++{
++    malloc_trim(0);
++}
++#endif
++
+ void MemoryPressureHandler::holdOffTimerFired()
+ {
+     install();
+-- 
+2.11.0
+
