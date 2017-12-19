@@ -49,9 +49,9 @@ index 4a648f9..3ffa61e 100644
 +// refresh (generate a new frame) and then wait up to MAX_SECONDS_KILL_NO_REFRESH (since we got the
 +// last frame) to forcefully restart WPE.
 +
-+// Minimum value allowed is 1 for ask and 2 for kill. Recommended are 2 and 4.
-+#define MAX_SECONDS_ASK_FOR_REFRESH 2
-+#define MAX_SECONDS_KILL_NO_REFRESH 4
++// Minimum value allowed is 1 for ask and 2 for kill. Recommended are 5 and 10.
++#define MAX_SECONDS_ASK_FOR_REFRESH 5
++#define MAX_SECONDS_KILL_NO_REFRESH 10
 +
 +// Check that the values make sense (at build time)
 +#if (MAX_SECONDS_WAIT_USER_INPUT < 1) || (MAX_SECONDS_ASK_FOR_REFRESH < 1) ||  (MAX_SECONDS_KILL_NO_REFRESH <= MAX_SECONDS_ASK_FOR_REFRESH)
