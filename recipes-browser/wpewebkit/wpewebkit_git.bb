@@ -182,10 +182,9 @@ RDEPS_EXTRA = " \
     gstreamer1.0-plugins-bad-videoparsersbad \
 "
 
-RDEPS_VIDEOGL = " \
-    gstreamer1.0-omx \
-    gstreamer1.0-plugins-bad-opengl \
-"
+RDEPS_VIDEOGL = "gstreamer1.0-plugins-bad-opengl gstreamer1.0-omx"
+RDEPS_VIDEOGL_imx = "gstreamer1.0-plugins-bad-opengl gstreamer1.0-plugins-imx-imxvpu"
+
 #fixme
 #    gstreamer1.0-plugins-bad-faad (videogl=> aac)
 #    gstreamer1.0-plugins-bad-hls
