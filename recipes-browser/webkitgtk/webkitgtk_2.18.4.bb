@@ -4,12 +4,10 @@ DEPENDS += " libgcrypt gettext-native glib-2.0-native"
 
 SRC_URI = "\
    https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz \
-   file://GTK-Fails-to-build-because-Float32Array-has-not-been.patch \
-   file://Add-a-switch-to-start-the-mini-browser-in-full-s.patch \
 "
 
-SRC_URI[md5sum] = "10d86dd5a5b68875654cc38af139f382"
-SRC_URI[sha256sum] = "b583e46a3de36a3e80ba33b084ead60512a2046aca01ff61e50e519436e5038d"
+SRC_URI[md5sum] = "c4686971eac2760bab685e21ac8849be"
+SRC_URI[sha256sum] = "87b6bb9a6065b949ecbe6191313c43e57ad28efdf1f2b5e763405093520632b8"
 
 PACKAGECONFIG ?= "x11 opengl gles2 webcrypto gst_gl"
 PACKAGECONFIG[webcrypto] = "-DENABLE_WEB_CRYPTO=ON,-DENABLE_WEB_CRYPTO=OFF,libgcrypt libtasn1"

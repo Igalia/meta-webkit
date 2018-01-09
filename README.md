@@ -56,7 +56,7 @@ When creating an image with with WebkitGTK+, take into account:
     source code of the recipe to see all the ones available. For example, for enabling
     WebGL support you can add the following to your conf/local.conf file:
 
-        PACKAGECONFIG_pn-webkitgtk = "x11 webgl"
+        PACKAGECONFIG_pn-webkitgtk = "x11 opengl webgl"
 
   * Add the following lines to your conf/local.conf file (for building the X11 backend of WebKitGTK+) :
 
