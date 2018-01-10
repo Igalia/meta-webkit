@@ -1,6 +1,6 @@
 require webkitgtk.inc
 
-DEPENDS += " libgcrypt gettext-native glib-2.0-native"
+DEPENDS += " libgcrypt"
 
 SRC_URI = "\
    https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz \
