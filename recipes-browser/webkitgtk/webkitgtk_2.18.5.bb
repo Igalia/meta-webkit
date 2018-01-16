@@ -6,8 +6,8 @@ SRC_URI = "\
    https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz \
 "
 
-SRC_URI[md5sum] = "c4686971eac2760bab685e21ac8849be"
-SRC_URI[sha256sum] = "87b6bb9a6065b949ecbe6191313c43e57ad28efdf1f2b5e763405093520632b8"
+SRC_URI[md5sum] = "af18c2cfa00cadfd0b4d8db21cab011d"
+SRC_URI[sha256sum] = "0c6d80cc7eb5d32f8063041fa11a1a6f17a29765c2f69c6bc862cd47c2d539b8"
 
 PACKAGECONFIG ?= "x11 opengl gles2 webcrypto gst_gl"
 PACKAGECONFIG[webcrypto] = "-DENABLE_WEB_CRYPTO=ON,-DENABLE_WEB_CRYPTO=OFF,libgcrypt libtasn1"
