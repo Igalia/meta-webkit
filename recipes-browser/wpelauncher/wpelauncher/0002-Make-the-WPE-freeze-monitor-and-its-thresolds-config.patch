@@ -1,0 +1,136 @@
+From d7cdecbd91bec134b71958acba7a9e4638336741 Mon Sep 17 00:00:00 2001
+From: Carlos Alberto Lopez Perez <clopez@igalia.com>
+Date: Wed, 24 Jan 2018 13:31:08 +0100
+Subject: [PATCH 2/2] Make the WPE freeze monitor and its thresolds
+ configurable at run-time
+
+* This introduces 4 new environment variables:
+
+ - If WPE_DISABLE_FREEZE_MONITOR is set to "1" it disables the freeze monitor.
+
+ - The thresolds can be configured by the following env variables
+    WPE_MAX_SECONDS_WAIT_USER_INPUT
+    WPE_MAX_SECONDS_ASK_FOR_REFRESH
+    WPE_MAX_SECONDS_KILL_NO_REFRESH
+
+ - It will print at startup the configured status for the monitor.
+---
+ launcher/main.cpp | 57 ++++++++++++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 46 insertions(+), 11 deletions(-)
+
+diff --git a/launcher/main.cpp b/launcher/main.cpp
+index 1fb5d74..99e8886 100644
+--- a/launcher/main.cpp
++++ b/launcher/main.cpp
+@@ -29,6 +29,7 @@
+ 
+ #include <cstdio>
+ #include <glib.h>
++#include <stdlib.h>
+ #include <initializer_list>
+ 
+ WKPageNavigationClientV0 s_navigationClient = {
+@@ -109,7 +110,7 @@ WKViewClientV0 s_viewClient = {
+ 
+ // This defines how much seconds to wait for WPE to come back when it fails to respond to user input.
+ // Minimum value allowed is 1. Recommended is 4.
+-#define MAX_SECONDS_WAIT_USER_INPUT 4
++#define DEFAULT_MAX_SECONDS_WAIT_USER_INPUT 4
+ 
+ // This defines how much seconds to wait for WPE to generate a frame update.
+ // Some pages (for example an static website) won't produce new frames unless the users scrolls, etc
+@@ -117,13 +118,13 @@ WKViewClientV0 s_viewClient = {
+ // refresh (generate a new frame) and then wait up to MAX_SECONDS_KILL_NO_REFRESH (since we got the
+ // last frame) to forcefully restart WPE.
+ 
++#define DEFAULT_MAX_SECONDS_ASK_FOR_REFRESH 5
+ // Minimum value allowed is 1 for ask and 2 for kill. Recommended are 5 and 10.
+-#define MAX_SECONDS_ASK_FOR_REFRESH 5
+-#define MAX_SECONDS_KILL_NO_REFRESH 10
++#define DEFAULT_MAX_SECONDS_KILL_NO_REFRESH 10
+ 
+ // Check that the values make sense (at build time)
+-#if (MAX_SECONDS_WAIT_USER_INPUT < 1) || (MAX_SECONDS_ASK_FOR_REFRESH < 1) ||  (MAX_SECONDS_KILL_NO_REFRESH <= MAX_SECONDS_ASK_FOR_REFRESH)
+-#error "The values configured for the WPE restart thresolds are wrong."
++#if (DEFAULT_MAX_SECONDS_WAIT_USER_INPUT < 1) || (DEFAULT_MAX_SECONDS_ASK_FOR_REFRESH < 1) ||  (DEFAULT_MAX_SECONDS_KILL_NO_REFRESH <= DEFAULT_MAX_SECONDS_ASK_FOR_REFRESH)
++#error "The default values configured for the WPE restart thresolds are wrong."
+ #endif
+ 
+ // This function is executed each second in the Glib man loop.
+@@ -132,6 +133,40 @@ WKViewClientV0 s_viewClient = {
+ guint responsinessPageChecker(WKPageRef page) {
+ 
+     static int responsivinessCounter = 0;
++    static int maxSecondsWaitUserInput = DEFAULT_MAX_SECONDS_WAIT_USER_INPUT;
++    static int maxSecondsAskForRefresh = DEFAULT_MAX_SECONDS_ASK_FOR_REFRESH;
++    static int maxSecondsKillNoRefresh = DEFAULT_MAX_SECONDS_KILL_NO_REFRESH;
++    static bool isFirstRun = true;
++    const gchar *tmp;
++
++    // startup checks and runtime setting of thresold values.
++    if (isFirstRun) {
++        isFirstRun = false;
++
++        if (tmp = g_getenv("WPE_DISABLE_FREEZE_MONITOR")) {
++            if (atoi(tmp) == 1) {
++                fprintf(stderr, "WPE freeze monitor has been disabled\n");
++                return FALSE;
++            }
++        }
++
++        if (tmp = g_getenv("WPE_MAX_SECONDS_WAIT_USER_INPUT"))
++            maxSecondsWaitUserInput = atoi(tmp);
++        if (tmp = g_getenv("WPE_MAX_SECONDS_ASK_FOR_REFRESH"))
++            maxSecondsAskForRefresh = atoi(tmp);
++        if (tmp = g_getenv("WPE_MAX_SECONDS_KILL_NO_REFRESH"))
++            maxSecondsKillNoRefresh = atoi(tmp);
++        if ((maxSecondsWaitUserInput < 1) || (maxSecondsAskForRefresh < 1) ||  (maxSecondsKillNoRefresh <= maxSecondsAskForRefresh)) {
++                fprintf(stderr, "WPE freeze monitor: Wrong values passed for the thresolds. Resetting to default values !!\n");
++                maxSecondsWaitUserInput = DEFAULT_MAX_SECONDS_WAIT_USER_INPUT;
++                maxSecondsAskForRefresh = DEFAULT_MAX_SECONDS_ASK_FOR_REFRESH;
++                maxSecondsKillNoRefresh = DEFAULT_MAX_SECONDS_KILL_NO_REFRESH;
++        }
++        fprintf(stderr,
++                "WPE freeze monitor: Running with thresolds WPE_MAX_SECONDS_ASK_FOR_REFRESH=%d WPE_MAX_SECONDS_KILL_NO_REFRESH=%d and WPE_MAX_SECONDS_WAIT_USER_INPUT=%d\n",
++                maxSecondsAskForRefresh, maxSecondsKillNoRefresh, maxSecondsWaitUserInput );
++    }
++
+ 
+     // first check: responsiveness timer.
+     if (WKWebProcessIsResponsive(page)) {
+@@ -139,9 +174,9 @@ guint responsinessPageChecker(WKPageRef page) {
+         // Dont return here. We want to run also the second check of frames.
+     } else  {
+         responsivinessCounter++;
+-        if (responsivinessCounter > MAX_SECONDS_WAIT_USER_INPUT ) {
++        if (responsivinessCounter > maxSecondsWaitUserInput ) {
+             responsivinessCounter = 0;
+-            fprintf(stderr, "WARNING: Forcing restart of non-responsive WebProcess after waiting more than %d seconds.\n", MAX_SECONDS_WAIT_USER_INPUT);
++            fprintf(stderr, "WPE freeze monitor: [WARNING] Forcing restart of non-responsive WebProcess after waiting more than %d seconds.\n", maxSecondsWaitUserInput);
+             WKPageTerminate(page);
+             WKPageReload(page);
+             return TRUE;
+@@ -154,16 +189,16 @@ guint responsinessPageChecker(WKPageRef page) {
+ 
+     gint64 lastUpdateAgo = g_get_monotonic_time() - stampLastFrameUpdate;
+ 
+-    if (lastUpdateAgo > MAX_SECONDS_KILL_NO_REFRESH * G_USEC_PER_SEC) {
+-        fprintf(stderr, "WARNING: Forcing restart of WebProcess after %d seconds without frame updates.\n", MAX_SECONDS_KILL_NO_REFRESH);
++    if (lastUpdateAgo > maxSecondsKillNoRefresh * G_USEC_PER_SEC) {
++        fprintf(stderr, "WPE freeze monitor: [WARNING] Forcing restart of WebProcess after %d seconds without frame updates.\n", maxSecondsKillNoRefresh);
+         WKPageTerminate(page);
+         WKPageReload(page);
+         stampLastFrameUpdate = g_get_monotonic_time();
+         return TRUE;
+     }
+ 
+-    if (lastUpdateAgo > MAX_SECONDS_ASK_FOR_REFRESH * G_USEC_PER_SEC) {
+-        fprintf(stderr, "WARNING: No frame updates for more than %d seconds. Forcing a repaint.\n", MAX_SECONDS_ASK_FOR_REFRESH);
++    if (lastUpdateAgo > maxSecondsAskForRefresh * G_USEC_PER_SEC) {
++        fprintf(stderr, "WPE freeze monitor: [WARNING] No frame updates for more than %d seconds. Forcing a repaint.\n", maxSecondsAskForRefresh);
+         WKPageForceRepaint(page, 0, [](WKErrorRef, void*) { stampLastFrameUpdate = g_get_monotonic_time(); } );
+     }
+ 
+-- 
+2.11.0
+

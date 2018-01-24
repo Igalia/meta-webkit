@@ -1,7 +1,7 @@
-From 6119d58a9fe16132b4a8395c611864bc1d8f9145 Mon Sep 17 00:00:00 2001
+From 17192e3ee08d932e8af7f92d3c09fc507f8c6044 Mon Sep 17 00:00:00 2001
 From: Carlos Alberto Lopez Perez <clopez@igalia.com>
 Date: Fri, 1 Dec 2017 15:29:02 +0100
-Subject: [PATCH] Implement a watchdog-like feature to monitor the WPE
+Subject: [PATCH 1/2] Implement a watchdog-like feature to monitor the WPE
  WebProcess
 
  * Make the values configurable:
@@ -13,7 +13,7 @@ Subject: [PATCH] Implement a watchdog-like feature to monitor the WPE
  1 file changed, 71 insertions(+)
 
 diff --git a/launcher/main.cpp b/launcher/main.cpp
-index 4a648f9..3ffa61e 100644
+index 4a648f9..1fb5d74 100644
 --- a/launcher/main.cpp
 +++ b/launcher/main.cpp
 @@ -81,6 +81,8 @@ WKPageNavigationClientV0 s_navigationClient = {
