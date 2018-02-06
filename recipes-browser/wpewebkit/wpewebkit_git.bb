@@ -13,7 +13,7 @@ DEPENDS += " \
     virtual/egl virtual/libgles2 \
 "
 
-PV = "1.20171219"
+PV = "1.20180205"
 SRCREV = "60a107da98ed8484705966e63f5467ac673dd743"
 
 
@@ -31,6 +31,7 @@ SRC_URI = " git://github.com/WebPlatformForEmbedded/WPEWebKit.git;protocol=https
             file://0001-fast-canvas-canvas-createPattern-video-loading.html-.patch \
             file://0002-GStreamer-g_mutex_clear-called-on-uninitialised-or-l.patch \
             file://0003-GLIB-Periodically-clean-memory-allocated-via-glibc-m.patch \
+            file://0001-GSTREAMER_GL-Disable-wait-on-eos-before-destroying-w.patch \
           "
 
 S = "${WORKDIR}/git"

@@ -1,0 +1,27 @@
+From 658db7c325ca4d2f8989ed948999cc98661d9605 Mon Sep 17 00:00:00 2001
+From: Carlos Alberto Lopez Perez <clopez@igalia.com>
+Date: Mon, 5 Feb 2018 19:19:29 +0100
+Subject: [PATCH] [GSTREAMER_GL] Disable wait-on-eos before destroying
+ webkit-gl-video-sink
+
+ * This avoids a deadlock on IMX platform when destroying the mediaplayer
+   with gstreamer-imx and GSTREAMER_GL.
+---
+ .../platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp      | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
+index a5f41aed647..a81008738fe 100644
+--- a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
++++ b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
+@@ -318,6 +318,7 @@ MediaPlayerPrivateGStreamerBase::~MediaPlayerPrivateGStreamerBase()
+         if (GST_IS_BIN(m_videoSink.get())) {
+             GRefPtr<GstElement> appsink = adoptGRef(gst_bin_get_by_name(GST_BIN_CAST(m_videoSink.get()), "webkit-gl-video-sink"));
+             g_signal_handlers_disconnect_by_data(appsink.get(), this);
++            g_object_set(appsink.get(), "wait-on-eos", FALSE, nullptr);
+         }
+ #endif
+     }
+-- 
+2.11.0
+
