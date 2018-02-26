@@ -1,0 +1,183 @@
+From e7d59b1bfdf68e2f53a2a8f45eec0ef8eb6e2b95 Mon Sep 17 00:00:00 2001
+From: Carlos Alberto Lopez Perez <clopez@igalia.com>
+Date: Tue, 26 Sep 2017 15:22:30 +0200
+Subject: [PATCH] Revert "[GTK][WPE][GSTREAMER_GL] Change the colorspace used
+ by the video frames provided by GStreamer"
+
+This reverts commit fed922529570b7cc64c52e6ecb74651fa9e5b266.
+---
+ .../gstreamer/MediaPlayerPrivateGStreamerBase.cpp     | 18 ++++--------------
+ .../gstreamer/VideoTextureCopierGStreamer.cpp         | 19 ++-----------------
+ .../graphics/gstreamer/VideoTextureCopierGStreamer.h  |  9 +--------
+ .../platform/graphics/texmap/TextureMapperGL.cpp      |  2 --
+ .../platform/graphics/texmap/TextureMapperGL.h        |  3 +--
+ 5 files changed, 8 insertions(+), 43 deletions(-)
+
+diff --git a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
+index 46c89308853..7531253ed62 100644
+--- a/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
++++ b/Source/WebCore/platform/graphics/gstreamer/MediaPlayerPrivateGStreamerBase.cpp
+@@ -55,16 +55,6 @@
+ #endif
+ 
+ #if USE(GSTREAMER_GL)
+-#if G_BYTE_ORDER == G_LITTLE_ENDIAN
+-#define GST_GL_CAPS_FORMAT "{ BGRx, BGRA }"
+-#define TEXTURE_MAPPER_COLOR_CONVERT_FLAG TextureMapperGL::ShouldConvertTextureBGRAToRGBA
+-#define TEXTURE_COPIER_COLOR_CONVERT_FLAG VideoTextureCopierGStreamer::ColorConversion::ConvertBGRAToRGBA
+-#else
+-#define GST_GL_CAPS_FORMAT "{ xRGB, ARGB }"
+-#define TEXTURE_MAPPER_COLOR_CONVERT_FLAG TextureMapperGL::ShouldConvertTextureARGBToRGBA
+-#define TEXTURE_COPIER_COLOR_CONVERT_FLAG VideoTextureCopierGStreamer::ColorConversion::ConvertARGBToRGBA
+-#endif
+-
+ #include <gst/app/gstappsink.h>
+ 
+ #if USE(LIBEPOXY)
+@@ -193,7 +183,7 @@ public:
+             return;
+ 
+         m_size = IntSize(GST_VIDEO_INFO_WIDTH(&videoInfo), GST_VIDEO_INFO_HEIGHT(&videoInfo));
+-        m_flags = flags | (GST_VIDEO_INFO_HAS_ALPHA(&videoInfo) ? TextureMapperGL::ShouldBlend : 0) | TEXTURE_MAPPER_COLOR_CONVERT_FLAG;
++        m_flags = flags | (GST_VIDEO_INFO_HAS_ALPHA(&videoInfo) ? TextureMapperGL::ShouldBlend : 0);
+ 
+         GstBuffer* buffer = gst_sample_get_buffer(sample);
+         if (UNLIKELY(!gst_video_frame_map(&m_videoFrame, &videoInfo, buffer, static_cast<GstMapFlags>(GST_MAP_READ | GST_MAP_GL))))
+@@ -887,7 +877,7 @@ bool MediaPlayerPrivateGStreamerBase::copyVideoTextureToPlatformTexture(Graphics
+     unsigned textureID = *reinterpret_cast<unsigned*>(videoFrame.data[0]);
+ 
+     if (!m_videoTextureCopier)
+-        m_videoTextureCopier = std::make_unique<VideoTextureCopierGStreamer>(TEXTURE_COPIER_COLOR_CONVERT_FLAG);
++        m_videoTextureCopier = std::make_unique<VideoTextureCopierGStreamer>();
+ 
+     bool copied = m_videoTextureCopier->copyVideoTextureToPlatformTexture(textureID, size, outputTexture, outputTarget, level, internalFormat, format, type, flipY, m_videoSourceOrientation);
+ 
+@@ -921,7 +911,7 @@ NativeImagePtr MediaPlayerPrivateGStreamerBase::nativeImageForCurrentTime()
+     context->makeContextCurrent();
+ 
+     if (!m_videoTextureCopier)
+-        m_videoTextureCopier = std::make_unique<VideoTextureCopierGStreamer>(TEXTURE_COPIER_COLOR_CONVERT_FLAG);
++        m_videoTextureCopier = std::make_unique<VideoTextureCopierGStreamer>();
+ 
+     unsigned textureID = *reinterpret_cast<unsigned*>(videoFrame.data[0]);
+     bool copied = m_videoTextureCopier->copyVideoTextureToPlatformTexture(textureID, size, 0, GraphicsContext3D::TEXTURE_2D, 0, GraphicsContext3D::RGBA, GraphicsContext3D::RGBA, GraphicsContext3D::UNSIGNED_BYTE, false, m_videoSourceOrientation);
+@@ -1024,7 +1014,7 @@ GstElement* MediaPlayerPrivateGStreamerBase::createVideoSinkGL()
+ 
+     gst_bin_add_many(GST_BIN(videoSink), upload, colorconvert, appsink, nullptr);
+ 
+-    GRefPtr<GstCaps> caps = adoptGRef(gst_caps_from_string("video/x-raw(" GST_CAPS_FEATURE_MEMORY_GL_MEMORY "), format = (string) " GST_GL_CAPS_FORMAT));
++    GRefPtr<GstCaps> caps = adoptGRef(gst_caps_from_string("video/x-raw(" GST_CAPS_FEATURE_MEMORY_GL_MEMORY "), format = (string) { RGBA }"));
+ 
+     result &= gst_element_link_pads(upload, "src", colorconvert, "sink");
+     result &= gst_element_link_pads_filtered(colorconvert, "src", appsink, "sink", caps.get());
+diff --git a/Source/WebCore/platform/graphics/gstreamer/VideoTextureCopierGStreamer.cpp b/Source/WebCore/platform/graphics/gstreamer/VideoTextureCopierGStreamer.cpp
+index c78b2d635de..dce5a4b0af9 100644
+--- a/Source/WebCore/platform/graphics/gstreamer/VideoTextureCopierGStreamer.cpp
++++ b/Source/WebCore/platform/graphics/gstreamer/VideoTextureCopierGStreamer.cpp
+@@ -32,7 +32,7 @@
+ 
+ namespace WebCore {
+ 
+-VideoTextureCopierGStreamer::VideoTextureCopierGStreamer(ColorConversion colorConversion)
++VideoTextureCopierGStreamer::VideoTextureCopierGStreamer()
+ {
+     GLContext* previousContext = GLContext::current();
+     ASSERT(previousContext);
+@@ -52,7 +52,6 @@ VideoTextureCopierGStreamer::VideoTextureCopierGStreamer(ColorConversion colorCo
+     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 8, vertices, GL_STATIC_DRAW);
+ 
+-    updateColorConversionMatrix(colorConversion);
+     updateTextureSpaceMatrix();
+ 
+     previousContext->makeContextCurrent();
+@@ -72,20 +71,6 @@ VideoTextureCopierGStreamer::~VideoTextureCopierGStreamer()
+         previousContext->makeContextCurrent();
+ }
+ 
+-void VideoTextureCopierGStreamer::updateColorConversionMatrix(ColorConversion colorConversion)
+-{
+-    switch (colorConversion) {
+-    case ColorConversion::ConvertBGRAToRGBA:
+-        m_colorConversionMatrix.setMatrix(0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+-        break;
+-    case ColorConversion::ConvertARGBToRGBA:
+-        m_colorConversionMatrix.setMatrix(0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0);
+-        break;
+-    default:
+-        RELEASE_ASSERT_NOT_REACHED();
+-    }
+-}
+-
+ void VideoTextureCopierGStreamer::updateTextureSpaceMatrix()
+ {
+     m_textureSpaceMatrix.makeIdentity();
+@@ -190,7 +175,7 @@ bool VideoTextureCopierGStreamer::copyVideoTextureToPlatformTexture(GLuint input
+     m_shaderProgram->setMatrix(m_shaderProgram->modelViewMatrixLocation(), m_modelViewMatrix);
+     m_shaderProgram->setMatrix(m_shaderProgram->projectionMatrixLocation(), m_projectionMatrix);
+     m_shaderProgram->setMatrix(m_shaderProgram->textureSpaceMatrixLocation(), m_textureSpaceMatrix);
+-    m_shaderProgram->setMatrix(m_shaderProgram->textureColorSpaceMatrixLocation(), m_colorConversionMatrix);
++    m_shaderProgram->setMatrix(m_shaderProgram->textureColorSpaceMatrixLocation(), TransformationMatrix());
+ 
+     // Perform the copy.
+     glEnableVertexAttribArray(m_shaderProgram->vertexLocation());
+diff --git a/Source/WebCore/platform/graphics/gstreamer/VideoTextureCopierGStreamer.h b/Source/WebCore/platform/graphics/gstreamer/VideoTextureCopierGStreamer.h
+index 218977ca014..9971f2de593 100644
+--- a/Source/WebCore/platform/graphics/gstreamer/VideoTextureCopierGStreamer.h
++++ b/Source/WebCore/platform/graphics/gstreamer/VideoTextureCopierGStreamer.h
+@@ -34,16 +34,10 @@ class ImageOrientation;
+ 
+ class VideoTextureCopierGStreamer {
+ public:
+-    enum class ColorConversion {
+-        ConvertBGRAToRGBA,
+-        ConvertARGBToRGBA
+-    };
+-
+-    VideoTextureCopierGStreamer(ColorConversion);
++    VideoTextureCopierGStreamer();
+     ~VideoTextureCopierGStreamer();
+ 
+     bool copyVideoTextureToPlatformTexture(GLuint inputTexture, IntSize& frameSize, GLuint outputTexture, GLenum outputTarget, GLint level, GLenum internalFormat, GLenum format, GLenum type, bool flipY, ImageOrientation& sourceOrientation);
+-    void updateColorConversionMatrix(ColorConversion);
+     void updateTextureSpaceMatrix();
+     void updateTransformationMatrix();
+     GLuint resultTexture() { return m_resultTexture; }
+@@ -58,7 +52,6 @@ private:
+     TransformationMatrix m_modelViewMatrix;
+     TransformationMatrix m_projectionMatrix;
+     TransformationMatrix m_textureSpaceMatrix;
+-    TransformationMatrix m_colorConversionMatrix;
+     GLuint m_resultTexture { 0 };
+ };
+ 
+diff --git a/Source/WebCore/platform/graphics/texmap/TextureMapperGL.cpp b/Source/WebCore/platform/graphics/texmap/TextureMapperGL.cpp
+index 15ed70a5b6b..908aa3d6f0d 100644
+--- a/Source/WebCore/platform/graphics/texmap/TextureMapperGL.cpp
++++ b/Source/WebCore/platform/graphics/texmap/TextureMapperGL.cpp
+@@ -418,8 +418,6 @@ static TransformationMatrix colorSpaceMatrixForFlags(TextureMapperGL::Flags flag
+     TransformationMatrix matrix;
+     if (flags & TextureMapperGL::ShouldConvertTextureBGRAToRGBA)
+         matrix.setMatrix(0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+-    else if (flags & TextureMapperGL::ShouldConvertTextureARGBToRGBA)
+-        matrix.setMatrix(0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0);
+ 
+     return matrix;
+ }
+diff --git a/Source/WebCore/platform/graphics/texmap/TextureMapperGL.h b/Source/WebCore/platform/graphics/texmap/TextureMapperGL.h
+index 1c889965608..55da5faad47 100644
+--- a/Source/WebCore/platform/graphics/texmap/TextureMapperGL.h
++++ b/Source/WebCore/platform/graphics/texmap/TextureMapperGL.h
+@@ -51,8 +51,7 @@ public:
+         ShouldRotateTexture90 = 0x10,
+         ShouldRotateTexture180 = 0x20,
+         ShouldRotateTexture270 = 0x40,
+-        ShouldConvertTextureBGRAToRGBA = 0x80,
+-        ShouldConvertTextureARGBToRGBA = 0x100
++        ShouldConvertTextureBGRAToRGBA = 0x80
+     };
+ 
+     typedef int Flags;
+-- 
+2.11.0
+
