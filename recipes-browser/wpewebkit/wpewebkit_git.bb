@@ -21,6 +21,10 @@ SRC_URI = " git://github.com/WebPlatformForEmbedded/WPEWebKit.git;protocol=https
             file://0001-WebKitMacros-Append-to-I-and-not-to-isystem.patch \
             file://0001-WPE-Some-event-handlers-not-working.patch \
             file://revert_image_decoders-198781.patch \
+            file://fix_JSStringRef_type_conversion.patch \
+            file://fix_WKString_type_conversion.patch \
+            file://fix_API_JSStringRef_type_conversion.patch \
+            file://fix_WebEventFactory.patch \
           "
 
 S = "${WORKDIR}/git"
