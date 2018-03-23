@@ -5,11 +5,9 @@ BUGTRACKER = "https://github.com/Igalia/WPEBackend-fdo/issues"
 LICENSE = "CLOSED"
 DEPENDS += "wpebackend glib-2.0 libxkbcommon wayland virtual/libgl"
 
-SRCREV = "9283e0ed6cedaa61fd89a3ae92efe75d6c122f5a"
+SRCREV = "a437117577c260a43f6a85650c254186fbac0835"
 
-SRC_URI = " \
-            git://github.com/Igalia/WPEBackend-fdo.git;protocol=https;branch=master \
-            file://removes-unnecessary-include-eglmesaext.patch \
+SRC_URI = "git://github.com/Igalia/WPEBackend-fdo.git;protocol=https;branch=master \
           "
 
 S = "${WORKDIR}/git"
