@@ -1,0 +1,25 @@
+From 1e1870c0fe43f8a650b1a024af34937b9d341936 Mon Sep 17 00:00:00 2001
+From: Pablo Saavedra <psaavedra@igalia.com>
+Date: Tue, 13 Mar 2018 19:25:37 +0100
+Subject: [PATCH] Fixed luajit native path
+
+---
+ src/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/Makefile b/src/Makefile
+index c9fe194..d25af51 100644
+--- a/src/Makefile
++++ b/src/Makefile
+@@ -47,7 +47,7 @@ CFLAGS  += $(LUAJIT_CFLAGS)
+ LDFLAGS += $(LUAJIT_LDLIBS)
+ 
+ ifeq ($(strip $(LUAJIT)),)
+-  LUAJIT := $(shell pkg-config luajit --variable=prefix)/bin/luajit
++  LUAJIT := $(PKG_CONFIG_SYSROOT_DIR)-native$(shell pkg-config luajit --variable=prefix)/bin/luajit
+ endif
+ 
+ all: dyz
+-- 
+2.11.0
+
