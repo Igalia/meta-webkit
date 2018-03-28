@@ -17,6 +17,7 @@ SVNREV ?= "229528"
 
 SRC_URI = " \
     svn://svn.webkit.org/repository/webkit;module=releases/WebKitGTK/webkit-2.20;rev=${SVNREV};protocol=https \
+    file://0001-REGRESSION-r225340-WPE-port-should-not-be-getting-EG.patch \
 "
 
 
