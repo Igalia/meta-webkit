@@ -13,14 +13,15 @@ DEPENDS += " \
     virtual/egl virtual/libgles2 libepoxy \
 "
 
-SVNREV ?= "226305"
+SVNREV ?= "229528"
 
 SRC_URI = " \
-    svn://svn.webkit.org/repository/webkit;module=trunk;rev=${SVNREV};protocol=https \
-    file://Revert-GTK-WPE-GSTREAMER_GL-Change-the-colorspace-us.patch \
+    svn://svn.webkit.org/repository/webkit;module=releases/WebKitGTK/webkit-2.20;rev=${SVNREV};protocol=https \
 "
 
-S = "${WORKDIR}/trunk"
+
+S = "${WORKDIR}/releases/WebKitGTK/webkit-2.20"
+
 PV = "0.r${SVNREV}"
 
 
