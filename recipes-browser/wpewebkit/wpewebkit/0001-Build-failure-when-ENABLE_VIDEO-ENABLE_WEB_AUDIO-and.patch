@@ -1,0 +1,32 @@
+From c3f0dc6d7e109284b1b44bcfc2c38163cf1c86f1 Mon Sep 17 00:00:00 2001
+From: "aperez@igalia.com" <aperez@igalia.com>
+Date: Thu, 22 Mar 2018 13:48:34 +0000
+Subject: [PATCH xserver] Build failure when ENABLE_VIDEO, ENABLE_WEB_AUDIO and
+ ENABLE_XSLT are disabled https://bugs.webkit.org/show_bug.cgi?id=183896
+
+Reviewed by Yusuke Suzuki.
+
+No new tests needed.
+
+* bindings/js/JSWebAnimationCustom.cpp: Add missing #include of Document.h
+
+git-svn-id: http://svn.webkit.org/repository/webkit/trunk@229848 268f45cc-cd09-0410-ab3c-d52691b4dbfc
+---
+ Source/WebCore/bindings/js/JSWebAnimationCustom.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Source/WebCore/bindings/js/JSWebAnimationCustom.cpp b/Source/WebCore/bindings/js/JSWebAnimationCustom.cpp
+index 8b56f86c151..b8716be0f1c 100644
+--- a/Source/WebCore/bindings/js/JSWebAnimationCustom.cpp
++++ b/Source/WebCore/bindings/js/JSWebAnimationCustom.cpp
+@@ -26,6 +26,7 @@
+ #include "config.h"
+ #include "JSWebAnimation.h"
+ 
++#include "Document.h"
+ #include "JSAnimationEffect.h"
+ #include "JSAnimationTimeline.h"
+ #include "JSDOMConstructor.h"
+-- 
+2.11.0
+
