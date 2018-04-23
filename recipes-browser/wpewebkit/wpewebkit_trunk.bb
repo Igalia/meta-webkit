@@ -173,7 +173,6 @@ RDEPS_EXTRA = " \
 "
 
 RDEPS_VIDEOGL = " \
-    gstreamer1.0-omx \
     gstreamer1.0-plugins-bad-opengl \
 "
 #fixme
