@@ -21,21 +21,19 @@ systems based on Web platform technologies.
 It is designed with hardware acceleration in mind, leveraging common 3D graphics
 APIs for best performance.
 
+The usual way to create an image with WPE is:
 
-The usual way to create an image with wpe is:
-
-  * Checkout the branch of this repository that matches your Yocto/OE version (for example: krogoth)
   * Add this layer to bblayers.conf
   * Add the following to local.conf:
 
         DISTRO_FEATURES_append = " opengl wayland"
-        IMAGE_INSTALL_append = " wpebackend-rdk wpelauncher wpewebkit"
+        IMAGE_INSTALL_append = " wpebackend-rdk dinghy wpewebkit"
 
   * Then build the target image, for example:
 
         bitbake core-image-weston
 
-  * Run WPELauncher from a weston terminal.
+  * Run "dinghy" from a weston terminal.
 
 Building the WebKitGTK+ engine.
 -------------------------------
@@ -56,13 +54,13 @@ When creating an image with with WebkitGTK+, take into account:
     source code of the recipe to see all the ones available. For example, for enabling
     WebGL support you can add the following to your conf/local.conf file:
 
-        PACKAGECONFIG_pn-webkitgtk = "x11 opengl webgl"
+        PACKAGECONFIG_append_pn-webkitgtk = " webgl"
 
   * Add the following lines to your conf/local.conf file (for building the X11 backend of WebKitGTK+) :
 
         DISTRO_FEATURES_append = " opengl x11"
         IMAGE_INSTALL_append = " webkitgtk-bin"
-        PREFERRED_VERSION_webkitgtk = "2.10.7"
+        PREFERRED_VERSION_webkitgtk = "2.20.1"
 
   * Then build the X11 image
 
@@ -79,7 +77,7 @@ with the very same name than the one included here.
 
 The purpose of this layer is:
 
-  * To ship a WebKitforWayland recipe.
+  * To ship a WPE recipe.
   * To provide WebKit2GTK+ recipes newer or different than the ones included in oe-core.
     For example, people with releases older than jethro can use this layer for
     easily building WebKit2GTK+. And people using jethro can use this layer to get more
