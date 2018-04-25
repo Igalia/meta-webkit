@@ -1,0 +1,76 @@
+From f8faf91c9b3b42fa3a54cea55d6def3419d542e4 Mon Sep 17 00:00:00 2001
+From: "zandobersek@gmail.com" <zandobersek@gmail.com>
+Date: Tue, 24 Apr 2018 08:15:41 +0000
+Subject: [PATCH 1/2] Avoid painting backing stores for zero-opacity layers
+
+https://bugs.webkit.org/show_bug.cgi?id=184143
+
+Reviewed by Carlos Garcia Campos.
+
+Source/WebCore:
+
+Skip generating backing stores for layers that have zero opacity and do
+not animate the opacity value. In the current CoordinatedGraphics system
+this can end up saving loads of memory on Web content that deploys a
+large number of such elements.
+
+* platform/graphics/texmap/TextureMapperLayer.h:
+* platform/graphics/texmap/coordinated/CoordinatedGraphicsLayer.cpp:
+(WebCore::CoordinatedGraphicsLayer::shouldHaveBackingStore const):
+
+Source/WebKit:
+
+* Shared/CoordinatedGraphics/CoordinatedGraphicsScene.cpp:
+(WebKit::layerShouldHaveBackingStore):
+Mirror CoordinatedGraphicsLayer's backing store requirements.
+
+git-svn-id: http://svn.webkit.org/repository/webkit/trunk@230950 268f45cc-cd09-0410-ab3c-d52691b4dbfc
+---
+ Source/WebCore/platform/graphics/texmap/TextureMapperLayer.h           | 1 +
+ .../platform/graphics/texmap/coordinated/CoordinatedGraphicsLayer.cpp  | 3 ++-
+ Source/WebKit/Shared/CoordinatedGraphics/CoordinatedGraphicsScene.cpp  | 3 ++-
+ 3 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/Source/WebCore/platform/graphics/texmap/TextureMapperLayer.h b/Source/WebCore/platform/graphics/texmap/TextureMapperLayer.h
+index 899a5612149..3b2a2c04293 100644
+--- a/Source/WebCore/platform/graphics/texmap/TextureMapperLayer.h
++++ b/Source/WebCore/platform/graphics/texmap/TextureMapperLayer.h
+@@ -115,6 +115,7 @@ public:
+     void setRepaintCount(int);
+     void setContentsLayer(TextureMapperPlatformLayer*);
+     void setAnimations(const TextureMapperAnimations&);
++    const TextureMapperAnimations& animations() const { return m_animations; }
+     void setFixedToViewport(bool);
+     bool fixedToViewport() const { return m_fixedToViewport; }
+     void setBackingStore(RefPtr<TextureMapperBackingStore>&&);
+diff --git a/Source/WebCore/platform/graphics/texmap/coordinated/CoordinatedGraphicsLayer.cpp b/Source/WebCore/platform/graphics/texmap/coordinated/CoordinatedGraphicsLayer.cpp
+index 0a4b08e2a51..544be9648d2 100644
+--- a/Source/WebCore/platform/graphics/texmap/coordinated/CoordinatedGraphicsLayer.cpp
++++ b/Source/WebCore/platform/graphics/texmap/coordinated/CoordinatedGraphicsLayer.cpp
+@@ -1108,7 +1108,8 @@ void CoordinatedGraphicsLayer::computeTransformedVisibleRect()
+ 
+ bool CoordinatedGraphicsLayer::shouldHaveBackingStore() const
+ {
+-    return drawsContent() && contentsAreVisible() && !m_size.isEmpty();
++    return drawsContent() && contentsAreVisible() && !m_size.isEmpty()
++        && (!!opacity() || m_animations.hasActiveAnimationsOfType(AnimatedPropertyOpacity));
+ }
+ 
+ bool CoordinatedGraphicsLayer::selfOrAncestorHasActiveTransformAnimation() const
+diff --git a/Source/WebKit/Shared/CoordinatedGraphics/CoordinatedGraphicsScene.cpp b/Source/WebKit/Shared/CoordinatedGraphics/CoordinatedGraphicsScene.cpp
+index 36bdfff266e..ba249826071 100644
+--- a/Source/WebKit/Shared/CoordinatedGraphics/CoordinatedGraphicsScene.cpp
++++ b/Source/WebKit/Shared/CoordinatedGraphics/CoordinatedGraphicsScene.cpp
+@@ -61,7 +61,8 @@ void CoordinatedGraphicsScene::dispatchOnClientRunLoop(Function<void()>&& functi
+ 
+ static bool layerShouldHaveBackingStore(TextureMapperLayer* layer)
+ {
+-    return layer->drawsContent() && layer->contentsAreVisible() && !layer->size().isEmpty();
++    return layer->drawsContent() && layer->contentsAreVisible() && !layer->size().isEmpty()
++        && (!!layer->opacity() || layer->animations().hasActiveAnimationsOfType(AnimatedPropertyOpacity));
+ }
+ 
+ CoordinatedGraphicsScene::CoordinatedGraphicsScene(CoordinatedGraphicsSceneClient* client)
+-- 
+2.11.0
+

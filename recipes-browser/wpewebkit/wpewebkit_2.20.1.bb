@@ -7,5 +7,7 @@ SVNREV = "230477"
 SVNBRANCH = "releases/WebKitGTK/webkit-2.20"
 SRC_URI = " \
     svn://svn.webkit.org/repository/webkit;module=${SVNBRANCH};rev=${SVNREV};protocol=https \
+    file://0001-Avoid-painting-backing-stores-for-zero-opacity-layer.patch \
+    file://0002-REGRESSION-r230950-Faulty-commit-sequencing-in-Coord.patch \
 "
 S = "${WORKDIR}/${SVNBRANCH}"
