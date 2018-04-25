@@ -7,8 +7,8 @@ LIC_FILES_CHKSUM = "file://src/wayland/display.h;;beginline=5;endline=24;md5=b1c
 
 DEPENDS = "wpebackend glib-2.0 libinput"
 
-PV = "1.20180320"
-SRCREV = "b96c7823905d47a405be148b3c3ac064a720ae69"
+PV = "1.20180411"
+SRCREV = "456f7c1470d0dba61399bd593f34a0b0316158cf"
 
 SRC_URI = " \
             git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=https;branch=master \
