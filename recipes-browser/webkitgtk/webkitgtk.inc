@@ -11,17 +11,19 @@ DEPENDS = "zlib enchant libsoup-2.4 curl libxml2 cairo libxslt libidn gnutls \
            gperf-native perl-native ruby-native sqlite3 \
            libwebp harfbuzz glib-2.0 gettext-native glib-2.0-native"
 
-DEPENDS += " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'gtk+ libxt', '', d)}"
-DEPENDS += " ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'virtual/libgl', '', d)}"
-
 
 inherit cmake lib_package pkgconfig perlnative pythonnative distro_features_check
 
 S = "${WORKDIR}/webkitgtk-${PV}/"
 
-PACKAGECONFIG ??= "x11 opengl gles2"
+# To build with embedded gl support -> Enable *both* "opengl" and "gles2" option
+# To build with desktop  gl support -> Enable "opengl", but disable "gles2" option
+PACKAGECONFIG ??= " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)} \
+                    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
+                    ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'opengl gles2 webgl', '', d)} \
+                  "
 PACKAGECONFIG[wayland] = "-DENABLE_WAYLAND_TARGET=ON,-DENABLE_WAYLAND_TARGET=OFF,wayland wayland-native"
-PACKAGECONFIG[x11] = "-DENABLE_X11_TARGET=ON,-DENABLE_X11_TARGET=OFF,virtual/libx11"
+PACKAGECONFIG[x11] = "-DENABLE_X11_TARGET=ON,-DENABLE_X11_TARGET=OFF,virtual/libx11 libxt"
 PACKAGECONFIG[geoclue] = "-DENABLE_GEOLOCATION=ON,-DENABLE_GEOLOCATION=OFF,geoclue"
 PACKAGECONFIG[enchant] = "-DENABLE_SPELLCHECK=ON,-DENABLE_SPELLCHECK=OFF,enchant"
 PACKAGECONFIG[gtk2] = "-DENABLE_PLUGIN_PROCESS_GTK2=ON,-DENABLE_PLUGIN_PROCESS_GTK2=OFF,gtk+"
