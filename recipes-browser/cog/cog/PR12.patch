@@ -1,0 +1,70 @@
+From 8683128129fe1d73e30ee13eca7fadef81eea084 Mon Sep 17 00:00:00 2001
+From: Carlos Alberto Lopez Perez <clopez@igalia.com>
+Date: Tue, 15 May 2018 20:10:17 +0200
+Subject: [PATCH] Install a libWPEBackend-default.so symlink with fdo (#11)
+
+ * When building with fdo support (-DCOG_PLATFORM_FDO=ON) create
+   and install a libWPEBackend-default.so symlink pointing to
+   libWPEBackend-fdo-0.1.so.0.
+
+ * Also default to platform fdo is no other one is specified via
+   command line argument.
+---
+ CMakeLists.txt       | 7 +++++++
+ cog.c                | 8 +++++++-
+ core/cog-config.h.in | 1 +
+ 3 files changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c94307e..e622fbc 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -147,6 +147,13 @@ target_include_directories(cogplatform-fdo PUBLIC wayland ${COGPLATFORM_FDO_INCL
+ target_compile_options(cogplatform-fdo PUBLIC ${COGPLATFORM_FDO_CFLAGS})
+ target_link_libraries(cogplatform-fdo cogcore ${COGPLATFORM_FDO_LDFLAGS})
+ 
++# Create a libWPEBackend-default.so symlink to libWPEBackend-fdo-0.1.so.0 and install it.
++add_custom_command(TARGET cogplatform-fdo
++                   POST_BUILD
++                   COMMAND ${CMAKE_COMMAND} -E create_symlink libWPEBackend-fdo-0.1.so.0 ${CMAKE_CURRENT_BINARY_DIR}/libWPEBackend-default.so
++)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libWPEBackend-default.so DESTINATION ${CMAKE_INSTALL_LIBDIR})
++
+ install(TARGETS cogplatform-fdo
+     DESTINATION ${CMAKE_INSTALL_LIBDIR}
+     COMPONENT "runtime"
+diff --git a/cog.c b/cog.c
+index 5485e74..e5c0140 100644
+--- a/cog.c
++++ b/cog.c
+@@ -230,8 +230,14 @@ platform_setup (CogLauncher *launcher)
+ 
+     g_debug ("%s: Platform name: %s", __func__, s_options.platform_name);
+ 
+-    if (!s_options.platform_name)
++    if (!s_options.platform_name) {
++#if COG_PLATFORM_FDO
++        // if no platform specified, try to use fdo if available.
++        s_options.platform_name = g_strdup("fdo");
++#else
+         return FALSE;
++#endif
++    }
+ 
+     g_autofree char *platform_soname =
+         g_strdup_printf ("libcogplatform-%s.so", s_options.platform_name);
+diff --git a/core/cog-config.h.in b/core/cog-config.h.in
+index 270d2f2..d22ab9b 100644
+--- a/core/cog-config.h.in
++++ b/core/cog-config.h.in
+@@ -15,6 +15,7 @@
+ #cmakedefine COG_DEFAULT_APPID "@COG_DEFAULT_APPID@"
+ #cmakedefine COG_DEFAULT_HOME_URI "@COG_DEFAULT_HOME_URI@"
+ #cmakedefine01 COG_USE_WEBKITGTK
++#cmakedefine01 COG_PLATFORM_FDO
+ 
+ /* FIXME: Perhaps make this a cmake define instead. */
+ #define COG_DEFAULT_APPNAME "Cog"
+-- 
+2.11.0
+
