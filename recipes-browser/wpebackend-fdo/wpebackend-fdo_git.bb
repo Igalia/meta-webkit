@@ -1,21 +1,8 @@
-SUMMARY = "WPE's backend based on a Freedesktop.org stack."
-HOMEPAGE = "https://github.com/Igalia/WPEBackend-fdo"
-BUGTRACKER = "https://github.com/Igalia/WPEBackend-fdo/issues"
+require wpebackend-fdo.inc
 
-LICENSE = "CLOSED"
-DEPENDS += "wpebackend glib-2.0 libxkbcommon wayland virtual/libgl"
+PV = "0.1~git"
 
-SRCREV = "a437117577c260a43f6a85650c254186fbac0835"
-
-SRC_URI = "git://github.com/Igalia/WPEBackend-fdo.git;protocol=https;branch=master \
-          "
+SRCREV = "76079c1809a5319da9d0cf9bbdb86ee0a44f55d0"
+SRC_URI = "git://github.com/Igalia/WPEBackend-fdo.git;protocol=https;branch=master"
 
 S = "${WORKDIR}/git"
-
-
-inherit cmake
-
-
-FILES_SOLIBSDEV = ""
-FILES_${PN} += "${libdir}/libWPEBackend-fdo.so ${libdir}/pkgconfig/wpebackend-fdo.pc"
-INSANE_SKIP_${PN} ="dev-so"

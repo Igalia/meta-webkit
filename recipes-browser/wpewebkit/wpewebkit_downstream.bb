@@ -16,9 +16,15 @@ DEFAULT_PRERENCE = "-1"
 # PREFERRED_VERSION_wpewebkit = "1.downstream%"
 #
 
+
+# NOTE: The build of this recipe is currently broken after the versioning
+#        changes done on wpebackend recipes. Remove this note and update
+#        the commit below once that is fixed on the downstream repository.
 PV = "1.downstream-20180424"
 SRCREV = "a8f773758e16492d641456eb34a982029249fda4"
 SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEWebKit.git;protocol=https;branch=master"
+
+S = "${WORKDIR}/git"
 
 # Some config options are only available on the downstream version, like:
 PACKAGECONFIG[fusion] = "-DUSE_FUSION_API_GSTREAMER=ON,-DUSE_FUSION_API_GSTREAMER=OFF,"

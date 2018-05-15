@@ -10,115 +10,14 @@ This layer depends on:
     branch: master
     revision: HEAD
 
+    URI: git://git.openembedded.org/meta-openembedded
+    branch: master
+    revision: HEAD
 
 
-Building the WPE engine (former WebKitForWayland).
----------------------------------------------------
+Building the WPE engine or WebKitGTK+
+=====================================
 
+Please refer to the project Wiki for a detailed guide:
 
-WPE is a WebKit port intended to allow embedders to create simple and performant
-systems based on Web platform technologies.
-It is designed with hardware acceleration in mind, leveraging common 3D graphics
-APIs for best performance.
-
-The usual way to create an image with WPE is:
-
-  * Add this layer to bblayers.conf
-  * Add the following to local.conf:
-
-        DISTRO_FEATURES_append = " opengl wayland"
-        IMAGE_INSTALL_append = " wpebackend-rdk dinghy wpewebkit"
-
-  * Then build the target image, for example:
-
-        bitbake core-image-weston
-
-  * Run "dinghy" from a weston terminal.
-
-Building the WebKitGTK+ engine.
--------------------------------
-
-WebKitGTK+ is a full-featured port of the WebKit rendering engine, suitable for projects
-requiring any kind of web integration, from hybrid HTML/CSS applications to full-fledged
-web browsers. It offers WebKit’s full functionality and is useful in a wide range of
-systems from desktop computers to embedded systems like phones, tablets, and televisions.
-
-When creating an image with with WebkitGTK+, take into account:
-
-  * The package webkitgtk contains the shared libraries and the webkitgtk runtime.
-  * The package webkitgtk-bin contains the MiniBrowser executable (a very basic browser
-    built on top of the webkitgtk runtime, mainly used for testing purposes).
-  * The name of the recipe is the same than the one available in oe-core (master),
-    so you should select which version of webkitgtk you want to build in your local.conf
-  * The webkitgtk recipe has several packageconfig options that you can tune. Check the
-    source code of the recipe to see all the ones available. For example, for enabling
-    WebGL support you can add the following to your conf/local.conf file:
-
-        PACKAGECONFIG_append_pn-webkitgtk = " webgl"
-
-  * Add the following lines to your conf/local.conf file (for building the X11 backend of WebKitGTK+) :
-
-        DISTRO_FEATURES_append = " opengl x11"
-        IMAGE_INSTALL_append = " webkitgtk-bin"
-        PREFERRED_VERSION_webkitgtk = "2.20.1"
-
-  * Then build the X11 image
-
-        bitbake core-image-sato
-
-  * Run MiniBrowser (or another browser based on webkitgtk+) from an X terminal.
-
-
-Note about the recipe of webkitgtk in oe-core
----------------------------------------------
-
-The oe-core repository (since jethro release) already includes a recipe for WebKit2GTK+
-with the very same name than the one included here.
-
-The purpose of this layer is:
-
-  * To ship a WPE recipe.
-  * To provide WebKit2GTK+ recipes newer or different than the ones included in oe-core.
-    For example, people with releases older than jethro can use this layer for
-    easily building WebKit2GTK+. And people using jethro can use this layer to get more
-    recent WebKit2GTK+ recipes.
-
-
-Using the same name for the webkitgtk recipe than in oe-core is done on purpose.
-The idea is that you can select between the webkitgtk recipe from oe-core or from
-this layer by selecting the version with the variable PREFERRED_VERSION_webkitgtk
-in local.conf.
-
-If you don't want to use or experiment with the webkitgtk recipes from this layer,
-then the best thing to do is to simply ignore this layer and don't try to use it.
-
-Contributing
-------------
-
-At your convenience, use either github pull requests <https://github.com/Igalia/meta-webkit/pulls>
-or send patches directly to the OpenEmbedded dev mailing list <openembedded-devel@lists.openembedded.org>
-and please cc the maintainers.
-
-To send patches to the mailing list, please use something like :
-
-    git send-email -1 --to openembedded-devel@lists.openembedded.org --cc clopez@igalia.com --subject-prefix='meta-webkit][PATCH'
-
-
-Reporting bugs
---------------
-
- You can use the github issue tracker <https://github.com/Igalia/meta-webkit/issues>
- or send an email to the OpenEmbedded dev mailing list <openembedded-devel@lists.openembedded.org>
- cc'ing the maintainers.
-
-Maintainers:
-
-    Carlos Alberto Lopez Perez <clopez@igalia.com>
-
-
-Further info
-------------
-
- The following resources contain useful information:
-
-  * Blog post introducing this meta-webkit layer: http://blog.neutrino.es/2015/meta-webkit-yocto-layer
+   - WiKi: https://github.com/Igalia/meta-webkit/wiki
