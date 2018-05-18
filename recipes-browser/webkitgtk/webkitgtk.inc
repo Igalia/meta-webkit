@@ -11,6 +11,13 @@ DEPENDS = "zlib enchant libsoup-2.4 curl libxml2 cairo libxslt libidn gnutls \
            gperf-native perl-native ruby-native sqlite3 \
            libwebp harfbuzz glib-2.0 gettext-native glib-2.0-native"
 
+RRECOMMENDS_${PN} = "${PN}-bin \
+                     ca-certificates \
+                     shared-mime-info \
+                     ttf-bitstream-vera \
+                     ${@bb.utils.contains('PACKAGECONFIG', 'video', 'gstreamer1.0-plugins-base-meta gstreamer1.0-plugins-good-meta gstreamer1.0-plugins-bad-meta', '', d)} \
+                     "
+RRECOMMENDS_${PN}_bin = "adwaita-icon-theme"
 
 inherit cmake lib_package pkgconfig perlnative pythonnative distro_features_check
 
@@ -33,7 +40,7 @@ PACKAGECONFIG[opengl] = "-DENABLE_OPENGL=ON,-DENABLE_OPENGL=OFF,virtual/libgl"
 PACKAGECONFIG[libsecret] = "-DUSE_LIBSECRET=ON,-DUSE_LIBSECRET=OFF,libsecret"
 PACKAGECONFIG[libnotify] = "-DUSE_LIBNOTIFY=ON,-DUSE_LIBNOTIFY=OFF,libnotify"
 PACKAGECONFIG[libhyphen] = "-DUSE_LIBHYPHEN=ON,-DUSE_LIBHYPHEN=OFF,libhyphen"
-
+PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON,-DENABLE_VIDEO=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad"
 
 WEBKIT_BUILD_TYPE ??= "Release"
 
@@ -61,8 +68,7 @@ EXTRA_OECMAKE_append_armv6 = " -DENABLE_JIT=OFF "
 # https://sourceware.org/bugzilla/show_bug.cgi?id=18430
 EXTRA_OECMAKE_append_aarch64 = " -DUSE_LD_GOLD=OFF "
 
-# JIT not supported on MIPS either
-EXTRA_OECMAKE_append_mips = " -DENABLE_JIT=OFF "
+# JIT not supported on MIPS64 either
 EXTRA_OECMAKE_append_mips64 = " -DENABLE_JIT=OFF "
 
 # http://errors.yoctoproject.org/Errors/Details/20370/
@@ -79,8 +85,14 @@ ARM_INSTRUCTION_SET_armv7r = "thumb"
 ARM_INSTRUCTION_SET_armv7m = "thumb"
 ARM_INSTRUCTION_SET_armv7ve = "thumb"
 
+# Install MiniBrowser in PATH
+do_install_append() {
+    if test -f ${D}${libexecdir}/webkit2gtk-4.0/MiniBrowser; then
+        mkdir -p ${D}${bindir}
+        mv ${D}${libexecdir}/webkit2gtk-4.0/MiniBrowser ${D}${bindir}
+    fi
+}
+
 FILES_${PN} += "${libdir}/webkit2gtk-4.0/injected-bundle/libwebkit2gtkinjectedbundle.so"
 FILES_${PN}-dbg += "${libdir}/webkit2gtk-4.0/injected-bundle/.debug/libwebkit2gtkinjectedbundle.so"
 FILES_${PN}-dbg += "${libdir}/webkitgtk/webkit2gtk-4.0/.debug/*"
-
-RRECOMMENDS_${PN} += "ca-certificates"
