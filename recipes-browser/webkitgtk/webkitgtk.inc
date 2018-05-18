@@ -17,7 +17,7 @@ RRECOMMENDS_${PN} = "${PN}-bin \
                      ttf-bitstream-vera \
                      ${@bb.utils.contains('PACKAGECONFIG', 'video', 'gstreamer1.0-plugins-base-meta gstreamer1.0-plugins-good-meta gstreamer1.0-plugins-bad-meta', '', d)} \
                      "
-RRECOMMENDS_${PN}_bin = "adwaita-icon-theme"
+RRECOMMENDS_${PN}-bin = "adwaita-icon-theme librsvg-gtk"
 
 inherit cmake lib_package pkgconfig perlnative pythonnative distro_features_check
 
