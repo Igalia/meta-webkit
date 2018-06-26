@@ -9,3 +9,5 @@ PROVIDES += "virtual/wpebackend"
 RPROVIDES_${PN} += "virtual/wpebackend"
 
 inherit cmake
+
+FILES_${PN} += "${libdir}/libWPEBackend-fdo-0.1.so"
