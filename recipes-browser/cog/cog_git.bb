@@ -11,10 +11,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bf1229cd7425b302d60cdb641b0ce5fb"
 
 # Please: keep PV to the date of the last update, so the version number
 # is an always increasing number to avoid "version goes backwards" errors.
-PV = "20180515"
-SRCREV = "bab4ad47e9a579727779f2de084ebea36d6b8a1e"
+PV = "20180703"
+SRCREV = "2d298c14f7776400cccc90f209d31848337ca7a4"
 SRC_URI = " git://github.com/Igalia/cog.git;protocol=https;branch=master \
-            file://PR12.patch \
+            file://0001-Install-a-libWPEBackend-default.so-symlink-with-fdo.patch \
           "
 S = "${WORKDIR}/git"
 
