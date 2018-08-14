@@ -9,7 +9,7 @@ PV = "0.1~git"
 #
 # PREFERRED_VERSION_wpebackend = "0.1~git%"
 
-SRCREV = "3ca651d393566ec2f2801e447b67d3f71377e363"
+SRCREV = "${AUTOREV}"
 SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEBackend.git;protocol=https;branch=master"
 
 S = "${WORKDIR}/git"
