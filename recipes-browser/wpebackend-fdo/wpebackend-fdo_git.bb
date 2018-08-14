@@ -9,7 +9,7 @@ PV = "0.1~git"
 #
 # PREFERRED_VERSION_wpebackend-fdo = "0.1~git%"
 
-SRCREV = "da746af2dff6b972c5c4903a132edcafdb768926"
+SRCREV = "${AUTOREV}"
 SRC_URI = "git://github.com/Igalia/WPEBackend-fdo.git;protocol=https;branch=master"
 
 S = "${WORKDIR}/git"
