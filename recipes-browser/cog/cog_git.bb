@@ -26,8 +26,6 @@ DEPENDS = " \
 
 # At run-time cog package should depend on virtual/wpebackend unless webkitgtk+ is enabled.
 RDEPENDS_${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', '', 'virtual/wpebackend', d)}"
-# If built with fdo support, it conflicts with dyz due to the libWPEBackend-default.so symlink
-RCONFLICTS_${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'fdo', 'dyz', '', d)}"
 
 inherit cmake
 
