@@ -3,7 +3,7 @@ require wpewebkit.inc
 DEFAULT_PRERENCE = "-1"
 
 SVNBRANCH = "trunk"
-SVNREV ?= "234795"
+SVNREV ?= "235780"
 
 # To enable this recipe set on local.conf
 # PREFERRED_VERSION_wpewebkit = "1.trunk%"
@@ -16,3 +16,5 @@ SRC_URI = " \
     svn://svn.webkit.org/repository/webkit;module=${SVNBRANCH};rev=${SVNREV};protocol=https \
 "
 S = "${WORKDIR}/${SVNBRANCH}"
+
+DEPENDS += " libwpe"
