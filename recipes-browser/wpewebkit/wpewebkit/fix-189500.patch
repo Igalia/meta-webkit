@@ -1,0 +1,60 @@
+Index: wpewebkit-2.21.91/Source/WebCore/page/Page.cpp
+===================================================================
+--- wpewebkit-2.21.91.orig/Source/WebCore/page/Page.cpp
++++ wpewebkit-2.21.91/Source/WebCore/page/Page.cpp
+@@ -242,7 +242,9 @@ Page::Page(PageConfiguration&& pageConfi
+     , m_userContentProvider(*WTFMove(pageConfiguration.userContentProvider))
+     , m_visitedLinkStore(*WTFMove(pageConfiguration.visitedLinkStore))
+     , m_sessionID(PAL::SessionID::defaultSessionID())
++#if ENABLE(VIDEO)
+     , m_playbackControlsManagerUpdateTimer(*this, &Page::playbackControlsManagerUpdateTimerFired)
++#endif
+     , m_isUtilityPage(isUtilityPageChromeClient(chrome().client()))
+     , m_performanceMonitor(isUtilityPage() ? nullptr : std::make_unique<PerformanceMonitor>(*this))
+     , m_lowPowerModeNotifier(std::make_unique<LowPowerModeNotifier>([this](bool isLowPowerModeEnabled) { handleLowModePowerChange(isLowPowerModeEnabled); }))
+@@ -1511,10 +1513,13 @@ void Page::updateIsPlayingMedia(uint64_t
+ 
+ void Page::schedulePlaybackControlsManagerUpdate()
+ {
++#if ENABLE(VIDEO)
+     if (!m_playbackControlsManagerUpdateTimer.isActive())
+         m_playbackControlsManagerUpdateTimer.startOneShot(0_s);
++#endif
+ }
+ 
++#if ENABLE(VIDEO)
+ void Page::playbackControlsManagerUpdateTimerFired()
+ {
+     if (auto bestMediaElement = HTMLMediaElement::bestMediaElementForShowingPlaybackControlsManager(MediaElementSession::PlaybackControlsPurpose::ControlsManager))
+@@ -1522,6 +1527,7 @@ void Page::playbackControlsManagerUpdate
+     else
+         chrome().client().clearPlaybackControlsManager();
+ }
++#endif
+ 
+ void Page::setMuted(MediaProducer::MutedStateFlags muted)
+ {
+Index: wpewebkit-2.21.91/Source/WebCore/page/Page.h
+===================================================================
+--- wpewebkit-2.21.91.orig/Source/WebCore/page/Page.h
++++ wpewebkit-2.21.91/Source/WebCore/page/Page.h
+@@ -689,7 +689,9 @@ private:
+ 
+     std::optional<std::pair<MediaCanStartListener&, Document&>> takeAnyMediaCanStartListener();
+ 
++#if ENABLE(VIDEO)
+     void playbackControlsManagerUpdateTimerFired();
++#endif
+ 
+     Vector<Ref<PluginViewBase>> pluginViews();
+ 
+@@ -868,7 +870,9 @@ private:
+ 
+     MediaProducer::MediaStateFlags m_mediaState { MediaProducer::IsNotPlaying };
+ 
++#if ENABLE(VIDEO)
+     Timer m_playbackControlsManagerUpdateTimer;
++#endif
+ 
+     bool m_allowsMediaDocumentInlinePlayback { false };
+     bool m_allowsPlaybackControlsForAutoplayingAudio { false };
