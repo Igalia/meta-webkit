@@ -13,9 +13,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bf1229cd7425b302d60cdb641b0ce5fb"
 # is an always increasing number to avoid "version goes backwards" errors.
 PV = "20180809"
 SRCREV = "${AUTOREV}"
-SRC_URI = " git://github.com/Igalia/cog.git;protocol=https;branch=master \
-            file://0001-Install-a-libWPEBackend-default.so-symlink-with-fdo.patch \
-          "
+SRC_URI = " git://github.com/Igalia/cog.git;protocol=https;branch=master"
 S = "${WORKDIR}/git"
 
 # Depend on wpewebkit unless the webkitgtk packageconfig option is selected.
@@ -26,8 +24,6 @@ DEPENDS = " \
 
 # At run-time cog package should depend on virtual/wpebackend unless webkitgtk+ is enabled.
 RDEPENDS_${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', '', 'virtual/wpebackend', d)}"
-# If built with fdo support, it conflicts with dyz due to the libWPEBackend-default.so symlink
-RCONFLICTS_${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'fdo', 'dyz', '', d)}"
 
 inherit cmake
 
@@ -40,7 +36,7 @@ PACKAGECONFIG ?= " ${@bb.utils.contains('PREFERRED_PROVIDER_virtual/wpebackend',
 # https://github.com/Igalia/cog/commit/758ed08555e8152a2becd2178d1f3a4ce6e67af9
 # Also libWPEBackend-default.so should go into the main package.
 FILES_SOLIBSDEV = "${libdir}/libcogcore*.so"
-FILES_${PN} += "${libdir}/libcogplatform*.so ${libdir}/libWPEBackend-default.so"
+FILES_${PN} += "${libdir}/libcogplatform*.so"
 INSANE_SKIP_${PN} = "dev-so"
 
 # Use WebKitGTK+ instead of WPEWebKit

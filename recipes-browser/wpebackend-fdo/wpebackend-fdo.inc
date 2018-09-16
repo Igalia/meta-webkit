@@ -4,10 +4,8 @@ BUGTRACKER = "https://github.com/Igalia/WPEBackend-fdo/issues"
 
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1f62cef2e3645e3e74eb05fd389d7a66"
-DEPENDS = "wpebackend glib-2.0 libxkbcommon wayland virtual/libgl"
+DEPENDS = "glib-2.0 libxkbcommon wayland virtual/libgl"
 PROVIDES += "virtual/wpebackend"
 RPROVIDES_${PN} += "virtual/wpebackend"
 
 inherit cmake
-
-FILES_${PN} += "${libdir}/libWPEBackend-fdo-0.1.so"

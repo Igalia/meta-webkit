@@ -7,7 +7,7 @@ LICENSE = "BSD & LGPLv2+"
 LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf8b8a7c36b6eec80 "
 
 DEPENDS = " \
-    wpebackend bison-native gperf-native harfbuzz-native libxml2-native ruby-native cairo \
+    bison-native gperf-native harfbuzz-native libxml2-native ruby-native cairo \
     fontconfig freetype glib-2.0 gnutls harfbuzz icu jpeg pcre sqlite3 zlib libpng \
     libsoup-2.4 libwebp libxml2 libxslt virtual/egl virtual/libgles2 libepoxy libgcrypt \
 "
@@ -35,12 +35,8 @@ PACKAGECONFIG[woff2] = "-DUSE_WOFF2=ON,-DUSE_WOFF2=OFF,woff2"
 PACKAGECONFIG[2dcanvas] = "-DENABLE_ACCELERATED_2D_CANVAS=ON,-DENABLE_ACCELERATED_2D_CANVAS=OFF,"
 PACKAGECONFIG[remote-inspector] = "-DENABLE_REMOTE_INSPECTOR=ON,-DENABLE_REMOTE_INSPECTOR=OFF,"
 
-WEBKIT_BUILD_TYPE ??= "Release"
 
-EXTRA_OECMAKE = " \
-                 -DPORT=WPE \
-                 -DCMAKE_BUILD_TYPE=${WEBKIT_BUILD_TYPE} \
-                "
+EXTRA_OECMAKE = " -DPORT=WPE"
 
 LEAD_SONAME = "libWPEWebKit.so"
 PACKAGES =+ "${PN}-web-inspector-plugin"
