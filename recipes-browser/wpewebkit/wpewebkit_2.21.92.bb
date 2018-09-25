@@ -7,8 +7,8 @@ SRC_URI = "https://wpewebkit.org/releases/${PN}-${PV}.tar.xz \
            file://fix-189506.patch \
            file://fix-189540.patch"
 
-SRC_URI[md5sum] = "08778a95eba2de141d8aaff3d802c811"
-SRC_URI[sha256sum] = "e75b1ca225fa9303017e954b6203e4f1750a7566fa852443e6fd574fd5f926b8"
+SRC_URI[md5sum] = "c5fcb3768067978741d8e72b1055ab8b"
+SRC_URI[sha256sum] = "8ee366915aaf4f97950889863ac9951d21d94cae9c5f09d5f8e6efeb92069746"
 
 DEPENDS += " libwpe"
 RCONFLICTS_${PN} = "wpebackend (< 1.0) wpebackend-fdo (< 1.0)"
