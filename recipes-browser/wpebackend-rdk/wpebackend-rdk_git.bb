@@ -5,17 +5,14 @@ BUGTRACKER = "https://github.com/WebPlatformForEmbedded/WPEBackend-rdk/issues"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://src/wayland/display.h;;beginline=5;endline=24;md5=b1c8cb6b0857048a21b33611f01c575a"
 
-DEPENDS = "wpebackend glib-2.0 libinput"
+DEPENDS = "libwpe glib-2.0 libinput"
 PROVIDES += "virtual/wpebackend"
 RPROVIDES_${PN} += "virtual/wpebackend"
 
-PV = "1.20180411"
-SRCREV = "456f7c1470d0dba61399bd593f34a0b0316158cf"
+PV = "1.20180925"
+SRCREV = "8ea61fbdee554a7cb2d1c1cbc53ce0868aaca304"
 
-SRC_URI = " git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=https;branch=master \
-            file://0001-WPEBackend-libraries-are-versioned-now.patch \
-            file://0001-Fix-include-of-headers-after-WPEBackend-commit-2bf3c.patch \
-          "
+SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=https;branch=master"
 
 S = "${WORKDIR}/git"
 
