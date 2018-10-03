@@ -3,12 +3,10 @@ require wpewebkit.inc
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI = "https://wpewebkit.org/releases/${PN}-${PV}.tar.xz \
            file://0001-REGRESSION-r217927-WPE-2.22-GSTREAMER_GL-Video-appea.patch \
-           file://fix-189500.patch \
-           file://fix-189506.patch \
-           file://fix-189540.patch"
+          "
 
-SRC_URI[md5sum] = "c5fcb3768067978741d8e72b1055ab8b"
-SRC_URI[sha256sum] = "8ee366915aaf4f97950889863ac9951d21d94cae9c5f09d5f8e6efeb92069746"
+SRC_URI[md5sum] = "e23753c1b2984303e2523c18031b0736"
+SRC_URI[sha256sum] = "625551aa60ad047639cc64be4259f03598c4ed5db5f7427251657f889e822208"
 
 DEPENDS += " libwpe"
 RCONFLICTS_${PN} = "wpebackend (< 1.0) wpebackend-fdo (< 1.0)"
