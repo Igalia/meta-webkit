@@ -14,6 +14,12 @@ This layer depends on:
     branch: master
     revision: HEAD
 
+For Yocto releases prior to thud we highly recommend users to add the meta-gstreamer1.0 layer to their distro:
+
+    URI: https://github.com/OSSystems/meta-gstreamer1.0.git
+    branch: rocko or sumo
+    revision: HEAD
+
 
 Building the WPE engine or WebKitGTK+
 =====================================
