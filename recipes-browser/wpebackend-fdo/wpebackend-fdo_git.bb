@@ -1,6 +1,6 @@
 require wpebackend-fdo.inc
 
-DEFAULT_PRERENCE = "-1"
+DEFAULT_PREFERENCE = "-1"
 PV = "1.0.0~git"
 
 # This version of WPEBackend-fdo is not selected by default on this layer,
