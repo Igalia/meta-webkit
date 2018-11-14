@@ -14,3 +14,10 @@ SRC_URI = "git://github.com/Igalia/WPEBackend-fdo.git;protocol=https;branch=mast
 S = "${WORKDIR}/git"
 
 DEPENDS += " wpebackend"
+
+FILES_${PN} += " ${libdir}/libWPEBackend-default.so"
+
+do_install_append () {
+    install -d "${D}/usr/lib"
+    ln -s libWPEBackend-fdo-0.1.so "${D}/usr/lib/libWPEBackend-default.so"
+}
