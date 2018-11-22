@@ -5,8 +5,8 @@ SRC_URI = "https://wpewebkit.org/releases/${PN}-${PV}.tar.xz \
            file://0001-REGRESSION-r217927-WPE-2.22-GSTREAMER_GL-Video-appea.patch \
           "
 
-SRC_URI[md5sum] = "e23753c1b2984303e2523c18031b0736"
-SRC_URI[sha256sum] = "625551aa60ad047639cc64be4259f03598c4ed5db5f7427251657f889e822208"
+SRC_URI[md5sum] = "69c29ce376208b62b0cc43b750e27afb"
+SRC_URI[sha256sum] = "56dced284e9fe71a7c56abc881b240251863472aed41c3e32ee3b071c21e56a9"
 
 DEPENDS += " libwpe"
 RCONFLICTS_${PN} = "wpebackend (< 1.0) wpebackend-fdo (< 1.0)"
