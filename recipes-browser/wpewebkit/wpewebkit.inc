@@ -12,7 +12,7 @@ DEPENDS = " \
     libsoup-2.4 libwebp libxml2 libxslt virtual/egl virtual/libgles2 libepoxy libgcrypt \
 "
 
-inherit cmake pkgconfig perlnative pythonnative
+inherit cmake pkgconfig perlnative pythonnative cmake_qt5
 
 TOOLCHAIN = "gcc"
 
@@ -35,14 +35,18 @@ PACKAGECONFIG[woff2] = "-DUSE_WOFF2=ON,-DUSE_WOFF2=OFF,woff2"
 PACKAGECONFIG[2dcanvas] = "-DENABLE_ACCELERATED_2D_CANVAS=ON,-DENABLE_ACCELERATED_2D_CANVAS=OFF,"
 PACKAGECONFIG[remote-inspector] = "-DENABLE_REMOTE_INSPECTOR=ON,-DENABLE_REMOTE_INSPECTOR=OFF,"
 PACKAGECONFIG[webrtc] = "-DENABLE_WEB_RTC=ON,-DENABLE_WEB_RTC=OFF,libvpx libevent libopus"
+PACKAGECONFIG[qtwpe] = "-DENABLE_WPE_QT_API=ON,-DENABLE_WPE_QT_API=OFF,qtbase-native qtbase qtdeclarative qtquickcontrols2 libepoxy wpebackend-fdo"
 
 EXTRA_OECMAKE = " -DPORT=WPE"
 
 LEAD_SONAME = "libWPEWebKit.so"
-PACKAGES =+ "${PN}-web-inspector-plugin"
+PACKAGES =+ "${PN}-web-inspector-plugin ${PN}-qtwpe-qml-plugin"
 FILES_${PN} += "${libdir}/wpe-webkit*/injected-bundle/libWPEInjectedBundle.so"
 FILES_${PN}-web-inspector-plugin += "${libdir}/libWPEWebInspectorResources.so ${libdir}/wpe-webkit-*/libWPEWebInspectorResources.so"
 INSANE_SKIP_${PN}-web-inspector-plugin = "dev-so"
+
+FILES_${PN}-qtwpe-qml-plugin += "${libdir}/qml/org/wpewebkit/qtwpe/*"
+INSANE_SKIP_${PN}-qtwpe-qml-plugin = "dev-so"
 
 # JSC JIT on ARMv7 is better supported with Thumb2 instruction set.
 ARM_INSTRUCTION_SET_armv7a = "thumb"
@@ -84,5 +88,6 @@ RRECOMMENDS_${PN} += " \
     shared-mime-info \
     ttf-bitstream-vera \
     ${PN}-web-inspector-plugin \
+    ${PN}-qtwpe-qml-plugin \
     ${@bb.utils.contains('PACKAGECONFIG', 'video', 'gstreamer1.0-plugins-base-meta gstreamer1.0-plugins-good-meta gstreamer1.0-plugins-bad-meta', '', d)} \
 "
