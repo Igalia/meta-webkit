@@ -14,6 +14,16 @@ This layer depends on:
     branch: master
     revision: HEAD
 
+    URI: http://code.qt.io/yocto/meta-qt5.git
+    branch: 5.12
+    revision: HEAD
+
+The meta-qt5 dependency is necessary for the WPEWebKit engine. It provides an
+opt-in Qt5 API as an alternative to other Qt5 web-engines such as QtWebKit and
+QtWebEngine. As this is an optional component of WPEWebKit we believe that
+adding meta-qt5 in your distro doesn't mean it needs to ship any Qt package
+per-se.
+
 For Yocto releases prior to thud we highly recommend users to add the meta-gstreamer1.0 layer to their distro:
 
     URI: https://github.com/OSSystems/meta-gstreamer1.0.git
