@@ -7,12 +7,14 @@ LICENSE = "BSD & LGPLv2+"
 LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf8b8a7c36b6eec80 "
 
 DEPENDS = " \
-    bison-native gperf-native harfbuzz-native libxml2-native ruby-native cairo \
+    bison-native gperf-native harfbuzz-native libxml2-native ccache-native ninja-native ruby-native cairo \
     fontconfig freetype glib-2.0 gnutls harfbuzz icu jpeg pcre sqlite3 zlib libpng \
     libsoup-2.4 libwebp libxml2 libxslt virtual/egl virtual/libgles2 libepoxy libgcrypt \
 "
 
 inherit cmake pkgconfig perlnative pythonnative cmake_qt5
+
+CCACHE_DISABLE[unexport] = "1"
 
 TOOLCHAIN = "gcc"
 
@@ -37,7 +39,13 @@ PACKAGECONFIG[remote-inspector] = "-DENABLE_REMOTE_INSPECTOR=ON,-DENABLE_REMOTE_
 PACKAGECONFIG[webrtc] = "-DENABLE_WEB_RTC=ON,-DENABLE_WEB_RTC=OFF,libvpx libevent libopus"
 PACKAGECONFIG[qtwpe] = "-DENABLE_WPE_QT_API=ON,-DENABLE_WPE_QT_API=OFF,qtbase-native qtbase qtdeclarative qtquickcontrols2 libepoxy wpebackend-fdo"
 
-EXTRA_OECMAKE = " -DPORT=WPE"
+EXTRA_OECMAKE = " -DPORT=WPE -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+    -G Ninja \
+"
+
+FULL_OPTIMIZATION_remove = "-g"
 
 LEAD_SONAME = "libWPEWebKit.so"
 PACKAGES =+ "${PN}-web-inspector-plugin ${PN}-qtwpe-qml-plugin"
