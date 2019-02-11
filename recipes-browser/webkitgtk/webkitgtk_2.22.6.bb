@@ -6,8 +6,8 @@ SRC_URI = "\
    https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz \
 "
 
-SRC_URI[md5sum] = "9f08d09cfc21c761a431a545549f301a"
-SRC_URI[sha256sum] = "fab5be2883802352ae0e735dd1eff4bc18abaff7ac78689cec72eb2f611943b8"
+SRC_URI[md5sum] = "7c21a30f7f078f0b712caf0c7ee966a4"
+SRC_URI[sha256sum] = "df90db9c0db0a2072b945fa3e1d45865922bd686c4659cce6cb5897ce357c85b"
 
 PACKAGECONFIG ?= " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)} \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
