@@ -14,9 +14,15 @@ This layer depends on:
     branch: master
     revision: HEAD
 
+    URI: git://git.yoctoproject.org/meta-security
+    branch: master
+    revision: HEAD
+    
     URI: http://code.qt.io/yocto/meta-qt5.git
     branch: 5.12
     revision: HEAD
+
+The meta-security dependency is necessary to enable web process sandbox for WPE.
 
 The meta-qt5 dependency is necessary for the WPEWebKit engine. It provides an
 opt-in Qt5 API as an alternative to other Qt5 web-engines such as QtWebKit and
