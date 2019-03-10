@@ -1,0 +1,633 @@
+From 4f1ff2cb0f249913a1ba7cd2d3c7fa832609c553 Mon Sep 17 00:00:00 2001
+From: Carlos Alberto Lopez Perez <clopez@igalia.com>
+Date: Mon, 14 May 2018 15:02:20 +0200
+Subject: [PATCH] Fix include of headers after WPEBackend commit 2bf3c3ae
+
+* wpe/wpe.h should be included instead of wpe/input.h, wpe/loader.h,
+  wpe/pasteboard.h, wpe/renderer-host.h and wpe/view-backend.h
+
+* wpe/wpe-egl.h should be included instead of wpe/renderer-backend-egl.h
+---
+ cmake/FindWPE.cmake                         | 2 +-
+ src/bcm-nexus-wayland/interfaces.h          | 4 ++--
+ src/bcm-nexus-wayland/renderer-backend.cpp  | 2 +-
+ src/bcm-nexus-wayland/view-backend.cpp      | 2 +-
+ src/bcm-nexus/interfaces.h                  | 4 ++--
+ src/bcm-nexus/renderer-backend.cpp          | 2 +-
+ src/bcm-nexus/view-backend.cpp              | 2 +-
+ src/bcm-rpi/interfaces.h                    | 4 ++--
+ src/bcm-rpi/renderer-backend.cpp            | 2 +-
+ src/bcm-rpi/view-backend.cpp                | 2 +-
+ src/input/KeyboardEventHandler.h            | 2 +-
+ src/input/Libinput/KeyboardEventRepeating.h | 2 +-
+ src/input/Libinput/LibinputServer.cpp       | 2 +-
+ src/input/Libinput/LibinputServer.h         | 2 +-
+ src/input/LinuxInput/input-linuxinput.h     | 2 +-
+ src/input/XKB/input-libxkbcommon.h          | 2 +-
+ src/intelce/interfaces.h                    | 4 ++--
+ src/intelce/renderer-backend.cpp            | 2 +-
+ src/intelce/view-backend.cpp                | 2 +-
+ src/loader-impl.cpp                         | 4 ++--
+ src/realtek-wl-egl/interfaces.h             | 4 ++--
+ src/realtek-wl-egl/renderer-backend.cpp     | 2 +-
+ src/realtek-wl-egl/view-backend.cpp         | 3 +--
+ src/viv-imx6/interfaces.h                   | 4 ++--
+ src/viv-imx6/renderer-backend.cpp           | 2 +-
+ src/viv-imx6/view-backend.cpp               | 2 +-
+ src/wayland-egl/interfaces.h                | 4 ++--
+ src/wayland-egl/renderer-backend.cpp        | 2 +-
+ src/wayland-egl/view-backend.cpp            | 3 +--
+ src/wayland/display.cpp                     | 3 +--
+ src/wayland/display.h                       | 2 +-
+ src/westeros/WesterosViewbackendInput.cpp   | 3 +--
+ src/westeros/WesterosViewbackendOutput.cpp  | 2 +-
+ src/westeros/interfaces.h                   | 4 ++--
+ src/westeros/renderer-backend.cpp           | 2 +-
+ src/westeros/view-backend.cpp               | 2 +-
+ src/wpeframework/display.cpp                | 3 +--
+ src/wpeframework/display.h                  | 2 +-
+ src/wpeframework/interfaces.h               | 4 ++--
+ src/wpeframework/renderer-backend.cpp       | 2 +-
+ src/wpeframework/view-backend.cpp           | 3 +--
+ src/wpeframework/view-backend.old.cpp       | 3 +--
+ 42 files changed, 52 insertions(+), 59 deletions(-)
+
+diff --git a/cmake/FindWPE.cmake b/cmake/FindWPE.cmake
+index fb050ce..b71b17e 100644
+--- a/cmake/FindWPE.cmake
++++ b/cmake/FindWPE.cmake
+@@ -32,7 +32,7 @@ find_package(PkgConfig)
+ pkg_check_modules(PC_WPE QUIET wpe-0.1)
+ 
+ find_path(WPE_INCLUDE_DIRS
+-    NAMES wpe/loader.h
++    NAMES wpe/wpe.h
+     HINTS ${PC_WPE_INCLUDEDIR} ${PC_WPE_INCLUDE_DIRS}
+ )
+ 
+diff --git a/src/bcm-nexus-wayland/interfaces.h b/src/bcm-nexus-wayland/interfaces.h
+index db2006e..7a20fe0 100644
+--- a/src/bcm-nexus-wayland/interfaces.h
++++ b/src/bcm-nexus-wayland/interfaces.h
+@@ -1,8 +1,8 @@
+ #ifndef bcm_nexus_wayland_interfaces_h
+ #define bcm_nexus_wayland_interfaces_h
+ 
+-#include <wpe/renderer-backend-egl.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe-egl.h>
++#include <wpe/wpe.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+diff --git a/src/bcm-nexus-wayland/renderer-backend.cpp b/src/bcm-nexus-wayland/renderer-backend.cpp
+index d08bd4a..39f4c0f 100644
+--- a/src/bcm-nexus-wayland/renderer-backend.cpp
++++ b/src/bcm-nexus-wayland/renderer-backend.cpp
+@@ -25,7 +25,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/renderer-backend-egl.h>
++#include <wpe/wpe-egl.h>
+ 
+ #include "ipc.h"
+ #include "ipc-bcmnexuswl.h"
+diff --git a/src/bcm-nexus-wayland/view-backend.cpp b/src/bcm-nexus-wayland/view-backend.cpp
+index 8026ba8..af70476 100644
+--- a/src/bcm-nexus-wayland/view-backend.cpp
++++ b/src/bcm-nexus-wayland/view-backend.cpp
+@@ -25,7 +25,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/view-backend.h>
++#include <wpe/wpe.h>
+ 
+ #include "display.h"
+ #include "ipc.h"
+diff --git a/src/bcm-nexus/interfaces.h b/src/bcm-nexus/interfaces.h
+index 6075801..1f75fb2 100644
+--- a/src/bcm-nexus/interfaces.h
++++ b/src/bcm-nexus/interfaces.h
+@@ -28,8 +28,8 @@
+ #ifndef bcm_nexus_interfaces_h
+ #define bcm_nexus_interfaces_h
+ 
+-#include <wpe/renderer-backend-egl.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe-egl.h>
++#include <wpe/wpe.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+diff --git a/src/bcm-nexus/renderer-backend.cpp b/src/bcm-nexus/renderer-backend.cpp
+index 340d815..77a8635 100644
+--- a/src/bcm-nexus/renderer-backend.cpp
++++ b/src/bcm-nexus/renderer-backend.cpp
+@@ -25,7 +25,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/renderer-backend-egl.h>
++#include <wpe/wpe-egl.h>
+ 
+ #include "ipc.h"
+ #include "ipc-bcmnexus.h"
+diff --git a/src/bcm-nexus/view-backend.cpp b/src/bcm-nexus/view-backend.cpp
+index 2b6aee9..9f77c6f 100644
+--- a/src/bcm-nexus/view-backend.cpp
++++ b/src/bcm-nexus/view-backend.cpp
+@@ -25,7 +25,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/view-backend.h>
++#include <wpe/wpe.h>
+ 
+ #ifdef KEY_INPUT_HANDLING_LIBINPUT
+ #include "Libinput/LibinputServer.h"
+diff --git a/src/bcm-rpi/interfaces.h b/src/bcm-rpi/interfaces.h
+index 18a6bd4..fc7cfd6 100644
+--- a/src/bcm-rpi/interfaces.h
++++ b/src/bcm-rpi/interfaces.h
+@@ -30,8 +30,8 @@
+ 
+ #define __GBM__
+ 
+-#include <wpe/renderer-backend-egl.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe-egl.h>
++#include <wpe/wpe.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+diff --git a/src/bcm-rpi/renderer-backend.cpp b/src/bcm-rpi/renderer-backend.cpp
+index 2b3b495..fcdec97 100644
+--- a/src/bcm-rpi/renderer-backend.cpp
++++ b/src/bcm-rpi/renderer-backend.cpp
+@@ -25,7 +25,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/renderer-backend-egl.h>
++#include <wpe/wpe-egl.h>
+ 
+ #include "ipc.h"
+ #include "ipc-rpi.h"
+diff --git a/src/bcm-rpi/view-backend.cpp b/src/bcm-rpi/view-backend.cpp
+index d4ff2d5..3a96ad3 100644
+--- a/src/bcm-rpi/view-backend.cpp
++++ b/src/bcm-rpi/view-backend.cpp
+@@ -25,7 +25,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/view-backend.h>
++#include <wpe/wpe.h>
+ 
+ #include "Libinput/LibinputServer.h"
+ #include "cursor-data.h"
+diff --git a/src/input/KeyboardEventHandler.h b/src/input/KeyboardEventHandler.h
+index 937c4e2..c0cd66e 100644
+--- a/src/input/KeyboardEventHandler.h
++++ b/src/input/KeyboardEventHandler.h
+@@ -30,7 +30,7 @@
+ 
+ #include <memory>
+ #include <tuple>
+-#include <wpe/input.h>
++#include <wpe/wpe.h>
+ 
+ namespace WPE {
+ 
+diff --git a/src/input/Libinput/KeyboardEventRepeating.h b/src/input/Libinput/KeyboardEventRepeating.h
+index d631f45..b84c03f 100644
+--- a/src/input/Libinput/KeyboardEventRepeating.h
++++ b/src/input/Libinput/KeyboardEventRepeating.h
+@@ -29,7 +29,7 @@
+ #define WPE_Input_KeyboardEventRepeating_h
+ 
+ #include <glib.h>
+-#include <wpe/input.h>
++#include <wpe/wpe.h>
+ 
+ namespace WPE {
+ 
+diff --git a/src/input/Libinput/LibinputServer.cpp b/src/input/Libinput/LibinputServer.cpp
+index bb87a78..b18de55 100644
+--- a/src/input/Libinput/LibinputServer.cpp
++++ b/src/input/Libinput/LibinputServer.cpp
+@@ -32,7 +32,7 @@
+ #include <cstdio>
+ #include <fcntl.h>
+ #include <unistd.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe.h>
+ 
+ namespace WPE {
+ 
+diff --git a/src/input/Libinput/LibinputServer.h b/src/input/Libinput/LibinputServer.h
+index 9734caa..b10021a 100644
+--- a/src/input/Libinput/LibinputServer.h
++++ b/src/input/Libinput/LibinputServer.h
+@@ -31,7 +31,7 @@
+ #include "KeyboardEventRepeating.h"
+ #include <glib.h>
+ #include <memory>
+-#include <wpe/input.h>
++#include <wpe/wpe.h>
+ #ifndef KEY_INPUT_HANDLING_VIRTUAL
+ #include <libudev.h>
+ #include <libinput.h>
+diff --git a/src/input/LinuxInput/input-linuxinput.h b/src/input/LinuxInput/input-linuxinput.h
+index e3caa8f..827f380 100644
+--- a/src/input/LinuxInput/input-linuxinput.h
++++ b/src/input/LinuxInput/input-linuxinput.h
+@@ -30,7 +30,7 @@
+ 
+ #ifdef KEY_INPUT_HANDLING_LINUX_INPUT
+ 
+-#include <wpe/input.h>
++#include <wpe/wpe.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+diff --git a/src/input/XKB/input-libxkbcommon.h b/src/input/XKB/input-libxkbcommon.h
+index 035e7a0..032e4c0 100644
+--- a/src/input/XKB/input-libxkbcommon.h
++++ b/src/input/XKB/input-libxkbcommon.h
+@@ -30,7 +30,7 @@
+ 
+ #ifdef KEY_INPUT_HANDLING_XKB
+ 
+-#include <wpe/input.h>
++#include <wpe/wpe.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+diff --git a/src/intelce/interfaces.h b/src/intelce/interfaces.h
+index 56d2739..f01334c 100644
+--- a/src/intelce/interfaces.h
++++ b/src/intelce/interfaces.h
+@@ -28,8 +28,8 @@
+ #ifndef intelce_interfaces_h
+ #define intelce_interfaces_h
+ 
+-#include <wpe/renderer-backend-egl.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe-egl.h>
++#include <wpe/wpe.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+diff --git a/src/intelce/renderer-backend.cpp b/src/intelce/renderer-backend.cpp
+index ec4644c..1056743 100644
+--- a/src/intelce/renderer-backend.cpp
++++ b/src/intelce/renderer-backend.cpp
+@@ -25,7 +25,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/renderer-backend-egl.h>
++#include <wpe/wpe-egl.h>
+ 
+ #include "ipc.h"
+ #include "ipc-intelce.h"
+diff --git a/src/intelce/view-backend.cpp b/src/intelce/view-backend.cpp
+index a91c42e..ac488d9 100644
+--- a/src/intelce/view-backend.cpp
++++ b/src/intelce/view-backend.cpp
+@@ -25,7 +25,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/view-backend.h>
++#include <wpe/wpe.h>
+ 
+ #include "Libinput/LibinputServer.h"
+ #include "ipc.h"
+diff --git a/src/loader-impl.cpp b/src/loader-impl.cpp
+index 72703dd..aaa8f4d 100644
+--- a/src/loader-impl.cpp
++++ b/src/loader-impl.cpp
+@@ -25,11 +25,11 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/loader.h>
++#include <wpe/wpe.h>
+ 
+ #include <cstdio>
+ #include <cstring>
+-#include <wpe/renderer-host.h>
++#include <wpe/wpe.h>
+ 
+ #ifdef BACKEND_BCM_NEXUS
+ #include "bcm-nexus/interfaces.h"
+diff --git a/src/realtek-wl-egl/interfaces.h b/src/realtek-wl-egl/interfaces.h
+index 36aa16b..7eaf033 100644
+--- a/src/realtek-wl-egl/interfaces.h
++++ b/src/realtek-wl-egl/interfaces.h
+@@ -28,8 +28,8 @@
+ #ifndef wayland_egl_interfaces_h
+ #define wayland_egl_interfaces_h
+ 
+-#include <wpe/renderer-backend-egl.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe-egl.h>
++#include <wpe/wpe.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+diff --git a/src/realtek-wl-egl/renderer-backend.cpp b/src/realtek-wl-egl/renderer-backend.cpp
+index cf46f17..2cbfd72 100644
+--- a/src/realtek-wl-egl/renderer-backend.cpp
++++ b/src/realtek-wl-egl/renderer-backend.cpp
+@@ -28,7 +28,7 @@
+ 
+ #include <wayland-egl.h>
+ 
+-#include <wpe/renderer-backend-egl.h>
++#include <wpe/wpe-egl.h>
+ 
+ #include "display.h"
+ #include "ipc.h"
+diff --git a/src/realtek-wl-egl/view-backend.cpp b/src/realtek-wl-egl/view-backend.cpp
+index 33b0fca..cd598fe 100644
+--- a/src/realtek-wl-egl/view-backend.cpp
++++ b/src/realtek-wl-egl/view-backend.cpp
+@@ -26,8 +26,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/input.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe.h>
+ #include "display.h"
+ #include "ipc.h"
+ #include "ipc-waylandegl.h"
+diff --git a/src/viv-imx6/interfaces.h b/src/viv-imx6/interfaces.h
+index 27ef3fe..641871e 100644
+--- a/src/viv-imx6/interfaces.h
++++ b/src/viv-imx6/interfaces.h
+@@ -29,8 +29,8 @@
+ #ifndef viv_imx6_interfaces_h
+ #define viv_imx6_interfaces_h
+ 
+-#include <wpe/renderer-backend-egl.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe-egl.h>
++#include <wpe/wpe.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+diff --git a/src/viv-imx6/renderer-backend.cpp b/src/viv-imx6/renderer-backend.cpp
+index b5b9ed9..c4fd1ec 100644
+--- a/src/viv-imx6/renderer-backend.cpp
++++ b/src/viv-imx6/renderer-backend.cpp
+@@ -26,7 +26,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/renderer-backend-egl.h>
++#include <wpe/wpe-egl.h>
+ 
+ #include "ipc.h"
+ #include <EGL/egl.h>
+diff --git a/src/viv-imx6/view-backend.cpp b/src/viv-imx6/view-backend.cpp
+index b31fd13..2759c6f 100644
+--- a/src/viv-imx6/view-backend.cpp
++++ b/src/viv-imx6/view-backend.cpp
+@@ -26,7 +26,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/view-backend.h>
++#include <wpe/wpe.h>
+ 
+ #include "Libinput/LibinputServer.h"
+ #include "ipc.h"
+diff --git a/src/wayland-egl/interfaces.h b/src/wayland-egl/interfaces.h
+index 36aa16b..7eaf033 100644
+--- a/src/wayland-egl/interfaces.h
++++ b/src/wayland-egl/interfaces.h
+@@ -28,8 +28,8 @@
+ #ifndef wayland_egl_interfaces_h
+ #define wayland_egl_interfaces_h
+ 
+-#include <wpe/renderer-backend-egl.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe-egl.h>
++#include <wpe/wpe.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+diff --git a/src/wayland-egl/renderer-backend.cpp b/src/wayland-egl/renderer-backend.cpp
+index 118d97f..408aef1 100644
+--- a/src/wayland-egl/renderer-backend.cpp
++++ b/src/wayland-egl/renderer-backend.cpp
+@@ -28,7 +28,7 @@
+ 
+ #include <wayland-egl.h>
+ 
+-#include <wpe/renderer-backend-egl.h>
++#include <wpe/wpe-egl.h>
+ 
+ #include "display.h"
+ #include "ipc.h"
+diff --git a/src/wayland-egl/view-backend.cpp b/src/wayland-egl/view-backend.cpp
+index c8ead26..64a7903 100644
+--- a/src/wayland-egl/view-backend.cpp
++++ b/src/wayland-egl/view-backend.cpp
+@@ -26,8 +26,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/input.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe.h>
+ #include "display.h"
+ #include "ipc.h"
+ #include "ipc-waylandegl.h"
+diff --git a/src/wayland/display.cpp b/src/wayland/display.cpp
+index 90f8d57..d7fe472 100644
+--- a/src/wayland/display.cpp
++++ b/src/wayland/display.cpp
+@@ -41,8 +41,7 @@
+ #include <sys/mman.h>
+ #include <unistd.h>
+ #include <wayland-client.h>
+-#include <wpe/input.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe.h>
+ 
+ namespace Wayland {
+ 
+diff --git a/src/wayland/display.h b/src/wayland/display.h
+index 9543877..df265c0 100644
+--- a/src/wayland/display.h
++++ b/src/wayland/display.h
+@@ -30,7 +30,7 @@
+ #include <array>
+ #include <unordered_map>
+ #include <utility>
+-#include <wpe/input.h>
++#include <wpe/wpe.h>
+ #include <xkbcommon/xkbcommon-compose.h>
+ #include <xkbcommon/xkbcommon.h>
+ #include "ipc.h"
+diff --git a/src/westeros/WesterosViewbackendInput.cpp b/src/westeros/WesterosViewbackendInput.cpp
+index 017461c..0f85269 100644
+--- a/src/westeros/WesterosViewbackendInput.cpp
++++ b/src/westeros/WesterosViewbackendInput.cpp
+@@ -7,8 +7,7 @@
+ #include <locale.h>
+ #include <sys/mman.h>
+ #include <unistd.h>
+-#include <wpe/input.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe.h>
+ 
+ namespace Westeros {
+ 
+diff --git a/src/westeros/WesterosViewbackendOutput.cpp b/src/westeros/WesterosViewbackendOutput.cpp
+index 4ac4d16..170a9c9 100644
+--- a/src/westeros/WesterosViewbackendOutput.cpp
++++ b/src/westeros/WesterosViewbackendOutput.cpp
+@@ -8,7 +8,7 @@
+ #include <locale.h>
+ #include <sys/mman.h>
+ #include <unistd.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe.h>
+ 
+ namespace Westeros {
+ 
+diff --git a/src/westeros/interfaces.h b/src/westeros/interfaces.h
+index a832aee..a87b60f 100644
+--- a/src/westeros/interfaces.h
++++ b/src/westeros/interfaces.h
+@@ -28,8 +28,8 @@
+ #ifndef westeros_interfaces_h
+ #define westeros_interfaces_h
+ 
+-#include <wpe/renderer-backend-egl.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe-egl.h>
++#include <wpe/wpe.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+diff --git a/src/westeros/renderer-backend.cpp b/src/westeros/renderer-backend.cpp
+index 80d9a59..6921573 100644
+--- a/src/westeros/renderer-backend.cpp
++++ b/src/westeros/renderer-backend.cpp
+@@ -27,7 +27,7 @@
+ 
+ #define WL_EGL_PLATFORM 1
+ 
+-#include <wpe/renderer-backend-egl.h>
++#include <wpe/wpe-egl.h>
+ 
+ #include <stdio.h>
+ #include <cstring>
+diff --git a/src/westeros/view-backend.cpp b/src/westeros/view-backend.cpp
+index eb86487..1baec54 100644
+--- a/src/westeros/view-backend.cpp
++++ b/src/westeros/view-backend.cpp
+@@ -25,7 +25,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/view-backend.h>
++#include <wpe/wpe.h>
+ 
+ #include "WesterosViewbackendInput.h"
+ #include "WesterosViewbackendOutput.h"
+diff --git a/src/wpeframework/display.cpp b/src/wpeframework/display.cpp
+index 821b056..b361dc5 100644
+--- a/src/wpeframework/display.cpp
++++ b/src/wpeframework/display.cpp
+@@ -24,8 +24,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/input.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe.h>
+ #include "display.h"
+ #include <cstring>
+ 
+diff --git a/src/wpeframework/display.h b/src/wpeframework/display.h
+index 5042507..60715b2 100644
+--- a/src/wpeframework/display.h
++++ b/src/wpeframework/display.h
+@@ -29,7 +29,7 @@
+ 
+ #include "ipc.h"
+ 
+-#include <wpe/input.h>
++#include <wpe/wpe.h>
+ #include <wayland/Client.h>
+ #include <xkbcommon/xkbcommon-compose.h>
+ #include <xkbcommon/xkbcommon.h>
+diff --git a/src/wpeframework/interfaces.h b/src/wpeframework/interfaces.h
+index d05b300..f38ccf0 100644
+--- a/src/wpeframework/interfaces.h
++++ b/src/wpeframework/interfaces.h
+@@ -28,8 +28,8 @@
+ #ifndef wpeframework_interfaces_h
+ #define wpeframework_interfaces_h
+ 
+-#include <wpe/renderer-backend-egl.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe-egl.h>
++#include <wpe/wpe.h>
+ 
+ #ifdef __cplusplus
+ extern "C" {
+diff --git a/src/wpeframework/renderer-backend.cpp b/src/wpeframework/renderer-backend.cpp
+index cca2ea0..0a815f6 100644
+--- a/src/wpeframework/renderer-backend.cpp
++++ b/src/wpeframework/renderer-backend.cpp
+@@ -24,7 +24,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/renderer-backend-egl.h>
++#include <wpe/wpe-egl.h>
+ 
+ #include "display.h"
+ #include "ipc.h"
+diff --git a/src/wpeframework/view-backend.cpp b/src/wpeframework/view-backend.cpp
+index 5f3efd6..6c56681 100644
+--- a/src/wpeframework/view-backend.cpp
++++ b/src/wpeframework/view-backend.cpp
+@@ -26,8 +26,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/input.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe.h>
+ #include "display.h"
+ #include "ipc.h"
+ #include "ipc-buffer.h"
+diff --git a/src/wpeframework/view-backend.old.cpp b/src/wpeframework/view-backend.old.cpp
+index 9266dce..2094553 100644
+--- a/src/wpeframework/view-backend.old.cpp
++++ b/src/wpeframework/view-backend.old.cpp
+@@ -26,8 +26,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+-#include <wpe/input.h>
+-#include <wpe/view-backend.h>
++#include <wpe/wpe.h>
+ #include "display.h"
+ #include "ipc.h"
+ #include "ipc-buffer.h"
+-- 
+2.11.0
+

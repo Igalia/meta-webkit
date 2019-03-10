@@ -8,4 +8,4 @@ SRC_URI[sha256sum] = "0950befe6e970c9219ccbc29f5ff08bcc0923f0a9ca5a4c7531d74f9e2
 
 DEPENDS += " wpebackend"
 
-RCONFLICTS_${PN} = "libwpe (>= 1.0) wpebackend-fdo (>= 1.0)"
+RCONFLICTS_${PN} = "wpebackend-rdk (> 1.20180411) libwpe (>= 1.0) wpebackend-fdo (>= 1.0)"
