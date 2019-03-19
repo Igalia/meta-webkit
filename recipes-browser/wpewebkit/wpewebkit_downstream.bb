@@ -2,7 +2,7 @@ require wpewebkit.inc
 
 HOMEPAGE = "https://github.com/WebPlatformForEmbedded"
 BUGTRACKER = "https://github.com/WebPlatformForEmbedded/WPEWebKit/issues"
-DEFAULT_PRERENCE = "-1"
+DEFAULT_PREFERENCE = "-1"
 
 # The downstream version of WPE is forked from the official one.
 # This version includes some features that have not yet been considered

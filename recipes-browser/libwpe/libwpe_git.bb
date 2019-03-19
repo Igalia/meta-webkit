@@ -1,6 +1,6 @@
 require libwpe.inc
 
-DEFAULT_PRERENCE = "-1"
+DEFAULT_PREFERENCE = "-1"
 PV = "1.2~git"
 
 # This version of libwpe is not selected by default on this layer,
