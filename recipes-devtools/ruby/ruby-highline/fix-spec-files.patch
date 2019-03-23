@@ -1,0 +1,13 @@
+diff --git a/highline.gemspec b/highline.gemspec
+index 9523c0f..6c8c419 100644
+--- a/highline.gemspec
++++ b/highline.gemspec
+@@ -10,7 +10,7 @@ SPEC = Gem::Specification.new do |spec|
+   spec.version  = GEM_VERSION
+   spec.platform = Gem::Platform::RUBY
+   spec.summary  = "HighLine is a high-level command-line IO library."
+-  spec.files    = `git ls-files`.split("\n")
++  spec.files    = `git ls-files | grep -v COPYING | grep -v .gitignore | grep -v .cvsignore | grep -v .travis.yml | grep -v AUTHORS`.split("\n")
+
+   spec.test_files       =  `git ls-files -- test/*.rb`.split("\n")
+   spec.has_rdoc         =  true
