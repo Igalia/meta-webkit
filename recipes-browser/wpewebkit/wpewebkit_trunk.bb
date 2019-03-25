@@ -3,7 +3,7 @@ require wpewebkit.inc
 DEFAULT_PREFERENCE = "-1"
 
 SVNBRANCH = "trunk"
-SVNREV ?= "238115"
+SVNREV ?= "243435"
 
 # To enable this recipe set on local.conf
 # PREFERRED_VERSION_wpewebkit = "1.trunk%"
