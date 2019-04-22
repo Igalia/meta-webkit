@@ -9,7 +9,7 @@ thud-wandboard-mesa-weston-wpe-2.20:
     - pushd sources/meta-webkit
     - git checkout $CI_COMMIT_SHA
     - popd
-    - source setup-environment wandboard-mesa-wpe-2.20 --update-config
+    - source setup-environment wandboard-mesa-wpe-2.20 wandboard-mesa browsers wandboard mesa-wpe-2_20 --update-config
     - rm -rf tmp
     - bitbake core-image-weston-wpe
 
@@ -24,7 +24,22 @@ thud-wandboard-mesa-weston-wpe-2.22:
     - pushd sources/meta-webkit
     - git checkout $CI_COMMIT_SHA
     - popd
-    - source setup-environment wandboard-mesa-wpe-2.22 --update-config
+    - source setup-environment wandboard-mesa-wpe-2.22 wandboard-mesa browsers wandboard mesa-wpe-2_22 --update-config
+    - rm -rf tmp
+    - bitbake core-image-weston-wpe
+
+thud-wandboard-mesa-weston-wpe-2.24:
+  tags:
+    - meta-webkit
+  script:
+    - mkdir -p ~/yocto-wandboard-wpe
+    - cd ~/yocto-wandboard-wpe
+    - repo init -u https://gitlab.com/saavedra.pablo/meta-perf-browser.git -m manifest.xml -b nightly
+    - repo sync --force-sync
+    - pushd sources/meta-webkit
+    - git checkout $CI_COMMIT_SHA
+    - popd
+    - source setup-environment wandboard-mesa-wpe-2.24 wandboard-mesa browsers wandboard mesa-wpe-2_24 --update-config
     - rm -rf tmp
     - bitbake core-image-weston-wpe
 
@@ -40,7 +55,7 @@ thud-wandboard-mesa-weston-wpe-trunk:
     - pushd sources/meta-webkit
     - git checkout $CI_COMMIT_SHA
     - popd
-    - source setup-environment wandboard-mesa-wpe-trunk --update-config
+    - source setup-environment wandboard-mesa-wpe-trunk wandboard-mesa browsers wandboard mesa-wpe-trunk --update-config
     - rm -rf tmp
     - bitbake core-image-weston-wpe
 
@@ -56,21 +71,21 @@ thud-wandboard-mesa-weston-wpe-qt:
     - pushd sources/meta-webkit
     - git checkout $CI_COMMIT_SHA
     - popd
-    - source setup-environment wandboard-mesa-wpe-qt --update-config
+    - source setup-environment wandboard-mesa-wpe-qt wandboard-mesa browsers wandboard mesa-wpe-qt --update-config
     - rm -rf tmp
     - bitbake core-image-weston-wpe
 
-thud-rpi3-vc4graphics-wpe-2.22:
+thud-rpi3-userland-wpe-2.22:
   tags:
     - meta-webkit
   script:
-    - mkdir -p ~/yocto-vc4graphics-wpe
-    - cd ~/yocto-vc4graphics-wpe
+    - mkdir -p ~/yocto-rpi3-wpe
+    - cd ~/yocto-rpi3-wpe
     - repo init -u https://gitlab.com/saavedra.pablo/meta-perf-browser.git -m manifest.xml -b nightly
     - repo sync --force-sync
     - pushd sources/meta-webkit
     - git checkout $CI_COMMIT_SHA
     - popd
-    - source setup-environment rpi3-vc4graphics-wpe-2.22 --update-config
+    - source setup-environment rpi3-userland-wpe-2.22 raspberrypi3-userland browsers raspberrypi3 userland-wpe-2_22 --update-config
     - rm -rf tmp
     - bitbake core-image-wpe
