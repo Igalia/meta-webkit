@@ -31,7 +31,7 @@ PACKAGECONFIG[gst_gl] = "-DUSE_GSTREAMER_GL=ON,-DUSE_GSTREAMER_GL=OFF,gstreamer1
 PACKAGECONFIG[indexeddb] = "-DENABLE_INDEXED_DATABASE=ON,-DENABLE_INDEXED_DATABASE=OFF,"
 PACKAGECONFIG[mediasource] = "-DENABLE_MEDIA_SOURCE=ON,-DENABLE_MEDIA_SOURCE=OFF,gstreamer1.0 gstreamer1.0-plugins-good"
 PACKAGECONFIG[service-worker] = "-DENABLE_SERVICE_WORKER=ON,-DENABLE_SERVICE_WORKER=OFF,"
-PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON -DENABLE_VIDEO_TRACK=ON,-DENABLE_VIDEO=OFF -DENABLE_VIDEO_TRACK=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad"
+PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON -DENABLE_VIDEO_TRACK=ON,-DENABLE_VIDEO=OFF -DENABLE_VIDEO_TRACK=OFF,gstreamer1.0 gstreamer1.0-plugins-base"
 PACKAGECONFIG[webaudio] = "-DENABLE_WEB_AUDIO=ON,-DENABLE_WEB_AUDIO=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good"
 PACKAGECONFIG[webcrypto] = "-DENABLE_WEB_CRYPTO=ON,-DENABLE_WEB_CRYPTO=OFF,libgcrypt libtasn1"
 PACKAGECONFIG[webgl2] = "-DENABLE_WEBGL2=ON,-DENABLE_WEBGL2=OFF,"
@@ -74,7 +74,6 @@ RDEPENDS_${PN} += " \
     ${@bb.utils.contains('PACKAGECONFIG', 'gst_gl', 'gstreamer1.0-plugins-base-opengl', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'video', 'gstreamer1.0-plugins-base-app \
                                                     gstreamer1.0-plugins-base-playback \
-                                                    gstreamer1.0-plugins-good-souphttpsrc \
                                                     gstreamer1.0-plugins-base-audioconvert \
                                                     gstreamer1.0-plugins-base-audioresample \
                                                     gstreamer1.0-plugins-base-gio \
@@ -88,10 +87,6 @@ RDEPENDS_${PN} += " \
                                                     gstreamer1.0-plugins-good-avi \
                                                     gstreamer1.0-plugins-good-deinterlace \
                                                     gstreamer1.0-plugins-good-interleave \
-                                                    gstreamer1.0-plugins-bad-dashdemux \
-                                                    gstreamer1.0-plugins-bad-mpegtsdemux \
-                                                    gstreamer1.0-plugins-bad-smoothstreaming \
-                                                    gstreamer1.0-plugins-bad-videoparsersbad \
                                                     ', '', d)} \
 "
 
