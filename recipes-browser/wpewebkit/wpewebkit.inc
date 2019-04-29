@@ -50,6 +50,10 @@ EXTRA_OECMAKE = " -DPORT=WPE -DCMAKE_BUILD_TYPE=Release \
     -G Ninja \
 "
 
+# If SSE code compiles, assume it runs successfully (it can't actually run
+# because of cross compiling)
+EXTRA_OECMAKE_append_x86 = " -DHAVE_SSE2_EXTENSIONS_EXITCODE=0"
+
 FULL_OPTIMIZATION_remove = "-g"
 
 LEAD_SONAME = "libWPEWebKit.so"
