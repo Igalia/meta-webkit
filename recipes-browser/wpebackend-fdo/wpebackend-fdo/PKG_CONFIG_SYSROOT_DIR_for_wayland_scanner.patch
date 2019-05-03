@@ -1,0 +1,17 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8a94387..5cb9a38 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -94,9 +94,9 @@ add_custom_command(
+            ${CMAKE_BINARY_DIR}/bridge/wpe-bridge-client-protocol.h
+            ${CMAKE_BINARY_DIR}/bridge/wpe-bridge-server-protocol.h
+     DEPENDS ${CMAKE_SOURCE_DIR}/src/bridge/wpe-bridge.xml
+-    COMMAND ${WAYLAND_SCANNER} ${WAYLAND_SCANNER_CODE_ARG} < ${CMAKE_SOURCE_DIR}/src/bridge/wpe-bridge.xml > ${CMAKE_BINARY_DIR}/bridge/wpe-bridge-protocol.c
+-    COMMAND ${WAYLAND_SCANNER} client-header < ${CMAKE_SOURCE_DIR}/src/bridge/wpe-bridge.xml > ${CMAKE_BINARY_DIR}/bridge/wpe-bridge-client-protocol.h
+-    COMMAND ${WAYLAND_SCANNER} server-header < ${CMAKE_SOURCE_DIR}/src/bridge/wpe-bridge.xml > ${CMAKE_BINARY_DIR}/bridge/wpe-bridge-server-protocol.h
++    COMMAND $ENV{PKG_CONFIG_SYSROOT_DIR}-native${WAYLAND_SCANNER} ${WAYLAND_SCANNER_CODE_ARG} < ${CMAKE_SOURCE_DIR}/src/bridge/wpe-bridge.xml > ${CMAKE_BINARY_DIR}/bridge/wpe-bridge-protocol.c
++    COMMAND $ENV{PKG_CONFIG_SYSROOT_DIR}-native${WAYLAND_SCANNER} client-header < ${CMAKE_SOURCE_DIR}/src/bridge/wpe-bridge.xml > ${CMAKE_BINARY_DIR}/bridge/wpe-bridge-client-protocol.h
++    COMMAND $ENV{PKG_CONFIG_SYSROOT_DIR}-native${WAYLAND_SCANNER} server-header < ${CMAKE_SOURCE_DIR}/src/bridge/wpe-bridge.xml > ${CMAKE_BINARY_DIR}/bridge/wpe-bridge-server-protocol.h
+     VERBATIM
+ )
+
