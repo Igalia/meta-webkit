@@ -86,6 +86,6 @@ thud-rpi3-userland-wpe-2.22:
     - pushd sources/meta-webkit
     - git checkout $CI_COMMIT_SHA
     - popd
-    - source setup-environment rpi3-userland-wpe-2.22 raspberrypi3-userland browsers raspberrypi3 userland-wpe-2_22 --update-config
+    - source setup-environment rpi3-userland-wpe-2.22 raspberrypi3-userland browsers raspberrypi userland-wpe-2_22 --update-config
     - rm -rf tmp
     - bitbake core-image-wpe
