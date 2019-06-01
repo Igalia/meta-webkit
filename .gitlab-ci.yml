@@ -1,91 +1,82 @@
+before_script:
+  - mkdir -p ~/yocto-webkit
+  - cd ~/yocto-webkit
+  - ulimit -n 4096
+  - repo init -u https://gitlab.com/saavedra.pablo/meta-perf-browser.git -m $MANIFEST -b nightly
+  - repo sync --force-sync
+  - pushd sources/meta-webkit
+  - git remote remove tmp || true
+  - git remote add tmp $CI_REPOSITORY_URL
+  - git fetch tmp
+  - git checkout $CI_COMMIT_SHA
+  - popd
+  - source setup-environment $SOURCE
+  - rm -rf tmp
+
 thud-wandboard-mesa-weston-wpe-2.20:
   tags:
     - meta-webkit
+  variables:
+    MANIFEST: manifest.xml
+    # setup-environment targetname machine distro bblayers presets --update-config
+    SOURCE: wandboard-mesa-wpe-2.20 wandboard-mesa browsers default mesa-wpe-2_20 --update-config
+    BITBAKE_TARGET: wpewebkit
   script:
-    - mkdir -p ~/yocto-wandboard-wpe
-    - cd ~/yocto-wandboard-wpe
-    - repo init -u https://gitlab.com/saavedra.pablo/meta-perf-browser.git -m manifest.xml -b nightly
-    - repo sync --force-sync
-    - pushd sources/meta-webkit
-    - git checkout $CI_COMMIT_SHA
-    - popd
-    - source setup-environment wandboard-mesa-wpe-2.20 wandboard-mesa browsers wandboard mesa-wpe-2_20 --update-config
-    - rm -rf tmp
-    - bitbake core-image-weston-wpe
+    - bitbake $BITBAKE_TARGET
 
 thud-wandboard-mesa-weston-wpe-2.22:
   tags:
     - meta-webkit
+  variables:
+    MANIFEST: manifest.xml
+    # setup-environment targetname machine distro bblayers presets --update-config
+    SOURCE: wandboard-mesa-wpe-2.22 wandboard-mesa browsers default mesa-wpe-2_22 --update-config
+    BITBAKE_TARGET: wpewebkit
   script:
-    - mkdir -p ~/yocto-wandboard-wpe
-    - cd ~/yocto-wandboard-wpe
-    - repo init -u https://gitlab.com/saavedra.pablo/meta-perf-browser.git -m manifest.xml -b nightly
-    - repo sync --force-sync
-    - pushd sources/meta-webkit
-    - git checkout $CI_COMMIT_SHA
-    - popd
-    - source setup-environment wandboard-mesa-wpe-2.22 wandboard-mesa browsers wandboard mesa-wpe-2_22 --update-config
-    - rm -rf tmp
-    - bitbake core-image-weston-wpe
+    - bitbake $BITBAKE_TARGET
 
 thud-wandboard-mesa-weston-wpe-2.24:
   tags:
     - meta-webkit
+  variables:
+    MANIFEST: manifest.xml
+    # setup-environment targetname machine distro bblayers presets --update-config
+    SOURCE: wandboard-mesa-wpe-2.24 wandboard-mesa browsers default mesa-wpe-2_24 --update-config
+    BITBAKE_TARGET: wpewebkit
   script:
-    - mkdir -p ~/yocto-wandboard-wpe
-    - cd ~/yocto-wandboard-wpe
-    - repo init -u https://gitlab.com/saavedra.pablo/meta-perf-browser.git -m manifest.xml -b nightly
-    - repo sync --force-sync
-    - pushd sources/meta-webkit
-    - git checkout $CI_COMMIT_SHA
-    - popd
-    - source setup-environment wandboard-mesa-wpe-2.24 wandboard-mesa browsers wandboard mesa-wpe-2_24 --update-config
-    - rm -rf tmp
-    - bitbake core-image-weston-wpe
+    - bitbake $BITBAKE_TARGET
 
 thud-wandboard-mesa-weston-wpe-trunk:
   allow_failure: true
   tags:
     - meta-webkit
+  variables:
+    MANIFEST: manifest.xml
+    # setup-environment targetname machine distro bblayers presets --update-config
+    SOURCE: wandboard-mesa-wpe-trunk wandboard-mesa browsers default mesa-wpe-trunk --update-config
+    BITBAKE_TARGET: wpewebkit
   script:
-    - mkdir -p ~/yocto-wandboard-wpe
-    - cd ~/yocto-wandboard-wpe
-    - repo init -u https://gitlab.com/saavedra.pablo/meta-perf-browser.git -m manifest.xml -b nightly
-    - repo sync --force-sync
-    - pushd sources/meta-webkit
-    - git checkout $CI_COMMIT_SHA
-    - popd
-    - source setup-environment wandboard-mesa-wpe-trunk wandboard-mesa browsers wandboard mesa-wpe-trunk --update-config
-    - rm -rf tmp
-    - bitbake core-image-weston-wpe
+    - bitbake $BITBAKE_TARGET
 
 thud-wandboard-mesa-weston-wpe-qt:
   allow_failure: true
   tags:
     - meta-webkit
+  variables:
+    MANIFEST: manifest.xml
+    # setup-environment targetname machine distro bblayers presets --update-config
+    SOURCE: wandboard-mesa-wpe-qt wandboard-mesa browsers default mesa-wpe-qt --update-config
+    BITBAKE_TARGET: wpewebkit
   script:
-    - mkdir -p ~/yocto-wandboard-wpe
-    - cd ~/yocto-wandboard-wpe
-    - repo init -u https://gitlab.com/saavedra.pablo/meta-perf-browser.git -m manifest.xml -b nightly
-    - repo sync --force-sync
-    - pushd sources/meta-webkit
-    - git checkout $CI_COMMIT_SHA
-    - popd
-    - source setup-environment wandboard-mesa-wpe-qt wandboard-mesa browsers wandboard mesa-wpe-qt --update-config
-    - rm -rf tmp
-    - bitbake core-image-weston-wpe
+    - bitbake $BITBAKE_TARGET
 
 thud-rpi3-userland-wpe-2.22:
   tags:
     - meta-webkit
+  variables:
+    MANIFEST: manifest.xml
+    # setup-environment targetname machine distro bblayers presets --update-config
+    SOURCE: rpi3-userland-wpe-2.22 raspberrypi3-userland browsers default userland-wpe-2_22 --update-config
+    BITBAKE_TARGET: wpewebkit
   script:
-    - mkdir -p ~/yocto-rpi3-wpe
-    - cd ~/yocto-rpi3-wpe
-    - repo init -u https://gitlab.com/saavedra.pablo/meta-perf-browser.git -m manifest.xml -b nightly
-    - repo sync --force-sync
-    - pushd sources/meta-webkit
-    - git checkout $CI_COMMIT_SHA
-    - popd
-    - source setup-environment rpi3-userland-wpe-2.22 raspberrypi3-userland browsers raspberrypi userland-wpe-2_22 --update-config
-    - rm -rf tmp
-    - bitbake core-image-wpe
+    - bitbake $BITBAKE_TARGET
