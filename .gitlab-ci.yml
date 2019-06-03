@@ -17,7 +17,7 @@ warrior-wandboard-mesa-weston-wpe-2.20:
   tags:
     - meta-webkit
   variables:
-    MANIFEST: manifest.xml
+    MANIFEST: manifest-warrior.xml
     # setup-environment targetname machine distro bblayers presets --update-config
     SOURCE: wandboard-mesa-wpe-2.20 wandboard-mesa browsers default mesa-wpe-2_20 --update-config
     BITBAKE_TARGET: wpewebkit
@@ -28,7 +28,7 @@ warrior-wandboard-mesa-weston-wpe-2.22:
   tags:
     - meta-webkit
   variables:
-    MANIFEST: manifest.xml
+    MANIFEST: manifest-warrior.xml
     # setup-environment targetname machine distro bblayers presets --update-config
     SOURCE: wandboard-mesa-wpe-2.22 wandboard-mesa browsers default mesa-wpe-2_22 --update-config
     BITBAKE_TARGET: wpewebkit
@@ -39,7 +39,7 @@ warrior-wandboard-mesa-weston-wpe-2.24:
   tags:
     - meta-webkit
   variables:
-    MANIFEST: manifest.xml
+    MANIFEST: manifest-warrior.xml
     # setup-environment targetname machine distro bblayers presets --update-config
     SOURCE: wandboard-mesa-wpe-2.24 wandboard-mesa browsers default mesa-wpe-2_24 --update-config
     BITBAKE_TARGET: wpewebkit
@@ -51,7 +51,7 @@ warrior-wandboard-mesa-weston-wpe-trunk:
   tags:
     - meta-webkit
   variables:
-    MANIFEST: manifest.xml
+    MANIFEST: manifest-warrior.xml
     # setup-environment targetname machine distro bblayers presets --update-config
     SOURCE: wandboard-mesa-wpe-trunk wandboard-mesa browsers default mesa-wpe-trunk --update-config
     BITBAKE_TARGET: wpewebkit
@@ -63,7 +63,7 @@ warrior-wandboard-mesa-weston-wpe-qt:
   tags:
     - meta-webkit
   variables:
-    MANIFEST: manifest.xml
+    MANIFEST: manifest-warrior.xml
     # setup-environment targetname machine distro bblayers presets --update-config
     SOURCE: wandboard-mesa-wpe-qt wandboard-mesa browsers default mesa-wpe-qt --update-config
     BITBAKE_TARGET: wpewebkit
@@ -74,7 +74,7 @@ warrior-rpi3-userland-wpe-2.22:
   tags:
     - meta-webkit
   variables:
-    MANIFEST: manifest.xml
+    MANIFEST: manifest-warrior.xml
     # setup-environment targetname machine distro bblayers presets --update-config
     SOURCE: rpi3-userland-wpe-2.22 raspberrypi3-userland browsers default userland-wpe-2_22 --update-config
     BITBAKE_TARGET: wpewebkit
