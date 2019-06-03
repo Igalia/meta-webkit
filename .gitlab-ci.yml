@@ -13,7 +13,7 @@ before_script:
   - source setup-environment $SOURCE
   - rm -rf tmp
 
-thud-wandboard-mesa-weston-wpe-2.20:
+warrior-wandboard-mesa-weston-wpe-2.20:
   tags:
     - meta-webkit
   variables:
@@ -24,7 +24,7 @@ thud-wandboard-mesa-weston-wpe-2.20:
   script:
     - bitbake $BITBAKE_TARGET
 
-thud-wandboard-mesa-weston-wpe-2.22:
+warrior-wandboard-mesa-weston-wpe-2.22:
   tags:
     - meta-webkit
   variables:
@@ -35,7 +35,7 @@ thud-wandboard-mesa-weston-wpe-2.22:
   script:
     - bitbake $BITBAKE_TARGET
 
-thud-wandboard-mesa-weston-wpe-2.24:
+warrior-wandboard-mesa-weston-wpe-2.24:
   tags:
     - meta-webkit
   variables:
@@ -46,7 +46,7 @@ thud-wandboard-mesa-weston-wpe-2.24:
   script:
     - bitbake $BITBAKE_TARGET
 
-thud-wandboard-mesa-weston-wpe-trunk:
+warrior-wandboard-mesa-weston-wpe-trunk:
   allow_failure: true
   tags:
     - meta-webkit
@@ -58,7 +58,7 @@ thud-wandboard-mesa-weston-wpe-trunk:
   script:
     - bitbake $BITBAKE_TARGET
 
-thud-wandboard-mesa-weston-wpe-qt:
+warrior-wandboard-mesa-weston-wpe-qt:
   allow_failure: true
   tags:
     - meta-webkit
@@ -70,7 +70,7 @@ thud-wandboard-mesa-weston-wpe-qt:
   script:
     - bitbake $BITBAKE_TARGET
 
-thud-rpi3-userland-wpe-2.22:
+warrior-rpi3-userland-wpe-2.22:
   tags:
     - meta-webkit
   variables:
