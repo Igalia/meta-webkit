@@ -12,7 +12,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bf1229cd7425b302d60cdb641b0ce5fb"
 # Depend on wpewebkit unless the webkitgtk packageconfig option is selected.
 DEPENDS = " \
             ${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', 'webkitgtk', 'wpewebkit', d)} \
-            libsoup-2.4 glib-2.0 \
+            libsoup-2.4 glib-2.0 wayland-native wayland-protocols \
             "
 
 # At run-time cog package should depend on virtual/wpebackend unless webkitgtk+ is enabled.
