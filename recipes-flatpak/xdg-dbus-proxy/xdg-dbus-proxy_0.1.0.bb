@@ -8,4 +8,6 @@ SRC_URI[sha256sum] = "9eefd30fe66940c8daf0e8ce6479307694814edb8b636caeb5aa6d6a46
 
 inherit autotools pkgconfig gobject-introspection
 
+EXTRA_OECONF_remove = "--enable-introspection"
+
 BBCLASSEXTEND = "native"
