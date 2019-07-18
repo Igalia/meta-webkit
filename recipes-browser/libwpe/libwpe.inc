@@ -3,7 +3,7 @@ HOMEPAGE = "https://github.com/WebPlatformForEmbedded/libwpe"
 BUGTRACKER = "https://github.com/WebPlatformForEmbedded/libwpe/issues"
 
 LICENSE = "BSD"
-LIC_FILES_CHKSUM = "file://COPYING;md5=6ae4db0d4b812334e1539cd5aa6e2f46"
+LIC_FILES_CHKSUM = "file://COPYING;md5=371a616eb4903c6cb79e9893a5f615cc"
 DEPENDS = "virtual/egl libxkbcommon"
 
 PROVIDES += "virtual/libwpe"
