@@ -10,8 +10,8 @@ UPSTREAM_CHECK_URI = "https://github.com/google/woff2/releases"
 
 DEPENDS = "brotli"
 
-SRC_URI = "https://github.com/google/woff2/archive/v${PV}.tar.gz"
-SRC_URI[md5sum] = "793c8844845351cb80730a74937e411b"
-SRC_URI[sha256sum] = "add272bb09e6384a4833ffca4896350fdb16e0ca22df68c0384773c67a175594"
+S = "${WORKDIR}/git"
+SRC_URI = "git://github.com/google/woff2.git;branch=master"
+SRCREV = "1bccf208bca986e53a647dfe4811322adb06ecf8"
 
 inherit cmake lib_package
