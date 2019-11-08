@@ -49,6 +49,18 @@ warrior-wandboard-mesa-weston-wpe-2.24:
     - bitbake $BITBAKE_TARGET
     - rm -rf tmp
 
+warrior-wandboard-mesa-weston-wpe-2.26:
+  tags:
+    - meta-webkit
+  variables:
+    MANIFEST: manifest-warrior.xml
+    # setup-environment targetname machine distro bblayers presets --update-config
+    SOURCE: wandboard-mesa-wpe-2.26 wandboard-mesa browsers default mesa-wpe-2_26 --update-config
+    BITBAKE_TARGET: wpewebkit
+  script:
+    - bitbake $BITBAKE_TARGET
+    - rm -rf tmp
+
 warrior-wandboard-mesa-weston-wpe-trunk:
   allow_failure: true
   tags:
