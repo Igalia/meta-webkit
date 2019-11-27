@@ -47,3 +47,4 @@ PACKAGECONFIG[dbus] = "-DCOG_DBUS_SYSTEM_BUS=ON,-DCOG_DBUS_SYSTEM_BUS=OFF"
 # Use wpebackend-fdo.
 PACKAGECONFIG[fdo] = "-DCOG_PLATFORM_FDO=ON,-DCOG_PLATFORM_FDO=OFF,wpebackend-fdo"
 PACKAGECONFIG[drm] = "-DCOG_PLATFORM_DRM=ON,-DCOG_PLATFORM_DRM=OFF,wpebackend-fdo libdrm virtual/libgbm libinput"
+PACKAGECONFIG[drm-gbm] = "-DCOG_PLATFORM_DRM_GBM=ON,-DCOG_PLATFORM_DRM_GBM=OFF,wpebackend-fdo libdrm virtual/libgbm libinput"
