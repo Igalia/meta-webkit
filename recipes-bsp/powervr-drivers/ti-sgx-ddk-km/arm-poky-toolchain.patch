@@ -1,0 +1,13 @@
+diff --git a/eurasia_km/eurasiacon/build/linux2/config/compiler.mk b/eurasia_km/eurasiacon/build/linux2/config/compiler.mk
+index 2ba3e5e..97b90e2 100644
+--- a/eurasia_km/eurasiacon/build/linux2/config/compiler.mk
++++ b/eurasia_km/eurasiacon/build/linux2/config/compiler.mk
+@@ -68,7 +68,7 @@ define calculate-compiler-preferred-target
+   ifneq ($$(filter aarch64-%,$$($(1)_compiler_preferred_target)),)
+    $(1)_compiler_preferred_target := aarch64-linux-gnu
+   endif
+-  ifneq ($$(filter arm-%-gnueabihf arm-oe-linux-gnueabi,$$($(1)_compiler_preferred_target)),)
++  ifneq ($$(filter arm-%-gnueabihf arm-oe-linux-gnueabi arm-poky-linux-gnueabi,$$($(1)_compiler_preferred_target)),)
+    $(1)_compiler_preferred_target := arm-linux-gnueabihf
+   endif
+   ifneq ($$(filter arm-%-gnueabi armv7a-cros-linux-gnueabi armv7hl-redhat-linux-gnueabi,$$($(1)_compiler_preferred_target)),)
