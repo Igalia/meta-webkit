@@ -21,7 +21,10 @@ DEPENDS_append_class-target = " \
             "
 
 # At run-time cog package should depend on virtual/wpebackend unless webkitgtk+ is enabled.
-RDEPENDS_${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', '', 'virtual/wpebackend', d)}"
+RDEPENDS_${PN} += "\
+    ${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', '', 'virtual/wpebackend', d)} \
+    xkeyboard-config \
+    "
 
 inherit cmake
 
