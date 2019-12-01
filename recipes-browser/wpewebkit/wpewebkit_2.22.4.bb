@@ -1,7 +1,7 @@
 require wpewebkit.inc
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
-SRC_URI = "https://wpewebkit.org/releases/${PN}-${PV}.tar.xz \
+SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz \
            file://0001-REGRESSION-r217927-WPE-2.22-GSTREAMER_GL-Video-appea.patch \
           "
 

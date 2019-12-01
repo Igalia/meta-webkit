@@ -1,6 +1,6 @@
 require wpewebkit.inc
 
-SRC_URI = "https://wpewebkit.org/releases/${PN}-${PV}.tar.xz \
+SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz \
            file://0001-REGRESSION-r217927-GTK-WPE-GSTREAMER_GL-Video-appear.patch \
           "
 SRC_URI[md5sum] = "07cb30291a8311f3cf126e3a2e3d0efb"
