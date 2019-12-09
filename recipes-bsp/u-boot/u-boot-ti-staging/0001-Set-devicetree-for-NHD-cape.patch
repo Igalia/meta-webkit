@@ -1,0 +1,22 @@
+From 404a36c16f38882a51929995cc182315066f4037 Mon Sep 17 00:00:00 2001
+From: Martin Roesch <martin.roesch@kistler.com>
+Date: Thu, 21 Nov 2019 14:25:26 +0100
+Subject: [PATCH] Set devicetree for NHD cape.
+
+---
+ include/configs/am335x_evm.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/am335x_evm.h b/include/configs/am335x_evm.h
+index def39d2fc3..c3ecdf4ad6 100644
+--- a/include/configs/am335x_evm.h
++++ b/include/configs/am335x_evm.h
+@@ -142,7 +142,7 @@
+ 		"if test $board_name = A335BONE; then " \
+ 			"setenv fdtfile am335x-bone.dtb; fi; " \
+ 		"if test $board_name = A335BNLT; then " \
+-			"setenv fdtfile am335x-boneblack.dtb; fi; " \
++			"setenv fdtfile bbb-nhd7cape.dtb; fi; " \
+ 		"if test $board_name = A335PBGL; then " \
+ 			"setenv fdtfile am335x-pocketbeagle.dtb; fi; " \
+ 		"if test $board_name = BBBW; then " \

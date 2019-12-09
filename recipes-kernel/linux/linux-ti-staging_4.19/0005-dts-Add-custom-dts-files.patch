@@ -1,0 +1,1384 @@
+From 3c8c13499c6ddffcc654a6300a13665c7ecc2a8a Mon Sep 17 00:00:00 2001
+From: Scott Ellis <scott@jumpnowtek.com>
+Date: Tue, 13 Dec 2016 06:03:20 -0500
+Subject: [PATCH 5/5] dts: Add custom dts files
+
+---
+ arch/arm/boot/dts/bbb-1wire.dtsi            |  25 +++++
+ arch/arm/boot/dts/bbb-4dcape43t-keypad.dtsi |  74 +++++++++++++
+ arch/arm/boot/dts/bbb-4dcape43t.dts         | 156 +++++++++++++++++++++++++++
+ arch/arm/boot/dts/bbb-4dcape70t-keypad.dtsi |  74 +++++++++++++
+ arch/arm/boot/dts/bbb-4dcape70t.dts         | 156 +++++++++++++++++++++++++++
+ arch/arm/boot/dts/bbb-adc.dtsi              |  15 +++
+ arch/arm/boot/dts/bbb-dcan0.dtsi            |  22 ++++
+ arch/arm/boot/dts/bbb-dcan1.dtsi            |  22 ++++
+ arch/arm/boot/dts/bbb-hdmi.dts              | 103 ++++++++++++++++++
+ arch/arm/boot/dts/bbb-i2c1.dtsi             |  23 ++++
+ arch/arm/boot/dts/bbb-i2c2.dtsi             |  23 ++++
+ arch/arm/boot/dts/bbb-nh5cape.dts           | 159 ++++++++++++++++++++++++++++
+ arch/arm/boot/dts/bbb-nhd7cape.dts          | 159 ++++++++++++++++++++++++++++
+ arch/arm/boot/dts/bbb-nohdmi.dts            |  46 ++++++++
+ arch/arm/boot/dts/bbb-spi0-spidev.dtsi      |  34 ++++++
+ arch/arm/boot/dts/bbb-spi1-spidev.dtsi      |  34 ++++++
+ arch/arm/boot/dts/bbb-uart1.dtsi            |  22 ++++
+ arch/arm/boot/dts/bbb-uart2.dtsi            |  22 ++++
+ arch/arm/boot/dts/bbb-uart4.dtsi            |  22 ++++
+ arch/arm/boot/dts/bbb-uart5.dtsi            |  22 ++++
+ 20 files changed, 1213 insertions(+)
+ create mode 100644 arch/arm/boot/dts/bbb-1wire.dtsi
+ create mode 100644 arch/arm/boot/dts/bbb-4dcape43t-keypad.dtsi
+ create mode 100644 arch/arm/boot/dts/bbb-4dcape43t.dts
+ create mode 100644 arch/arm/boot/dts/bbb-4dcape70t-keypad.dtsi
+ create mode 100644 arch/arm/boot/dts/bbb-4dcape70t.dts
+ create mode 100644 arch/arm/boot/dts/bbb-adc.dtsi
+ create mode 100644 arch/arm/boot/dts/bbb-dcan0.dtsi
+ create mode 100644 arch/arm/boot/dts/bbb-dcan1.dtsi
+ create mode 100644 arch/arm/boot/dts/bbb-hdmi.dts
+ create mode 100644 arch/arm/boot/dts/bbb-i2c1.dtsi
+ create mode 100644 arch/arm/boot/dts/bbb-i2c2.dtsi
+ create mode 100644 arch/arm/boot/dts/bbb-nh5cape.dts
+ create mode 100644 arch/arm/boot/dts/bbb-nhd7cape.dts
+ create mode 100644 arch/arm/boot/dts/bbb-nohdmi.dts
+ create mode 100644 arch/arm/boot/dts/bbb-spi0-spidev.dtsi
+ create mode 100644 arch/arm/boot/dts/bbb-spi1-spidev.dtsi
+ create mode 100644 arch/arm/boot/dts/bbb-uart1.dtsi
+ create mode 100644 arch/arm/boot/dts/bbb-uart2.dtsi
+ create mode 100644 arch/arm/boot/dts/bbb-uart4.dtsi
+ create mode 100644 arch/arm/boot/dts/bbb-uart5.dtsi
+
+diff --git a/arch/arm/boot/dts/bbb-1wire.dtsi b/arch/arm/boot/dts/bbb-1wire.dtsi
+new file mode 100644
+index 0000000..ea5c75c
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-1wire.dtsi
+@@ -0,0 +1,25 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++&am33xx_pinmux {
++	onewire_pin: onewire_pin {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x848, PIN_INPUT_PULLUP | MUX_MODE7)     /* P9.14, gpio1[18] */
++		>;
++	};
++};
++
++/ {
++	onewire@0 {
++		status = "okay";
++		compatible = "w1-gpio";
++		pinctrl-names = "default";
++		pinctrl-0 = <&onewire_pin>;
++		gpios = <&gpio1 18 0>;
++	};
++};
+diff --git a/arch/arm/boot/dts/bbb-4dcape43t-keypad.dtsi b/arch/arm/boot/dts/bbb-4dcape43t-keypad.dtsi
+new file mode 100644
+index 0000000..ca53ae3
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-4dcape43t-keypad.dtsi
+@@ -0,0 +1,74 @@
++/*
++ * Copyright (C) 2016 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++&am33xx_pinmux {
++	keymap_pins: pinmux_keymap_pins {
++		pinctrl-single,pins = <
++			0x040 (PIN_INPUT_PULLDOWN | ALTELECTRICALSEL | MUX_MODE7) /* P9.15, gpio1[16] */
++			0x044 (PIN_INPUT_PULLDOWN | ALTELECTRICALSEL | MUX_MODE7) /* P9.23, gpio1[17] */
++			0x04c (PIN_INPUT_PULLDOWN | ALTELECTRICALSEL | MUX_MODE7) /* P9.16, gpio1[19] */
++			0x198 (PIN_INPUT_PULLDOWN | ALTELECTRICALSEL | MUX_MODE7) /* P9.30, gpio3[16] */
++			0x184 (PIN_INPUT_PULLDOWN | ALTELECTRICALSEL | MUX_MODE7) /* P9.24, gpio0[15] */
++		>;
++	};
++};
++
++/ {
++	gpio_keys {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&keymap_pins>;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		button@1 {
++			debounce_interval = <50>;
++			linux,code = <105>;
++			label = "left";
++			gpios = <&gpio1 16 0x1>;
++			gpio-key,wakeup;
++			autorepeat;
++		};
++
++		button@2 {
++			debounce_interval = <50>;
++			linux,code = <106>;
++			label = "right";
++			gpios = <&gpio1 17 0x1>;
++			gpio-key,wakeup;
++			autorepeat;
++		};
++
++		button@3 {
++			debounce_interval = <50>;
++			linux,code = <103>;
++			label = "up";
++			gpios = <&gpio1 19 0x1>;
++			gpio-key,wakeup;
++			autorepeat;
++		};
++
++		button@4 {
++			debounce_interval = <50>;
++			linux,code = <108>;
++			label = "down";
++			gpios = <&gpio3 16 0x1>;
++			gpio-key,wakeup;
++			autorepeat;
++		};
++
++		button@5 {
++			debounce_interval = <50>;
++			linux,code = <28>;
++			label = "enter";
++			gpios = <&gpio0 15 0x1>;
++			gpio-key,wakeup;
++		};
++	};
++};
+diff --git a/arch/arm/boot/dts/bbb-4dcape43t.dts b/arch/arm/boot/dts/bbb-4dcape43t.dts
+new file mode 100644
+index 0000000..8b3b232
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-4dcape43t.dts
+@@ -0,0 +1,156 @@
++/*
++ * Copyright (C) 2016 Jumpnow Technologies, LLC
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "am33xx.dtsi"
++#include "am335x-bone-common.dtsi"
++#include "bbb-i2c1.dtsi"
++#include "bbb-i2c2.dtsi"
++#include "bbb-uart4.dtsi"
++
++/* The 4dcape DOWN button gpio3[16] conflicts with SPI1.d0
++   You can choose either the keypad.dtsi or the spi1-spidev dtsi,
++   but not both unless you comment out the 'DOWN' key defs in
++   bbb-4dcape70t-keypad.dtsi.
++*/
++#include "bbb-4dcape43t-keypad.dtsi"
++
++/ {
++	model = "TI AM335x BeagleBone Black";
++	compatible = "ti,am335x-bone-black", "ti,am33xx";
++};
++
++&ldo3_reg {
++	regulator-min-microvolt = <1800000>;
++	regulator-max-microvolt = <1800000>;
++	regulator-always-on;
++};
++
++&mmc1 {
++	vmmc-supply = <&vmmcsd_fixed>;
++};
++
++&mmc2 {
++	vmmc-supply = <&vmmcsd_fixed>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&emmc_pins>;
++	bus-width = <8>;
++	status = "okay";
++};
++
++&am33xx_pinmux {
++	lcd_pins: lcd_pins {
++		pinctrl-single,pins = <
++			0xa0 (PIN_OUTPUT | MUX_MODE0)            /* lcd_data0 */
++			0xa4 (PIN_OUTPUT | MUX_MODE0)            /* lcd_data1 */
++			0xa8 (PIN_OUTPUT | MUX_MODE0)            /* lcd_data2 */
++			0xac (PIN_OUTPUT | MUX_MODE0)            /* lcd_data3 */
++			0xb0 (PIN_OUTPUT | MUX_MODE0)            /* lcd_data4 */
++			0xb4 (PIN_OUTPUT | MUX_MODE0)            /* lcd_data5 */
++			0xb8 (PIN_OUTPUT | MUX_MODE0)            /* lcd_data6 */
++			0xbc (PIN_OUTPUT | MUX_MODE0)            /* lcd_data7 */
++			0xc0 (PIN_OUTPUT | MUX_MODE0)            /* lcd_data8 */
++			0xc4 (PIN_OUTPUT | MUX_MODE0)            /* lcd_data9 */
++			0xc8 (PIN_OUTPUT | MUX_MODE0)            /* lcd_data10 */
++			0xcc (PIN_OUTPUT | MUX_MODE0)            /* lcd_data11 */
++			0xd0 (PIN_OUTPUT | MUX_MODE0)            /* lcd_data12 */
++			0xd4 (PIN_OUTPUT | MUX_MODE0)            /* lcd_data13 */
++			0xd8 (PIN_OUTPUT | MUX_MODE0)            /* lcd_data14 */
++			0xdc (PIN_OUTPUT | MUX_MODE0)            /* lcd_data15 */
++			0xe0 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* lcd_vsync */
++			0xe4 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* lcd_hsync */
++			0xe8 (PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* lcd_pclk */
++			0xec (PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* lcd_ac_bias_en */
++			/* LCD enable */
++			0x1a4 (PIN_OUTPUT_PULLUP | MUX_MODE7)    /* P9.27, gpio3_19 */
++		>;
++	};
++
++	backlight_pin: backlight_pin {
++		pinctrl-single,pins = < 0x48 (PIN_OUTPUT_PULLUP | MUX_MODE7) >; /* P9.14, gpio1[18] */
++	};
++};
++
++&lcdc {
++	status = "okay";
++};
++
++/ {
++	lcd0: display {
++		status = "okay";
++		compatible = "ti,tilcdc,panel";
++		label = "lcd";
++		pinctrl-names = "default";
++		pinctrl-0 = <&lcd_pins>;
++		enable-gpios = <&gpio3 19 GPIO_ACTIVE_HIGH>;
++
++		panel-info {
++			ac-bias           = <255>;
++			ac-bias-intrpt    = <0>;
++			dma-burst-sz      = <16>;
++			bpp               = <16>;
++			fdd               = <0x80>;
++			sync-edge         = <0>;
++			sync-ctrl         = <1>;
++			raster-order      = <0>;
++			fifo-th           = <0>;
++		};
++
++		display-timings {
++			native-mode = <&timing0>;
++			timing0: 800x480 {
++				clock-frequency = <9200000>;
++				hactive = <480>;
++				vactive = <272>;
++				hfront-porch = <8>;
++				hback-porch = <47>;
++				hsync-len = <41>;
++				vback-porch = <2>;
++				vfront-porch = <3>;
++				vsync-len = <10>;
++				hsync-active = <0>;
++				vsync-active = <0>;
++				de-active = <1>;
++				pixelclk-active = <0>;
++			};
++		};
++	};
++
++	backlight {
++		status = "okay";
++		compatible = "gpio-backlight";
++		pinctrl-names = "default";
++		pinctrl-0 = <&backlight_pin>;
++		gpios = <&gpio1 18 GPIO_ACTIVE_HIGH>; /* P9.14 */
++		default-on;
++	};
++};
++
++&tscadc {
++	status = "okay";
++
++	tsc {
++		ti,wires = <4>;
++		ti,x-plate-resistance = <200>;
++		ti,coordinate-readouts = <5>;
++		ti,wire-config = <0x00 0x11 0x22 0x33>;
++		ti,charge-delay = <0x1000>;
++	};
++
++	adc {
++		ti,adc-channels = <4 5 6 7>;
++		ti,chan-step-opendelay = <0x2000 0x2000 0x2000 0x2000>; /* default 0x98, max 0x3ffff */
++		ti,chan-step-sampledelay = <0x10 0x10 0x10 0x10>;       /* default 0, max 0xff */
++		ti,chan-step-avg = <16 16 16 16>;                       /* default 16, range 0-16 */
++	};
++};
++
++&rtc {
++	system-power-controller;
++};
+diff --git a/arch/arm/boot/dts/bbb-4dcape70t-keypad.dtsi b/arch/arm/boot/dts/bbb-4dcape70t-keypad.dtsi
+new file mode 100644
+index 0000000..82d1f6f
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-4dcape70t-keypad.dtsi
+@@ -0,0 +1,74 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++&am33xx_pinmux {
++	keymap_pins: pinmux_keymap_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x840, PIN_INPUT_PULLDOWN | ALTELECTRICALSEL | MUX_MODE7) /* P9.15, gpio1[16] */
++			AM33XX_IOPAD(0x844, PIN_INPUT_PULLDOWN | ALTELECTRICALSEL | MUX_MODE7) /* P9.23, gpio1[17] */
++			AM33XX_IOPAD(0x84c, PIN_INPUT_PULLDOWN | ALTELECTRICALSEL | MUX_MODE7) /* P9.16, gpio1[19] */
++			AM33XX_IOPAD(0x998, PIN_INPUT_PULLDOWN | ALTELECTRICALSEL | MUX_MODE7) /* P9.30, gpio3[16] */
++			AM33XX_IOPAD(0x954, PIN_INPUT_PULLDOWN | ALTELECTRICALSEL | MUX_MODE7) /* P9.21, gpio0[3] */
++		>;
++	};
++};
++
++/ {
++	gpio_keys {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&keymap_pins>;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		button@1 {
++			debounce_interval = <50>;
++			linux,code = <105>;
++			label = "left";
++			gpios = <&gpio1 16 0x1>;
++			gpio-key,wakeup;
++			autorepeat;
++		};
++
++		button@2 {
++			debounce_interval = <50>;
++			linux,code = <106>;
++			label = "right";
++			gpios = <&gpio1 17 0x1>;
++			gpio-key,wakeup;
++			autorepeat;
++		};
++
++		button@3 {
++			debounce_interval = <50>;
++			linux,code = <103>;
++			label = "up";
++			gpios = <&gpio1 19 0x1>;
++			gpio-key,wakeup;
++			autorepeat;
++		};
++
++		button@4 {
++			debounce_interval = <50>;
++			linux,code = <108>;
++			label = "down";
++			gpios = <&gpio3 16 0x1>;
++			gpio-key,wakeup;
++			autorepeat;
++		};
++
++		button@5 {
++			debounce_interval = <50>;
++			linux,code = <28>;
++			label = "enter";
++			gpios = <&gpio0 3 0x1>;
++			gpio-key,wakeup;
++		};
++	};
++};
+diff --git a/arch/arm/boot/dts/bbb-4dcape70t.dts b/arch/arm/boot/dts/bbb-4dcape70t.dts
+new file mode 100644
+index 0000000..984b514
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-4dcape70t.dts
+@@ -0,0 +1,156 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "am33xx.dtsi"
++#include "am335x-bone-common.dtsi"
++#include "bbb-i2c1.dtsi"
++#include "bbb-i2c2.dtsi"
++#include "bbb-uart4.dtsi"
++
++/* The 4dcape DOWN button gpio3[16] conflicts with SPI1.d0
++   You can choose either the keypad.dtsi or the spi1-spidev dtsi,
++   but not both unless you comment out the 'DOWN' key defs in
++   bbb-4dcape70t-keypad.dtsi.
++*/
++#include "bbb-4dcape70t-keypad.dtsi"
++
++/ {
++	model = "TI AM335x BeagleBone Black";
++	compatible = "ti,am335x-bone-black", "ti,am33xx";
++};
++
++&ldo3_reg {
++	regulator-min-microvolt = <1800000>;
++	regulator-max-microvolt = <1800000>;
++	regulator-always-on;
++};
++
++&mmc1 {
++	vmmc-supply = <&vmmcsd_fixed>;
++};
++
++&mmc2 {
++	vmmc-supply = <&vmmcsd_fixed>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&emmc_pins>;
++	bus-width = <8>;
++	status = "okay";
++};
++
++&am33xx_pinmux {
++	lcd_pins: lcd_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x8a0, PIN_OUTPUT | MUX_MODE0)            /* lcd_data0 */
++			AM33XX_IOPAD(0x8a4, PIN_OUTPUT | MUX_MODE0)            /* lcd_data1 */
++			AM33XX_IOPAD(0x8a8, PIN_OUTPUT | MUX_MODE0)            /* lcd_data2 */
++			AM33XX_IOPAD(0x8ac, PIN_OUTPUT | MUX_MODE0)            /* lcd_data3 */
++			AM33XX_IOPAD(0x8b0, PIN_OUTPUT | MUX_MODE0)            /* lcd_data4 */
++			AM33XX_IOPAD(0x8b4, PIN_OUTPUT | MUX_MODE0)            /* lcd_data5 */
++			AM33XX_IOPAD(0x8b8, PIN_OUTPUT | MUX_MODE0)            /* lcd_data6 */
++			AM33XX_IOPAD(0x8bc, PIN_OUTPUT | MUX_MODE0)            /* lcd_data7 */
++			AM33XX_IOPAD(0x8c0, PIN_OUTPUT | MUX_MODE0)            /* lcd_data8 */
++			AM33XX_IOPAD(0x8c4, PIN_OUTPUT | MUX_MODE0)            /* lcd_data9 */
++			AM33XX_IOPAD(0x8c8, PIN_OUTPUT | MUX_MODE0)            /* lcd_data10 */
++			AM33XX_IOPAD(0x8cc, PIN_OUTPUT | MUX_MODE0)            /* lcd_data11 */
++			AM33XX_IOPAD(0x8d0, PIN_OUTPUT | MUX_MODE0)            /* lcd_data12 */
++			AM33XX_IOPAD(0x8d4, PIN_OUTPUT | MUX_MODE0)            /* lcd_data13 */
++			AM33XX_IOPAD(0x8d8, PIN_OUTPUT | MUX_MODE0)            /* lcd_data14 */
++			AM33XX_IOPAD(0x8dc, PIN_OUTPUT | MUX_MODE0)            /* lcd_data15 */
++			AM33XX_IOPAD(0x8e0, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* lcd_vsync */
++			AM33XX_IOPAD(0x8e4, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* lcd_hsync */
++			AM33XX_IOPAD(0x8e8, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* lcd_pclk */
++			AM33XX_IOPAD(0x8ec, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* lcd_ac_bias_en */
++			/* LCD enable */
++			AM33XX_IOPAD(0x950, PIN_OUTPUT_PULLUP | MUX_MODE7)     /* P9.22, gpio0_2 */
++		>;
++	};
++
++	backlight_pin: backlight_pin {
++		pinctrl-single,pins = < AM33XX_IOPAD(0x848, PIN_OUTPUT_PULLUP | MUX_MODE7) >; /* P9.14, gpio1[18] */
++	};
++};
++
++&lcdc {
++	status = "okay";
++};
++
++/ {
++	lcd0: display {
++		status = "okay";
++		compatible = "ti,tilcdc,panel";
++		label = "lcd";
++		pinctrl-names = "default";
++		pinctrl-0 = <&lcd_pins>;
++		enable-gpios = <&gpio0 2 GPIO_ACTIVE_HIGH>;
++
++		panel-info {
++			ac-bias           = <255>;
++			ac-bias-intrpt    = <0>;
++			dma-burst-sz      = <16>;
++			bpp               = <16>;
++			fdd               = <0x80>;
++			sync-edge         = <0>;
++			sync-ctrl         = <1>;
++			raster-order      = <0>;
++			fifo-th           = <0>;
++		};
++
++		display-timings {
++			native-mode = <&timing0>;
++			timing0: 800x480 {
++				clock-frequency = <30000000>;
++				hactive = <800>;
++				vactive = <480>;
++				hfront-porch = <40>;
++				hback-porch = <40>;
++				hsync-len = <48>;
++				vback-porch = <30>;
++				vfront-porch = <13>;
++				vsync-len = <3>;
++				hsync-active = <0>;
++				vsync-active = <0>;
++				de-active = <1>;
++				pixelclk-active = <0>;
++			};
++		};
++	};
++
++	backlight {
++		status = "okay";
++		compatible = "gpio-backlight";
++		pinctrl-names = "default";
++		pinctrl-0 = <&backlight_pin>;
++		gpios = <&gpio1 18 GPIO_ACTIVE_HIGH>; /* P9.14 */
++		default-on;
++	};
++};
++
++&tscadc {
++	status = "okay";
++
++	tsc {
++		ti,wires = <4>;
++		ti,x-plate-resistance = <200>;
++		ti,coordinate-readouts = <5>;
++		ti,wire-config = <0x00 0x11 0x22 0x33>;
++		ti,charge-delay = <0x1000>;
++	};
++
++	adc {
++		ti,adc-channels = <4 5 6 7>;
++		ti,chan-step-opendelay = <0x2000 0x2000 0x2000 0x2000>; /* default 0x98, max 0x3ffff */
++		ti,chan-step-sampledelay = <0x10 0x10 0x10 0x10>;       /* default 0, max 0xff */
++		ti,chan-step-avg = <16 16 16 16>;                       /* default 16, range 0-16 */
++	};
++};
++
++&rtc {
++	system-power-controller;
++};
+diff --git a/arch/arm/boot/dts/bbb-adc.dtsi b/arch/arm/boot/dts/bbb-adc.dtsi
+new file mode 100644
+index 0000000..ce04ca8
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-adc.dtsi
+@@ -0,0 +1,15 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++&tscadc {
++	status = "okay";
++
++	adc {
++		ti,adc-channels = <0 1 2 3 4 5 6>;
++	};
++};
+diff --git a/arch/arm/boot/dts/bbb-dcan0.dtsi b/arch/arm/boot/dts/bbb-dcan0.dtsi
+new file mode 100644
+index 0000000..283eeff
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-dcan0.dtsi
+@@ -0,0 +1,22 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++&am33xx_pinmux {
++	dcan0_pins: dcan0_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x97c, PIN_INPUT_PULLUP | MUX_MODE2)   /* P9.19, ddcan0_rx */
++			AM33XX_IOPAD(0x978, PIN_OUTPUT_PULLUP | MUX_MODE2)  /* P9.20, ddcan0_tx */
++		>;
++	};
++};
++
++&dcan0 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&dcan0_pins>;
++};
+diff --git a/arch/arm/boot/dts/bbb-dcan1.dtsi b/arch/arm/boot/dts/bbb-dcan1.dtsi
+new file mode 100644
+index 0000000..d6c4e45
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-dcan1.dtsi
+@@ -0,0 +1,22 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++&am33xx_pinmux {
++	dcan1_pins: dcan1_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x984, PIN_INPUT_PULLUP | MUX_MODE2)   /* P9.24, ddcan1_rx */
++			AM33XX_IOPAD(0x980, PIN_OUTPUT_PULLUP | MUX_MODE2)  /* P9.26, ddcan1_tx */
++		>;
++	};
++};
++
++&dcan1 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&dcan1_pins>;
++};
+diff --git a/arch/arm/boot/dts/bbb-hdmi.dts b/arch/arm/boot/dts/bbb-hdmi.dts
+new file mode 100644
+index 0000000..236dbaf
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-hdmi.dts
+@@ -0,0 +1,103 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "am33xx.dtsi"
++#include "am335x-bone-common.dtsi"
++#include "bbb-spi1-spidev.dtsi"
++#include "bbb-i2c1.dtsi"
++#include "bbb-i2c2.dtsi"
++#include "bbb-uart4.dtsi"
++#include "bbb-adc.dtsi"
++
++/ {
++	model = "TI AM335x BeagleBone Black";
++	compatible = "ti,am335x-bone-black", "ti,am33xx";
++};
++
++&ldo3_reg {
++	regulator-min-microvolt = <1800000>;
++	regulator-max-microvolt = <1800000>;
++	regulator-always-on;
++};
++
++&mmc1 {
++	vmmc-supply = <&vmmcsd_fixed>;
++};
++
++&mmc2 {
++	vmmc-supply = <&vmmcsd_fixed>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&emmc_pins>;
++	bus-width = <8>;
++	status = "okay";
++};
++
++&am33xx_pinmux {
++	hdmi_pins: hdmi_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x9b0, PIN_OUTPUT_PULLDOWN | MUX_MODE3)  /* xdma_event_intr0 */
++			AM33XX_IOPAD(0x8a0, PIN_OUTPUT | MUX_MODE0)            /* lcd_data0 */
++			AM33XX_IOPAD(0x8a4, PIN_OUTPUT | MUX_MODE0)            /* lcd_data1 */
++			AM33XX_IOPAD(0x8a8, PIN_OUTPUT | MUX_MODE0)            /* lcd_data2 */
++			AM33XX_IOPAD(0x8ac, PIN_OUTPUT | MUX_MODE0)            /* lcd_data3 */
++			AM33XX_IOPAD(0x8b0, PIN_OUTPUT | MUX_MODE0)            /* lcd_data4 */
++			AM33XX_IOPAD(0x8b4, PIN_OUTPUT | MUX_MODE0)            /* lcd_data5 */
++			AM33XX_IOPAD(0x8b8, PIN_OUTPUT | MUX_MODE0)            /* lcd_data6 */
++			AM33XX_IOPAD(0x8bc, PIN_OUTPUT | MUX_MODE0)            /* lcd_data7 */
++			AM33XX_IOPAD(0x8c0, PIN_OUTPUT | MUX_MODE0)            /* lcd_data8 */
++			AM33XX_IOPAD(0x8c4, PIN_OUTPUT | MUX_MODE0)            /* lcd_data9 */
++			AM33XX_IOPAD(0x8c8, PIN_OUTPUT | MUX_MODE0)            /* lcd_data10 */
++			AM33XX_IOPAD(0x8cc, PIN_OUTPUT | MUX_MODE0)            /* lcd_data11 */
++			AM33XX_IOPAD(0x8d0, PIN_OUTPUT | MUX_MODE0)            /* lcd_data12 */
++			AM33XX_IOPAD(0x8d4, PIN_OUTPUT | MUX_MODE0)            /* lcd_data13 */
++			AM33XX_IOPAD(0x8d8, PIN_OUTPUT | MUX_MODE0)            /* lcd_data14 */
++			AM33XX_IOPAD(0x8dc, PIN_OUTPUT | MUX_MODE0)            /* lcd_data15 */
++			AM33XX_IOPAD(0x8e0, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* lcd_vsync */
++			AM33XX_IOPAD(0x8e4, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* lcd_hsync */
++			AM33XX_IOPAD(0x8e8, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* lcd_pclk */
++			AM33XX_IOPAD(0x8ec, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* lcd_ac_bias_en */
++		>;
++	};
++
++	hdmi_off_pins: hdmi_off_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x9b0, PIN_OUTPUT_PULLDOWN | MUX_MODE3)  /* xdma_event_intr0 */
++		>;
++	};
++};
++
++&lcdc {
++	status = "okay";
++	port {
++		lcdc_0: endpoint@0 {
++			remote-endpoint = <&hdmi_0>;
++		};
++	};
++};
++
++&i2c0 {
++	tda19988 {
++		compatible = "nxp,tda998x";
++		reg = <0x70>;
++		pinctrl-names = "default", "off";
++		pinctrl-0 = <&hdmi_pins>;
++		pinctrl-1 = <&hdmi_off_pins>;
++
++		port {
++			hdmi_0: endpoint@0 {
++				remote-endpoint = <&lcdc_0>;
++			};
++		};
++	};
++};
++
++&rtc {
++	system-power-controller;
++};
+diff --git a/arch/arm/boot/dts/bbb-i2c1.dtsi b/arch/arm/boot/dts/bbb-i2c1.dtsi
+new file mode 100644
+index 0000000..8a04084
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-i2c1.dtsi
+@@ -0,0 +1,23 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++&am33xx_pinmux {
++	i2c1_pins: i2c1_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x958, SLEWCTRL_SLOW | PIN_INPUT_PULLUP | MUX_MODE2)  /* P9.18, i2c1_sda */
++			AM33XX_IOPAD(0x95c, SLEWCTRL_SLOW | PIN_INPUT_PULLUP | MUX_MODE2)  /* P9.17, i2c1_scl */
++		>;
++	};
++};
++
++&i2c1 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c1_pins>;
++	clock-frequency = <100000>;
++};
+diff --git a/arch/arm/boot/dts/bbb-i2c2.dtsi b/arch/arm/boot/dts/bbb-i2c2.dtsi
+new file mode 100644
+index 0000000..86f9b81
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-i2c2.dtsi
+@@ -0,0 +1,23 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++&am33xx_pinmux {
++	i2c2_pins: i2c2_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x978, SLEWCTRL_SLOW | PIN_INPUT_PULLUP | MUX_MODE3)  /* P9.20, i2c2_sda */
++			AM33XX_IOPAD(0x97c, SLEWCTRL_SLOW | PIN_INPUT_PULLUP | MUX_MODE3)  /* P9.19, i2c2_scl */
++		>;
++	};
++};
++
++&i2c2 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c2_pins>;
++	clock-frequency = <100000>;
++};
+diff --git a/arch/arm/boot/dts/bbb-nh5cape.dts b/arch/arm/boot/dts/bbb-nh5cape.dts
+new file mode 100644
+index 0000000..11ed90b
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-nh5cape.dts
+@@ -0,0 +1,159 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "am33xx.dtsi"
++#include "am335x-bone-common.dtsi"
++#include "bbb-spi1-spidev.dtsi"
++#include "bbb-i2c1.dtsi"
++#include "bbb-i2c2.dtsi"
++#include "bbb-uart4.dtsi"
++
++/ {
++	model = "TI AM335x BeagleBone Black";
++	compatible = "ti,am335x-bone-black", "ti,am335x-bone", "ti,am33xx";
++};
++
++&ldo3_reg {
++	regulator-min-microvolt = <1800000>;
++	regulator-max-microvolt = <1800000>;
++	regulator-always-on;
++};
++
++&mmc1 {
++	vmmc-supply = <&vmmcsd_fixed>;
++};
++
++&mmc2 {
++	vmmc-supply = <&vmmcsd_fixed>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&emmc_pins>;
++	bus-width = <8>;
++	status = "okay";
++};
++
++&am33xx_pinmux {
++	lcd_pins: lcd_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x8a0, PIN_OUTPUT | MUX_MODE0)            /* P8.45, lcd_data0 */
++			AM33XX_IOPAD(0x8a4, PIN_OUTPUT | MUX_MODE0)            /* P8.46, lcd_data1 */
++			AM33XX_IOPAD(0x8a8, PIN_OUTPUT | MUX_MODE0)            /* P8.43, lcd_data2 */
++			AM33XX_IOPAD(0x8ac, PIN_OUTPUT | MUX_MODE0)            /* P8.44, lcd_data3 */
++			AM33XX_IOPAD(0x8b0, PIN_OUTPUT | MUX_MODE0)            /* P8.41, lcd_data4 */
++			AM33XX_IOPAD(0x8b4, PIN_OUTPUT | MUX_MODE0)            /* P8.42, lcd_data5 */
++			AM33XX_IOPAD(0x8b8, PIN_OUTPUT | MUX_MODE0)            /* P8.39, lcd_data6 */
++			AM33XX_IOPAD(0x8bc, PIN_OUTPUT | MUX_MODE0)            /* P8.40, lcd_data7 */
++			AM33XX_IOPAD(0x8c0, PIN_OUTPUT | MUX_MODE0)            /* P8.37, lcd_data8 */
++			AM33XX_IOPAD(0x8c4, PIN_OUTPUT | MUX_MODE0)            /* P8.38, lcd_data9 */
++			AM33XX_IOPAD(0x8c8, PIN_OUTPUT | MUX_MODE0)            /* P8.36, lcd_data10 */
++			AM33XX_IOPAD(0x8cc, PIN_OUTPUT | MUX_MODE0)            /* P8.34, lcd_data11 */
++			AM33XX_IOPAD(0x8d0, PIN_OUTPUT | MUX_MODE0)            /* P8.35, lcd_data12 */
++			AM33XX_IOPAD(0x8d4, PIN_OUTPUT | MUX_MODE0)            /* P8.33, lcd_data13 */
++			AM33XX_IOPAD(0x8d8, PIN_OUTPUT | MUX_MODE0)            /* P8.31, lcd_data14 */
++			AM33XX_IOPAD(0x8dc, PIN_OUTPUT | MUX_MODE0)            /* P8.32, lcd_data15 */
++			AM33XX_IOPAD(0x83c, PIN_OUTPUT | MUX_MODE1)            /* P8.15, lcd_data16 */
++			AM33XX_IOPAD(0x838, PIN_OUTPUT | MUX_MODE1)            /* P8.16, lcd_data17 */
++			AM33XX_IOPAD(0x834, PIN_OUTPUT | MUX_MODE1)            /* P8.11, lcd_data18 */
++			AM33XX_IOPAD(0x830, PIN_OUTPUT | MUX_MODE1)            /* P8.12, lcd_data19 */
++			AM33XX_IOPAD(0x82c, PIN_OUTPUT | MUX_MODE1)            /* P8.17, lcd_data20 */
++			AM33XX_IOPAD(0x828, PIN_OUTPUT | MUX_MODE1)            /* P8.14, lcd_data21 */
++			AM33XX_IOPAD(0x824, PIN_OUTPUT | MUX_MODE1)            /* P8.13, lcd_data22 */
++			AM33XX_IOPAD(0x820, PIN_OUTPUT | MUX_MODE1)            /* P8.19, lcd_data23 */
++			AM33XX_IOPAD(0x8e0, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* P8.27, lcd_vsync */
++			AM33XX_IOPAD(0x8e4, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* P8.29, lcd_hsync */
++			AM33XX_IOPAD(0x8e8, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* P8.28, lcd_pclk */
++			AM33XX_IOPAD(0x8ec, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* P8.30, lcd_ac_bias_en */
++			/* LCD enable */
++			AM33XX_IOPAD(0x88c, PIN_OUTPUT_PULLUP | MUX_MODE7)     /* P8.18, gpio2[1] */
++		>;
++	};
++
++	backlight_pin: backlight_pin {
++		pinctrl-single,pins = < AM33XX_IOPAD(0x848, PIN_OUTPUT_PULLUP | MUX_MODE7) >; /* P9.14, gpio1[18] */
++	};
++
++	touchscreen_pins: touchscreen_pins {
++		pinctrl-single,pins = < AM33XX_IOPAD(0x9a4, PIN_INPUT_PULLUP | MUX_MODE7) >; /* P9.27, gpio3[19] */
++	};
++};
++
++&lcdc {
++	status = "okay";
++};
++
++/ {
++	lcd0: display {
++		status = "okay";
++		compatible = "ti,tilcdc,panel";
++		label = "lcd";
++		pinctrl-names = "default";
++		pinctrl-0 = <&lcd_pins>;
++		enable-gpios = <&gpio2 1 GPIO_ACTIVE_HIGH>; /* P8.18 */
++
++		panel-info {
++			ac-bias           = <255>;
++			ac-bias-intrpt    = <0>;
++			dma-burst-sz      = <16>;
++			bpp               = <32>;
++			fdd               = <0x80>;
++			sync-edge         = <0>;
++			sync-ctrl         = <0>;
++			raster-order      = <0>;
++			fifo-th           = <0>;
++		};
++
++		display-timings {
++			native-mode = <&timing0>;
++			timing0: 800x480 {
++				clock-frequency = <45000000>;
++				hactive = <800>;
++				vactive = <480>;
++				hfront-porch = <40>;
++				hback-porch = <40>;
++				hsync-len = <48>;
++				vback-porch = <29>;
++				vfront-porch = <13>;
++				vsync-len = <3>;
++				hsync-active = <0>;
++				vsync-active = <0>;
++			};
++		};
++	};
++
++	backlight {
++		status = "okay";
++		compatible = "gpio-backlight";
++		pinctrl-names = "default";
++		pinctrl-0 = <&backlight_pin>;
++		gpios = <&gpio1 18 GPIO_ACTIVE_HIGH>; /* P9.14 */
++		default-on;
++	};
++};
++
++&i2c2 {
++	ft5x06_ts: ft5x06_ts@38 {
++		compatible = "edt,edt-ft5x06";
++		pinctrl-names = "default";
++		pinctrl-0 = <&touchscreen_pins>;
++		reg = <0x38>;
++		interrupt-parent = <&gpio3>;
++		interrupts = <19 0>; /* P9.27 */
++		xmin = <0>;
++		xmax = <799>;
++		xfuzz = <0>;
++		ymin = <0>;
++		ymax = <479>;
++		yfuzz = <0>;
++		/* multitouch; */
++	};
++};
++
++&rtc {
++	system-power-controller;
++};
+diff --git a/arch/arm/boot/dts/bbb-nhd7cape.dts b/arch/arm/boot/dts/bbb-nhd7cape.dts
+new file mode 100644
+index 0000000..4786858
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-nhd7cape.dts
+@@ -0,0 +1,159 @@
++/*
++ * Copyright (C) 2017 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "am33xx.dtsi"
++#include "am335x-bone-common.dtsi"
++#include "bbb-spi1-spidev.dtsi"
++#include "bbb-i2c1.dtsi"
++#include "bbb-i2c2.dtsi"
++#include "bbb-uart4.dtsi"
++
++/ {
++	model = "TI AM335x BeagleBone Black";
++	compatible = "ti,am335x-bone-black", "ti,am335x-bone", "ti,am33xx";
++};
++
++&ldo3_reg {
++	regulator-min-microvolt = <1800000>;
++	regulator-max-microvolt = <1800000>;
++	regulator-always-on;
++};
++
++&mmc1 {
++	vmmc-supply = <&vmmcsd_fixed>;
++};
++
++&mmc2 {
++	vmmc-supply = <&vmmcsd_fixed>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&emmc_pins>;
++	bus-width = <8>;
++	status = "okay";
++};
++
++&am33xx_pinmux {
++	lcd_pins: lcd_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x8a0, PIN_OUTPUT | MUX_MODE0)            /* P8.45, lcd_data0 */
++			AM33XX_IOPAD(0x8a4, PIN_OUTPUT | MUX_MODE0)            /* P8.46, lcd_data1 */
++			AM33XX_IOPAD(0x8a8, PIN_OUTPUT | MUX_MODE0)            /* P8.43, lcd_data2 */
++			AM33XX_IOPAD(0x8ac, PIN_OUTPUT | MUX_MODE0)            /* P8.44, lcd_data3 */
++			AM33XX_IOPAD(0x8b0, PIN_OUTPUT | MUX_MODE0)            /* P8.41, lcd_data4 */
++			AM33XX_IOPAD(0x8b4, PIN_OUTPUT | MUX_MODE0)            /* P8.42, lcd_data5 */
++			AM33XX_IOPAD(0x8b8, PIN_OUTPUT | MUX_MODE0)            /* P8.39, lcd_data6 */
++			AM33XX_IOPAD(0x8bc, PIN_OUTPUT | MUX_MODE0)            /* P8.40, lcd_data7 */
++			AM33XX_IOPAD(0x8c0, PIN_OUTPUT | MUX_MODE0)            /* P8.37, lcd_data8 */
++			AM33XX_IOPAD(0x8c4, PIN_OUTPUT | MUX_MODE0)            /* P8.38, lcd_data9 */
++			AM33XX_IOPAD(0x8c8, PIN_OUTPUT | MUX_MODE0)            /* P8.36, lcd_data10 */
++			AM33XX_IOPAD(0x8cc, PIN_OUTPUT | MUX_MODE0)            /* P8.34, lcd_data11 */
++			AM33XX_IOPAD(0x8d0, PIN_OUTPUT | MUX_MODE0)            /* P8.35, lcd_data12 */
++			AM33XX_IOPAD(0x8d4, PIN_OUTPUT | MUX_MODE0)            /* P8.33, lcd_data13 */
++			AM33XX_IOPAD(0x8d8, PIN_OUTPUT | MUX_MODE0)            /* P8.31, lcd_data14 */
++			AM33XX_IOPAD(0x8dc, PIN_OUTPUT | MUX_MODE0)            /* P8.32, lcd_data15 */
++			AM33XX_IOPAD(0x83c, PIN_OUTPUT | MUX_MODE1)            /* P8.15, lcd_data16 */
++			AM33XX_IOPAD(0x838, PIN_OUTPUT | MUX_MODE1)            /* P8.16, lcd_data17 */
++			AM33XX_IOPAD(0x834, PIN_OUTPUT | MUX_MODE1)            /* P8.11, lcd_data18 */
++			AM33XX_IOPAD(0x830, PIN_OUTPUT | MUX_MODE1)            /* P8.12, lcd_data19 */
++			AM33XX_IOPAD(0x82c, PIN_OUTPUT | MUX_MODE1)            /* P8.17, lcd_data20 */
++			AM33XX_IOPAD(0x828, PIN_OUTPUT | MUX_MODE1)            /* P8.14, lcd_data21 */
++			AM33XX_IOPAD(0x824, PIN_OUTPUT | MUX_MODE1)            /* P8.13, lcd_data22 */
++			AM33XX_IOPAD(0x820, PIN_OUTPUT | MUX_MODE1)            /* P8.19, lcd_data23 */
++			AM33XX_IOPAD(0x8e0, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* P8.27, lcd_vsync */
++			AM33XX_IOPAD(0x8e4, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* P8.29, lcd_hsync */
++			AM33XX_IOPAD(0x8e8, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* P8.28, lcd_pclk */
++			AM33XX_IOPAD(0x8ec, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* P8.30, lcd_ac_bias_en */
++			/* LCD enable */
++			AM33XX_IOPAD(0x88c, PIN_OUTPUT_PULLUP | MUX_MODE7)     /* P8.18, gpio2[1] */
++		>;
++	};
++
++	backlight_pin: backlight_pin {
++		pinctrl-single,pins = < AM33XX_IOPAD(0x848, PIN_OUTPUT_PULLUP | MUX_MODE7) >; /* P9.14, gpio1[18] */
++	};
++
++	touchscreen_pins: touchscreen_pins {
++		pinctrl-single,pins = < AM33XX_IOPAD(0x9a4, PIN_INPUT_PULLUP | MUX_MODE7) >; /* P9.27, gpio3[19] */
++	};
++};
++
++&lcdc {
++	status = "okay";
++	blue-and-red-wiring = "crossed";
++};
++
++/ {
++	lcd0: display {
++		status = "okay";
++		compatible = "ti,tilcdc,panel";
++		label = "lcd";
++		pinctrl-names = "default";
++		pinctrl-0 = <&lcd_pins>;
++		enable-gpios = <&gpio2 1 GPIO_ACTIVE_HIGH>; /* P8.18 */
++
++		panel-info {
++			ac-bias           = <255>;
++			ac-bias-intrpt    = <0>;
++			dma-burst-sz      = <16>;
++			bpp               = <32>;
++			fdd               = <0x80>;
++			sync-edge         = <0>;
++			sync-ctrl         = <0>;
++			raster-order      = <0>;
++			fifo-th           = <0>;
++		};
++
++		display-timings {
++			native-mode = <&timing0>;
++			timing0: 800x480 {
++				clock-frequency = <45000000>;
++				hactive = <800>;
++				vactive = <480>;
++				hfront-porch = <40>;
++				hback-porch = <40>;
++				hsync-len = <48>;
++				vback-porch = <29>;
++				vfront-porch = <13>;
++				vsync-len = <3>;
++				hsync-active = <0>;
++				vsync-active = <0>;
++			};
++		};
++	};
++
++	backlight {
++		status = "okay";
++		compatible = "gpio-backlight";
++		pinctrl-names = "default";
++		pinctrl-0 = <&backlight_pin>;
++		gpios = <&gpio1 18 GPIO_ACTIVE_HIGH>; /* P9.14 */
++		default-on;
++	};
++};
++
++&i2c2 {
++	ft5x06_ts: ft5x06_ts@38 {
++		compatible = "edt,edt-ft5x06";
++		pinctrl-names = "default";
++		pinctrl-0 = <&touchscreen_pins>;
++		reg = <0x38>;
++		interrupt-parent = <&gpio3>;
++		interrupts = <19 0>; /* P9.27 */
++		xmin = <0>;
++		xmax = <799>;
++		xfuzz = <0>;
++		ymin = <0>;
++		ymax = <479>;
++		yfuzz = <0>;
++	};
++};
++
++&rtc {
++	system-power-controller;
++};
+diff --git a/arch/arm/boot/dts/bbb-nohdmi.dts b/arch/arm/boot/dts/bbb-nohdmi.dts
+new file mode 100644
+index 0000000..7c2e851
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-nohdmi.dts
+@@ -0,0 +1,46 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++/dts-v1/;
++
++#include "am33xx.dtsi"
++#include "am335x-bone-common.dtsi"
++#include "bbb-spi1-spidev.dtsi"
++#include "bbb-i2c1.dtsi"
++#include "bbb-i2c2.dtsi"
++#include "bbb-uart4.dtsi"
++#include "bbb-uart5.dtsi"
++#include "bbb-adc.dtsi"
++#include "bbb-1wire.dtsi"
++
++/ {
++	model = "TI AM335x BeagleBone Black";
++	compatible = "ti,am335x-bone-black", "ti,am33xx";
++};
++
++&ldo3_reg {
++	regulator-min-microvolt = <1800000>;
++	regulator-max-microvolt = <1800000>;
++	regulator-always-on;
++};
++
++&mmc1 {
++	vmmc-supply = <&vmmcsd_fixed>;
++};
++
++&mmc2 {
++	vmmc-supply = <&vmmcsd_fixed>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&emmc_pins>;
++	bus-width = <8>;
++	status = "okay";
++};
++
++&rtc {
++	system-power-controller;
++};
+diff --git a/arch/arm/boot/dts/bbb-spi0-spidev.dtsi b/arch/arm/boot/dts/bbb-spi0-spidev.dtsi
+new file mode 100644
+index 0000000..6214101
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-spi0-spidev.dtsi
+@@ -0,0 +1,34 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++&am33xx_pinmux {
++	spi0_pins: spi0_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x950, PIN_INPUT_PULLUP | MUX_MODE0)   /* P9.22, spi0_sclk */
++			AM33XX_IOPAD(0x954, PIN_INPUT_PULLUP | MUX_MODE0)   /* P9.21, spi0_d0 (miso) */
++			AM33XX_IOPAD(0x958, PIN_OUTPUT_PULLUP | MUX_MODE0)  /* P9.18, spi0_d1 (mosi) */
++			AM33XX_IOPAD(0x95c, PIN_OUTPUT_PULLUP | MUX_MODE0)  /* P9.17, spi0_cs0 */
++		>;
++	};
++};
++
++&spi0 {
++	status = "okay";
++	id = <0>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi0_pins>;
++
++	spidev0_0: spidev0@0 {
++		compatible = "spidev";
++		reg = <0>;
++		spi-max-frequency = <12000000>;
++		/* spi-cpha; sets CPHA=1, default is CPHA=0 */
++		/* spi-cpol; sets CPOL=1, default is CPOL=0 */
++		/* spi-cs-high; default is spi cs low */
++	};
++};
+diff --git a/arch/arm/boot/dts/bbb-spi1-spidev.dtsi b/arch/arm/boot/dts/bbb-spi1-spidev.dtsi
+new file mode 100644
+index 0000000..a4ad9fe
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-spi1-spidev.dtsi
+@@ -0,0 +1,34 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++&am33xx_pinmux {
++	spi1_pins: spi1_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x99c, PIN_OUTPUT_PULLUP | MUX_MODE3)  /* P9.28, spi1_cs0 */
++			AM33XX_IOPAD(0x994, PIN_OUTPUT_PULLUP | MUX_MODE3)  /* P9.29, spi1_d0 */
++			AM33XX_IOPAD(0x998, PIN_INPUT_PULLUP | MUX_MODE3)   /* P9.30, spi1_d1 */
++			AM33XX_IOPAD(0x990, PIN_INPUT_PULLUP | MUX_MODE3)   /* P9.31, spi1_sclk */
++		>;
++	};
++};
++
++&spi1 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi1_pins>;
++	ti,pindir-d0-out-d1-in = <1>; /* d0 is MOSI, d1 is MISO */
++
++	spidev1_0: spidev1@0 {
++		compatible = "spidev";
++		reg = <0>;
++		spi-max-frequency = <12000000>;
++		/* spi-cpha; sets CPHA=1, default is CPHA=0 */
++		/* spi-cpol; sets CPOL=1, default is CPOL=0 */
++		/* spi-cs-high; default is spi cs low */
++	};
++};
+diff --git a/arch/arm/boot/dts/bbb-uart1.dtsi b/arch/arm/boot/dts/bbb-uart1.dtsi
+new file mode 100644
+index 0000000..0cb7d85
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-uart1.dtsi
+@@ -0,0 +1,22 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++&am33xx_pinmux {
++	uart1_pins: uart1_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x980, PIN_INPUT_PULLUP | MUX_MODE0)      /* P9.26, uart1_rxd */
++			AM33XX_IOPAD(0x984, PIN_OUTPUT_PULLDOWN | MUX_MODE0)   /* P9.24, uart1_txd */
++		>;
++	};
++};
++
++&uart1 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart1_pins>;
++};
+diff --git a/arch/arm/boot/dts/bbb-uart2.dtsi b/arch/arm/boot/dts/bbb-uart2.dtsi
+new file mode 100644
+index 0000000..3a25bcb
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-uart2.dtsi
+@@ -0,0 +1,22 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++&am33xx_pinmux {
++	uart2_pins: uart2_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x950, PIN_INPUT_PULLUP | MUX_MODE1)     /* P9.22, uart2_rxd */
++			AM33XX_IOPAD(0x954, PIN_OUTPUT_PULLDOWN | MUX_MODE1)  /* P9.21, uart2_txd */
++		>;
++	};
++};
++
++&uart2 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart2_pins>;
++};
+diff --git a/arch/arm/boot/dts/bbb-uart4.dtsi b/arch/arm/boot/dts/bbb-uart4.dtsi
+new file mode 100644
+index 0000000..2bc934d
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-uart4.dtsi
+@@ -0,0 +1,22 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++&am33xx_pinmux {
++	uart4_pins: uart4_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x870, PIN_INPUT_PULLUP | MUX_MODE6)     /* P9.11, uart4_rxd */
++			AM33XX_IOPAD(0x874, PIN_OUTPUT_PULLDOWN | MUX_MODE6)  /* P9.13, uart4_txd */
++		>;
++	};
++};
++
++&uart4 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart4_pins>;
++};
+diff --git a/arch/arm/boot/dts/bbb-uart5.dtsi b/arch/arm/boot/dts/bbb-uart5.dtsi
+new file mode 100644
+index 0000000..3f2042d
+--- /dev/null
++++ b/arch/arm/boot/dts/bbb-uart5.dtsi
+@@ -0,0 +1,22 @@
++/*
++ * Copyright (C) 2015 Jumpnow Technologies, LLC - http://jumpnowtek.com
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++&am33xx_pinmux {
++	uart5_pins: uart5_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x8c4, PIN_INPUT_PULLUP | MUX_MODE4)     /* P8.38, uart5_rxd */
++			AM33XX_IOPAD(0x8c0, PIN_OUTPUT_PULLDOWN | MUX_MODE4)  /* P8.37, uart5_txd */
++		>;
++	};
++};
++
++&uart5 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart5_pins>;
++};
+-- 
+2.7.4
+

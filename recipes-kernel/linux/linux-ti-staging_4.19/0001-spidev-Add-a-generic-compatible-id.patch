@@ -1,0 +1,24 @@
+From 6418338dab4f9f47a34e429f9aff61fbf452b7ff Mon Sep 17 00:00:00 2001
+From: Scott Ellis <scott@jumpnowtek.com>
+Date: Wed, 6 Sep 2017 05:55:08 -0400
+Subject: [PATCH 1/5] spidev: Add a generic compatible id
+
+---
+ drivers/spi/spidev.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/spi/spidev.c b/drivers/spi/spidev.c
+index cda1071..4f3779d 100644
+--- a/drivers/spi/spidev.c
++++ b/drivers/spi/spidev.c
+@@ -669,6 +669,7 @@ static const struct of_device_id spidev_dt_ids[] = {
+ 	{ .compatible = "lineartechnology,ltc2488" },
+ 	{ .compatible = "ge,achc" },
+ 	{ .compatible = "semtech,sx1301" },
++	{ .compatible = "spidev" },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, spidev_dt_ids);
+-- 
+2.7.4
+

@@ -1,0 +1,86 @@
+From e972416f044ccb3c26c021a62810531f46d5d230 Mon Sep 17 00:00:00 2001
+From: Scott Ellis <scott@jumpnowtek.com>
+Date: Wed, 6 Sep 2017 05:55:53 -0400
+Subject: [PATCH 2/5] dts: Revoke Beaglebone i2c2 cape definitions
+
+---
+ arch/arm/boot/dts/am335x-bone-common.dtsi | 56 -------------------------------
+ 1 file changed, 56 deletions(-)
+
+diff --git a/arch/arm/boot/dts/am335x-bone-common.dtsi b/arch/arm/boot/dts/am335x-bone-common.dtsi
+index 48a15fc..69e5788 100644
+--- a/arch/arm/boot/dts/am335x-bone-common.dtsi
++++ b/arch/arm/boot/dts/am335x-bone-common.dtsi
+@@ -85,13 +85,6 @@
+ 		>;
+ 	};
+ 
+-	i2c2_pins: pinmux_i2c2_pins {
+-		pinctrl-single,pins = <
+-			AM33XX_IOPAD(0x978, PIN_INPUT_PULLUP | MUX_MODE3)	/* uart1_ctsn.i2c2_sda */
+-			AM33XX_IOPAD(0x97c, PIN_INPUT_PULLUP | MUX_MODE3)	/* uart1_rtsn.i2c2_scl */
+-		>;
+-	};
+-
+ 	uart0_pins: pinmux_uart0_pins {
+ 		pinctrl-single,pins = <
+ 			AM33XX_IOPAD(0x970, PIN_INPUT_PULLUP | MUX_MODE0)	/* uart0_rxd.uart0_rxd */
+@@ -243,55 +236,6 @@
+ 	};
+ };
+ 
+-&i2c2 {
+-	pinctrl-names = "default";
+-	pinctrl-0 = <&i2c2_pins>;
+-
+-	status = "okay";
+-	clock-frequency = <100000>;
+-
+-	cape_eeprom0: cape_eeprom0@54 {
+-		compatible = "atmel,24c256";
+-		reg = <0x54>;
+-		#address-cells = <1>;
+-		#size-cells = <1>;
+-		cape0_data: cape_data@0 {
+-			reg = <0 0x100>;
+-		};
+-	};
+-
+-	cape_eeprom1: cape_eeprom1@55 {
+-		compatible = "atmel,24c256";
+-		reg = <0x55>;
+-		#address-cells = <1>;
+-		#size-cells = <1>;
+-		cape1_data: cape_data@0 {
+-			reg = <0 0x100>;
+-		};
+-	};
+-
+-	cape_eeprom2: cape_eeprom2@56 {
+-		compatible = "atmel,24c256";
+-		reg = <0x56>;
+-		#address-cells = <1>;
+-		#size-cells = <1>;
+-		cape2_data: cape_data@0 {
+-			reg = <0 0x100>;
+-		};
+-	};
+-
+-	cape_eeprom3: cape_eeprom3@57 {
+-		compatible = "atmel,24c256";
+-		reg = <0x57>;
+-		#address-cells = <1>;
+-		#size-cells = <1>;
+-		cape3_data: cape_data@0 {
+-			reg = <0 0x100>;
+-		};
+-	};
+-};
+-
+-
+ /include/ "tps65217.dtsi"
+ 
+ &tps {
+-- 
+2.7.4
+

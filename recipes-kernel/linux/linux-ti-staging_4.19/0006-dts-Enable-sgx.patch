@@ -1,0 +1,21 @@
+From c97dabea57ea7083b797c0400c75d486b7047541 Mon Sep 17 00:00:00 2001
+From: Martin Roesch <martin.roesch@kistler.com>
+Date: Thu, 28 Nov 2019 13:54:10 +0100
+Subject: [PATCH] dts: Enable sgx.
+
+---
+ arch/arm/boot/dts/bbb-nhd7cape.dts | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/arm/boot/dts/bbb-nhd7cape.dts b/arch/arm/boot/dts/bbb-nhd7cape.dts
+index 47868588dcbf..2a77dd5a6253 100644
+--- a/arch/arm/boot/dts/bbb-nhd7cape.dts
++++ b/arch/arm/boot/dts/bbb-nhd7cape.dts
+@@ -157,3 +157,7 @@
+ &rtc {
+ 	system-power-controller;
+ };
++
++&sgx {
++	status = "okay";
++};
