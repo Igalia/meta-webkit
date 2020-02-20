@@ -1,13 +1,13 @@
 require wpebackend-fdo.inc
 
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz"
-SRC_URI[md5sum] = "63553c3f43593c2a8c587c32e88fdf3c"
-SRC_URI[sha256sum] = "a919ca4a5bc445f9419a5b7f3781cfc98e5abcf5d7259eb1869f5ab20fd18baf"
+SRC_URI[md5sum] = "c6362491a4a38ddac42b66f140e1cff2"
+SRC_URI[sha256sum] = "6249a0b7cbfa662206a8d2fa24e2c574e75c681ad0e93468091f1dc68ddb299d"
 
 BBCLASSEXTEND += "devupstream:target"
 
 SRC_URI_class-devupstream = "git://github.com/Igalia/WPEBackend-fdo.git;protocol=https;branch=master"
-SRCREV_class-devupstream = "bee4104c897412fbe58da0b9615d3a1a1bde826a"
+SRCREV_class-devupstream = "b01aa039d1fea67bb0a45cb00d88d28f707c96bb"
 
 S = "${WORKDIR}/${BPN}-${PV}"
 
