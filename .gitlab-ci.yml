@@ -14,7 +14,7 @@ before_script:
   - rm -rf tmp
 
 zeus-wandboard-mesa-weston-wpe-2.20:
-  allow_failure: false
+  allow_failure: true
   tags:
     - meta-webkit
   variables:
@@ -27,7 +27,7 @@ zeus-wandboard-mesa-weston-wpe-2.20:
     - rm -rf tmp
 
 zeus-wandboard-mesa-weston-wpe-2.22:
-  allow_failure: false
+  allow_failure: true
   tags:
     - meta-webkit
   variables:
