@@ -47,11 +47,7 @@ PACKAGECONFIG[openjpeg] = "-DUSE_OPENJPEG=ON,-DUSE_OPENJPEG=OFF,openjpeg"
 PACKAGECONFIG[unified-builds] = "-DENABLE_UNIFIED_BUILDS=ON,-DENABLE_UNIFIED_BUILDS=OFF,"
 
 
-EXTRA_OECMAKE = " -DPORT=WPE -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-    -G Ninja \
-"
+EXTRA_OECMAKE = " -DPORT=WPE -DCMAKE_BUILD_TYPE=Release -G Ninja"
 
 # If SSE code compiles, assume it runs successfully (it can't actually run
 # because of cross compiling)
