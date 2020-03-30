@@ -12,7 +12,7 @@ DEPENDS = " \
     libsoup-2.4 libwebp libxml2 libxslt virtual/egl virtual/libgles2 libepoxy libgcrypt \
 "
 
-inherit cmake pkgconfig perlnative pythonnative
+inherit cmake pkgconfig perlnative python3native
 inherit ${@'cmake_qt5' if 'qt5-layer' in d.getVar('BBFILE_COLLECTIONS').split() else ''}
 
 CCACHE_DISABLE[unexport] = "1"
