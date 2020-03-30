@@ -19,7 +19,7 @@ RDEPENDS_${PN} = " curl make patch perl procps psmisc python python-misc \
                    gobject-introspection python-pygobject gtk+3 ruby \
                    subversion libarchive-zip-perl"
 
-inherit python-dir
+inherit python3-dir
 
 do_install() {
     install -d ${D}${bindir}
