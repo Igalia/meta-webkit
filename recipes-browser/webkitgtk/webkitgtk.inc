@@ -19,7 +19,7 @@ RRECOMMENDS_${PN} = "${PN}-bin \
                      "
 RRECOMMENDS_${PN}-bin = "adwaita-icon-theme librsvg-gtk"
 
-inherit cmake lib_package pkgconfig perlnative python3native distro_features_check
+inherit cmake lib_package pkgconfig perlnative python3native features_check
 
 S = "${WORKDIR}/webkitgtk-${PV}/"
 

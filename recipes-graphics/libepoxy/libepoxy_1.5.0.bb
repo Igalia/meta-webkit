@@ -10,7 +10,7 @@ SRC_URI[md5sum] = "63fe3847789258254dcd7e3fdb9e7f5e"
 SRC_URI[sha256sum] = "4c94995398a6ebf691600dda2e9685a0cac261414175c2adf4645cdfab42a5d5"
 UPSTREAM_CHECK_URI = "https://github.com/anholt/libepoxy/releases"
 
-inherit autotools pkgconfig distro_features_check
+inherit autotools pkgconfig features_check
 
 DEPENDS = "util-macros-native"
 REQUIRED_DISTRO_FEATURES = "opengl"

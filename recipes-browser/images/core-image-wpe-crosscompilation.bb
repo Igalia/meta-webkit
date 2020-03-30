@@ -5,7 +5,7 @@ SUMMARY = "WPE cross-compilation image with wpebackend-fdo. \
 
 LICENSE = "BSD"
 
-inherit core-image distro_features_check
+inherit core-image features_check
 
 REQUIRED_DISTRO_FEATURES = "wayland"
 
