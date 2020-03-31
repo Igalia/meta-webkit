@@ -62,7 +62,7 @@ FILES_${PN} += "${libdir}/wpe-webkit*/injected-bundle/libWPEInjectedBundle.so"
 FILES_${PN}-web-inspector-plugin += "${libdir}/libWPEWebInspectorResources.so ${libdir}/wpe-webkit-*/libWPEWebInspectorResources.so"
 INSANE_SKIP_${PN}-web-inspector-plugin = "dev-so"
 
-FILES_${PN}-qtwpe-qml-plugin += "${libdir}/qml/org/wpewebkit/qtwpe/*"
+FILES_${PN}-qtwpe-qml-plugin += "${libdir}/qt5/qml/org/wpewebkit/qtwpe/*"
 INSANE_SKIP_${PN}-qtwpe-qml-plugin = "dev-so"
 
 # JSC JIT on ARMv7 is better supported with Thumb2 instruction set.
