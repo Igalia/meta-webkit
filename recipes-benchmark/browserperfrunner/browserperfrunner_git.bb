@@ -19,7 +19,19 @@ RDEPENDS_${PN} = " curl make patch perl procps psmisc python python-misc \
                    gobject-introspection python-pygobject gtk+3 ruby \
                    subversion libarchive-zip-perl"
 
-inherit python3-dir
+# This recipe still requires python2.
+# So on Yocto dunfell and later its needed to use meta-python2
+# Port to python3 tracked at https://github.com/Igalia/browserperfrunner/issues/3
+inherit ${@bb.utils.contains_any("LAYERSERIES_CORENAMES", "zeus warrior thud sumo rocko pyro", \
+        "python-dir", \
+        bb.utils.contains("BBFILE_COLLECTIONS", "meta-python2", "python-dir", "", d), \
+        d)}
+
+python() {
+    if d.getVar('LAYERSERIES_CORENAMES') not in ["zeus", "warrior", "thud", "sumo", "rocko", "pyro"]:
+        if "meta-python2" not in d.getVar("BBFILE_COLLECTIONS").split():
+            raise bb.parse.SkipRecipe("Requires meta-python2 to be present.")
+}
 
 do_install() {
     install -d ${D}${bindir}
