@@ -8,8 +8,14 @@ LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf
 # PACKAGECONFIG_append_pn-harfbuzz = " icu"
 DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn gnutls \
            gtk+3 gstreamer1.0 gstreamer1.0-plugins-base flex-native icu \
-           gperf-native perl-native ruby-native sqlite3 \
-           libwebp harfbuzz glib-2.0 gettext-native glib-2.0-native"
+           gperf-native perl-native ruby-native ccache-native ninja-native \
+           libwebp harfbuzz glib-2.0 gettext-native glib-2.0-native \
+           sqlite3 libgcrypt"
+
+SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz"
+SRC_URI[md5sum] = "0bf11df8117ea64f6b8de59d278a2c78"
+SRC_URI[sha1sum] = "927d0922b986fd06567015ce4425ed05d9fca209"
+SRC_URI[sha256sum] = "361f3d178f62a9c112cbadfedd46106c34455c26d57a12a28fb3b09178d20e8b"
 
 RRECOMMENDS_${PN} = "${PN}-bin \
                      ca-certificates \
@@ -19,29 +25,40 @@ RRECOMMENDS_${PN} = "${PN}-bin \
                      "
 RRECOMMENDS_${PN}-bin = "adwaita-icon-theme librsvg-gtk"
 
-inherit cmake lib_package pkgconfig perlnative python3native distro_features_check
+inherit cmake lib_package pkgconfig perlnative python3native features_check
 
 S = "${WORKDIR}/webkitgtk-${PV}/"
 
 # To build with embedded gl support -> Enable *both* "opengl" and "gles2" option
 # To build with desktop  gl support -> Enable "opengl", but disable "gles2" option
 PACKAGECONFIG ??= " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)} \
-                    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
+                    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland wperenderer', '', d)} \
                     ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'opengl gles2 webgl', '', d)} \
                     enchant \
+                    libsecret \
+                    openjpeg \
+                    video \
+                    webcrypto \
+                    woff2 \
                   "
-PACKAGECONFIG[wayland] = "-DENABLE_WAYLAND_TARGET=ON,-DENABLE_WAYLAND_TARGET=OFF,wayland wayland-native"
-PACKAGECONFIG[x11] = "-DENABLE_X11_TARGET=ON,-DENABLE_X11_TARGET=OFF,virtual/libx11 libxt"
-PACKAGECONFIG[geoclue] = "-DENABLE_GEOLOCATION=ON,-DENABLE_GEOLOCATION=OFF,geoclue"
+
+PACKAGECONFIG[bubblewrap] = "-DENABLE_BUBBLEWRAP_SANDBOX=ON,-DENABLE_BUBBLEWRAP_SANDBOX=OFF,bubblewrap xdg-dbus-proxy bubblewrap-native xdg-dbus-proxy-native libseccomp"
 PACKAGECONFIG[enchant] = "-DENABLE_SPELLCHECK=ON,-DENABLE_SPELLCHECK=OFF,enchant2"
-PACKAGECONFIG[gtk2] = "-DENABLE_PLUGIN_PROCESS_GTK2=ON,-DENABLE_PLUGIN_PROCESS_GTK2=OFF,gtk+"
+PACKAGECONFIG[geoclue] = "-DENABLE_GEOLOCATION=ON,-DENABLE_GEOLOCATION=OFF,geoclue"
 PACKAGECONFIG[gles2] = "-DENABLE_GLES2=ON,-DENABLE_GLES2=OFF,virtual/libgles2"
-PACKAGECONFIG[webgl] = "-DENABLE_WEBGL=ON,-DENABLE_WEBGL=OFF,virtual/libgl"
-PACKAGECONFIG[opengl] = "-DENABLE_OPENGL=ON,-DENABLE_OPENGL=OFF,virtual/libgl"
-PACKAGECONFIG[libsecret] = "-DUSE_LIBSECRET=ON,-DUSE_LIBSECRET=OFF,libsecret"
-PACKAGECONFIG[libnotify] = "-DUSE_LIBNOTIFY=ON,-DUSE_LIBNOTIFY=OFF,libnotify"
 PACKAGECONFIG[libhyphen] = "-DUSE_LIBHYPHEN=ON,-DUSE_LIBHYPHEN=OFF,libhyphen"
+PACKAGECONFIG[libnotify] = "-DUSE_LIBNOTIFY=ON,-DUSE_LIBNOTIFY=OFF,libnotify"
+PACKAGECONFIG[libsecret] = "-DUSE_LIBSECRET=ON,-DUSE_LIBSECRET=OFF,libsecret"
+PACKAGECONFIG[opengl] = "-DENABLE_OPENGL=ON,-DENABLE_OPENGL=OFF,virtual/libgl"
+PACKAGECONFIG[openjpeg] = "-DUSE_OPENJPEG=ON,-DUSE_OPENJPEG=OFF,openjpeg"
 PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON,-DENABLE_VIDEO=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad"
+PACKAGECONFIG[wayland] = "-DENABLE_WAYLAND_TARGET=ON,-DENABLE_WAYLAND_TARGET=OFF,wayland wayland-native"
+PACKAGECONFIG[webcrypto] = "-DENABLE_WEB_CRYPTO=ON,-DENABLE_WEB_CRYPTO=OFF,libgcrypt libtasn1"
+PACKAGECONFIG[webgl] = "-DENABLE_WEBGL=ON,-DENABLE_WEBGL=OFF,virtual/libgl"
+PACKAGECONFIG[woff2] = "-DUSE_WOFF2=ON,-DUSE_WOFF2=OFF,woff2"
+PACKAGECONFIG[wperenderer] = "-DUSE_WPE_RENDERER=ON,-DUSE_WPE_RENDERER=OFF,libwpe wpebackend-fdo"
+PACKAGECONFIG[x11] = "-DENABLE_X11_TARGET=ON,-DENABLE_X11_TARGET=OFF,virtual/libx11 libxt"
+
 
 WEBKIT_BUILD_TYPE ??= "Release"
 
@@ -50,10 +67,8 @@ EXTRA_OECMAKE = " \
                  -DCMAKE_BUILD_TYPE=${WEBKIT_BUILD_TYPE} \
                  -DENABLE_INTROSPECTION=OFF \
                  -DENABLE_GTKDOC=OFF \
-                 -DENABLE_CREDENTIAL_STORAGE=OFF \
                  -DENABLE_MINIBROWSER=ON \
-                 -DENABLE_DRAG_SUPPORT=OFF \
-                 -DUSE_REDIRECTED_XCOMPOSITE_WINDOW=OFF \
+                 -G Ninja \
                 "
 
 # Javascript JIT is not supported on powerpc
