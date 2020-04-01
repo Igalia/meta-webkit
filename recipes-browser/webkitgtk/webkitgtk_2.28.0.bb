@@ -25,7 +25,12 @@ RRECOMMENDS_${PN} = "${PN}-bin \
                      "
 RRECOMMENDS_${PN}-bin = "adwaita-icon-theme librsvg-gtk"
 
-inherit cmake lib_package pkgconfig perlnative python3native features_check
+inherit cmake lib_package pkgconfig perlnative python3native
+
+# distro_features_check is going to be removed after dunfell
+# ref: https://git.yoctoproject.org/cgit/cgit.cgi/poky/commit/meta/classes/features_check.bbclass?h=master-next&id=9702544b3e75d761d86cae7e8b36f3f2625b68ce
+#   Temporarily support the old class name with a warning about future deprecation.
+inherit ${@bb.utils.contains_any("LAYERSERIES_CORENAMES", 'zeus warrior thud sumo', 'distro_features_check', 'features_check', d)}
 
 S = "${WORKDIR}/webkitgtk-${PV}/"
 
