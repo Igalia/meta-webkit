@@ -13,44 +13,6 @@ before_script:
   - source setup-environment $SOURCE
   - rm -rf tmp
 
-zeus-wandboard-mesa-weston-wpe-2.20:
-  allow_failure: true
-  tags:
-    - meta-webkit
-  variables:
-    MANIFEST: manifest-zeus.xml
-    # setup-environment targetname machine distro bblayers presets --update-config
-    SOURCE: wandboard-mesa-wpe-2.20 wandboard-mesa browsers default mesa-wpe-2_20 --update-config
-    BITBAKE_TARGET: wpewebkit
-  script:
-    - bitbake $BITBAKE_TARGET
-    - rm -rf tmp
-
-zeus-wandboard-mesa-weston-wpe-2.22:
-  allow_failure: true
-  tags:
-    - meta-webkit
-  variables:
-    MANIFEST: manifest-zeus.xml
-    # setup-environment targetname machine distro bblayers presets --update-config
-    SOURCE: wandboard-mesa-wpe-2.22 wandboard-mesa browsers default mesa-wpe-2_22 --update-config
-    BITBAKE_TARGET: wpewebkit
-  script:
-    - bitbake $BITBAKE_TARGET
-    - rm -rf tmp
-
-zeus-wandboard-mesa-weston-wpe-2.24:
-  tags:
-    - meta-webkit
-  variables:
-    MANIFEST: manifest-zeus.xml
-    # setup-environment targetname machine distro bblayers presets --update-config
-    SOURCE: wandboard-mesa-wpe-2.24 wandboard-mesa browsers default mesa-wpe-2_24 --update-config
-    BITBAKE_TARGET: wpewebkit
-  script:
-    - bitbake $BITBAKE_TARGET
-    - rm -rf tmp
-
 zeus-wandboard-mesa-weston-wpe-2.26:
   tags:
     - meta-webkit
@@ -58,6 +20,18 @@ zeus-wandboard-mesa-weston-wpe-2.26:
     MANIFEST: manifest-zeus.xml
     # setup-environment targetname machine distro bblayers presets --update-config
     SOURCE: wandboard-mesa-wpe-2.26 wandboard-mesa browsers default mesa-wpe-2_26 --update-config
+    BITBAKE_TARGET: wpewebkit
+  script:
+    - bitbake $BITBAKE_TARGET
+    - rm -rf tmp
+
+zeus-wandboard-mesa-weston-wpe-2.28:
+  tags:
+    - meta-webkit
+  variables:
+    MANIFEST: manifest-zeus.xml
+    # setup-environment targetname machine distro bblayers presets --update-config
+    SOURCE: wandboard-mesa-wpe-2.28 wandboard-mesa browsers default mesa-wpe-2_28 --update-config
     BITBAKE_TARGET: wpewebkit
   script:
     - bitbake $BITBAKE_TARGET
@@ -96,6 +70,18 @@ zeus-rpi3-userland-wpe-2.26:
     MANIFEST: manifest-zeus.xml
     # setup-environment targetname machine distro bblayers presets --update-config
     SOURCE: rpi3-userland-wpe-2.26 raspberrypi3-userland browsers default userland-wpe-2_26 --update-config
+    BITBAKE_TARGET: wpewebkit
+  script:
+    - bitbake $BITBAKE_TARGET
+    - rm -rf tmp
+
+zeus-rpi3-userland-wpe-2.28:
+  tags:
+    - meta-webkit
+  variables:
+    MANIFEST: manifest-zeus.xml
+    # setup-environment targetname machine distro bblayers presets --update-config
+    SOURCE: rpi3-userland-wpe-2.28 raspberrypi3-userland browsers default userland-wpe-2_28 --update-config
     BITBAKE_TARGET: wpewebkit
   script:
     - bitbake $BITBAKE_TARGET

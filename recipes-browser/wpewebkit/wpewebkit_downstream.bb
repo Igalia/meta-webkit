@@ -24,7 +24,7 @@ PV = "1.downstream-20180424"
 SRCREV = "a8f773758e16492d641456eb34a982029249fda4"
 SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEWebKit.git;protocol=https;branch=master"
 
-DEPENDS += " wpebackend"
+DEPENDS += " virtual/wpebackend"
 
 S = "${WORKDIR}/git"
 
