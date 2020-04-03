@@ -57,7 +57,7 @@ zeus-wandboard-mesa-weston-wpe-qt:
   variables:
     MANIFEST: manifest-zeus.xml
     # setup-environment targetname machine distro bblayers presets --update-config
-    SOURCE: wandboard-mesa-wpe-qt wandboard-mesa browsers default mesa-wpe-qt --update-config
+    SOURCE: wandboard-mesa-wpe-qt wandboard-mesa browsers qt5 mesa-wpe-qt --update-config
     BITBAKE_TARGET: wpewebkit
   script:
     - bitbake $BITBAKE_TARGET
