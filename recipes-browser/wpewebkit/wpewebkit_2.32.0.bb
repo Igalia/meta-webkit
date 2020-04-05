@@ -4,6 +4,7 @@ require conf/include/devupstream.inc
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI = "\
     https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz \
+    file://musl.patch \
 "
 
 SRC_URI[sha256sum] = "6cfb18af9a180eeffffcaf34fea68d867ee59f633d811ced92bbead2d184b6ea"
