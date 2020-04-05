@@ -1,0 +1,75 @@
+From c4d4d9f1aa74addefdad40294cf16d9e0b3dd6ec Mon Sep 17 00:00:00 2001
+From: Khem Raj <raj.khem@gmail.com>
+Date: Fri, 6 Oct 2017 17:00:08 +0300
+Subject: [PATCH] Fix build with musl
+
+__GLIBC__ only covers glibc and uclibc C library on Linux but we need
+same condition for musl as well, which does not (intentionally) define
+libc specific builtin define
+
+Upstream-Status: Pending
+Signed-off-by: Khem Raj <raj.khem@gmail.com>
+
+---
+ Source/JavaScriptCore/runtime/MachineContext.h | 10 +++++-----
+ Source/WTF/wtf/Platform.h                      |  2 +-
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+--- a/Source/JavaScriptCore/runtime/MachineContext.h
++++ b/Source/JavaScriptCore/runtime/MachineContext.h
+@@ -196,7 +196,7 @@ static inline void*& stackPointerImpl(mc
+ #error Unknown Architecture
+ #endif
+ 
+-#elif OS(FUCHSIA) || defined(__GLIBC__) || defined(__BIONIC__)
++#elif OS(FUCHSIA) || OS(LINUX)
+ 
+ #if CPU(X86)
+     return reinterpret_cast<void*&>((uintptr_t&) machineContext.gregs[REG_ESP]);
+@@ -347,7 +347,7 @@ static inline void*& framePointerImpl(mc
+ #error Unknown Architecture
+ #endif
+ 
+-#elif OS(FUCHSIA) || defined(__GLIBC__) || defined(__BIONIC__)
++#elif OS(FUCHSIA) || OS(LINUX)
+ 
+ // The following sequence depends on glibc's sys/ucontext.h.
+ #if CPU(X86)
+@@ -498,7 +498,7 @@ static inline void*& instructionPointerI
+ #error Unknown Architecture
+ #endif
+ 
+-#elif OS(FUCHSIA) || defined(__GLIBC__) || defined(__BIONIC__)
++#elif OS(FUCHSIA) || OS(LINUX)
+ 
+ // The following sequence depends on glibc's sys/ucontext.h.
+ #if CPU(X86)
+@@ -656,7 +656,7 @@ inline void*& argumentPointer<1>(mcontex
+ #error Unknown Architecture
+ #endif
+ 
+-#elif OS(FUCHSIA) || defined(__GLIBC__) || defined(__BIONIC__)
++#elif OS(FUCHSIA) || OS(LINUX)
+ 
+ // The following sequence depends on glibc's sys/ucontext.h.
+ #if CPU(X86)
+@@ -773,7 +773,7 @@ inline void*& llintInstructionPointer(mc
+ #error Unknown Architecture
+ #endif
+ 
+-#elif OS(FUCHSIA) || defined(__GLIBC__) || defined(__BIONIC__)
++#elif OS(FUCHSIA) || OS(LINUX)
+ 
+ // The following sequence depends on glibc's sys/ucontext.h.
+ #if CPU(X86)
+--- a/Source/WTF/wtf/PlatformHave.h
++++ b/Source/WTF/wtf/PlatformHave.h
+@@ -222,7 +222,7 @@
+ #define HAVE_HOSTED_CORE_ANIMATION 1
+ #endif
+ 
+-#if OS(DARWIN) || OS(FUCHSIA) || ((OS(FREEBSD) || defined(__GLIBC__) || defined(__BIONIC__)) && (CPU(X86) || CPU(X86_64) || CPU(ARM) || CPU(ARM64) || CPU(MIPS)))
++#if OS(DARWIN) || OS(FUCHSIA) || ((OS(FREEBSD) || OS(LINUX)) && (CPU(X86) || CPU(X86_64) || CPU(ARM) || CPU(ARM64) || CPU(MIPS)))
+ #define HAVE_MACHINE_CONTEXT 1
+ #endif
+ 

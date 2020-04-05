@@ -1,6 +1,9 @@
 require wpewebkit.inc
 
-SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz"
+SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz \
+           file://0001-Fix-build-with-musl.patch \
+           file://reduce-jsc-stack-heap.patch \
+          "
 
 SRC_URI[sha256sum] = "3763a536d55529bbf66fa3772e9c1b543ddf882fabd0ca337076555b176ee8c5"
 
