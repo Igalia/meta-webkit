@@ -1,0 +1,36 @@
+From 367f2d0247a878ccd0c220ef786ec0660d0557d4 Mon Sep 17 00:00:00 2001
+From: Michael Catanzaro <mcatanzaro@gnome.org>
+Date: Wed, 18 Sep 2019 13:09:18 -0500
+Subject: [PATCH] Call setlocale()
+
+To enable locales. This fixes UTF-8 characters being converted to ?
+characters when printing error messages with e.g. g_warning().
+---
+ dbus-proxy.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+--- a/dbus-proxy.c
++++ b/dbus-proxy.c
+@@ -28,6 +28,7 @@
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <errno.h>
++#include <locale.h>
+ 
+ #include "flatpak-proxy.h"
+ 
+@@ -362,10 +363,13 @@ sync_closed_cb (GIOChannel  *source,
+ int
+ main (int argc, const char *argv[])
+ {
++  g_autoptr(GPtrArray) args = NULL;
+   GMainLoop *service_loop;
+   int i, args_i;
+ 
+-  g_autoptr(GPtrArray) args = g_ptr_array_new_with_free_func (g_free);
++  setlocale (LC_ALL, "");
++
++  args = g_ptr_array_new_with_free_func (g_free);
+ 
+   argv0 = argv[0];
+ 
