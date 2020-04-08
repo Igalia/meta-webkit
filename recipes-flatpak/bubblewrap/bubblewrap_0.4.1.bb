@@ -6,8 +6,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 DEPENDS = "libcap"
 
 SRC_URI = "https://github.com/projectatomic/${BPN}/releases/download/v${PV}/${BP}.tar.xz"
-SRC_URI[md5sum] = "c34034985e80bdea39aaaaa4bcb92c64"
-SRC_URI[sha256sum] = "deca6b608c54df4be0669b8bb6d254858924588e9f86e116eb04656a3b6d4bf8"
+SRC_URI[sha256sum] = "b9c69b9b1c61a608f34325c8e1a495229bacf6e4a07cbb0c80cf7a814d7ccc03"
 
 inherit autotools pkgconfig systemd
 AUTO_LIBNAME_PKGS = ""
