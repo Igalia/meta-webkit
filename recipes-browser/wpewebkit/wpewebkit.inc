@@ -13,7 +13,7 @@ DEPENDS = " \
 "
 
 inherit cmake pkgconfig perlnative python3native
-inherit ${@'cmake_qt5' if 'qt5-layer' in d.getVar('BBFILE_COLLECTIONS').split() else ''}
+inherit ${@'cmake_qt5' if 'qtwpe' in d.getVar('PACKAGECONFIG').split() else ''}
 
 CCACHE_DISABLE[unexport] = "1"
 
