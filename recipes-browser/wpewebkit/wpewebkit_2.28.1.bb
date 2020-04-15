@@ -2,7 +2,7 @@ require wpewebkit.inc
 
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz"
 
-SRC_URI[sha256sum] = "a85cd3cb46206a4929a9562d53379a7e7e2ec1a3224b34e2dcf5da30bb906722"
+SRC_URI[sha256sum] = "3763a536d55529bbf66fa3772e9c1b543ddf882fabd0ca337076555b176ee8c5"
 
 DEPENDS += " libwpe"
 RCONFLICTS_${PN} = "libwpe (< 1.2) wpebackend-fdo (< 1.2)"
