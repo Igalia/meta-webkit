@@ -57,6 +57,8 @@ EXTRA_OECMAKE_append_x86 = " -DHAVE_SSE2_EXTENSIONS_EXITCODE=0"
 # error: .gnu.hash is incompatible with the MIPS ABI
 EXTRA_OECMAKE_append_mipsarch = " -DUSE_LD_GOLD=OFF "
 
+LDFLAGS_append_riscv64 = " -pthread"
+
 FULL_OPTIMIZATION_remove = "-g"
 
 LEAD_SONAME = "libWPEWebKit.so"
