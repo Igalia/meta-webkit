@@ -1,0 +1,23 @@
+From 80aacb4dbc219ec51507fb5664588a1f2ff5ed05 Mon Sep 17 00:00:00 2001
+From: Zan Dobersek <zdobersek@igalia.com>
+Date: Thu, 7 May 2020 10:48:31 +0200
+Subject: [PATCH] renderer-backend-egl.cpp: get_native_display() should cast
+ the return to EGLNativeDisplayType.
+
+---
+ src/renderer-backend-egl.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/renderer-backend-egl.cpp b/src/renderer-backend-egl.cpp
+index ae55b5b..242008d 100644
+--- a/src/renderer-backend-egl.cpp
++++ b/src/renderer-backend-egl.cpp
+@@ -98,7 +98,7 @@ struct wpe_renderer_backend_egl_interface fdo_renderer_backend_egl = {
+     [](void* data) -> EGLNativeDisplayType
+     {
+         auto& backend = *reinterpret_cast<Backend*>(data);
+-        return backend.display();
++        return EGLNativeDisplayType(backend.display());
+     },
+ };
+ 
