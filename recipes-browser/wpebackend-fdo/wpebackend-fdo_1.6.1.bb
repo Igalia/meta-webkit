@@ -1,7 +1,7 @@
 require wpebackend-fdo.inc
 
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz"
-SRC_URI[sha256sum] = "7f5bd7b9d8f97b1655f4dcd39fad92719d0fb3985b251da5802df13aaa09f567"
+SRC_URI[sha256sum] = "740eee3327acfb462b8460519a219e30dc0a870326e88e2ddc4fe2c8de20b1c9"
 
 BBCLASSEXTEND += "devupstream:target"
 
@@ -10,4 +10,4 @@ BBCLASSEXTEND += "devupstream:target"
 DEPENDS_class-devupstream = "glib-2.0 libxkbcommon wayland libepoxy libwpe"
 
 SRC_URI_class-devupstream = "git://github.com/Igalia/WPEBackend-fdo.git;protocol=https;branch=master"
-SRCREV_class-devupstream = "5b4fa3cf160c957589a06d3b99589e53cccb0ee1"
+SRCREV_class-devupstream = "1123b61f49da162c1ad9fe08571917c5e2fd7a2a"
