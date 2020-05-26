@@ -154,6 +154,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-desktop = "\
     libdrm \
     libglu \
     libxi \
+    libxkbcommon \
     libxtst \
     libx11-locale \
     xorg-minimal-fonts \
