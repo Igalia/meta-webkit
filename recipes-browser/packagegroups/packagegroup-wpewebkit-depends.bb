@@ -69,7 +69,6 @@ RDEPENDS_packagegroup-wpewebkit-depends-python = "\
 "
 
 RDEPENDS_packagegroup-wpewebkit-depends-misc = "\
-    chkconfig \
     gettext \
     gettext-runtime \
     groff \
