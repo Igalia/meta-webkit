@@ -222,6 +222,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-video = " \
     gstreamer1.0-plugins-bad-mpegtsdemux \
     gstreamer1.0-plugins-bad-smoothstreaming \
     gstreamer1.0-plugins-bad-videoparsersbad \
+    libvpx \
 "
 
 RDEPENDS_packagegroup-wpewebkit-depends-extra = " \
