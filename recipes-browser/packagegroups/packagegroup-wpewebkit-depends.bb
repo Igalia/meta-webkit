@@ -143,7 +143,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-core = "\
     libgcrypt \
     bubblewrap \
     xdg-dbus-proxy \
-    libseccomp \
+    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'security', 'libseccomp', '', d)} \
     libicudata \
 "
 
