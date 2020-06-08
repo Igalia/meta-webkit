@@ -88,7 +88,6 @@ RDEPENDS_packagegroup-wpewebkit-depends-core = "\
     cronie \
     diffutils \
     ed \
-    glibc-utils \
     elfutils \
     file \
     findutils \
@@ -96,7 +95,6 @@ RDEPENDS_packagegroup-wpewebkit-depends-core = "\
     gawk \
     grep \
     gzip \
-    localedef \
     make \
     msmtp \
     patch \
@@ -108,7 +106,6 @@ RDEPENDS_packagegroup-wpewebkit-depends-core = "\
     time \
     util-linux \
     xdg-utils \
-    glibc \
     libgcc \
     libpam \
     libxml2 \
@@ -143,7 +140,11 @@ RDEPENDS_packagegroup-wpewebkit-depends-core = "\
     ${@bb.utils.contains('BBFILE_COLLECTIONS', 'security', 'libseccomp', '', d)} \
     libicudata \
 "
-
+RDEPENDS_packagegroup-wpewebkit-depends-core_append_libc-glibc = "\
+    glibc \
+    glibc-utils \
+    localedef \
+"
 RDEPENDS_packagegroup-wpewebkit-depends-desktop = "\
     libxt \
     libxxf86vm \
@@ -172,6 +173,8 @@ RDEPENDS_packagegroup-wpewebkit-depends-runtime-add = "\
     libxml-parser-perl \
     libxml-perl \
     libxml-sax-perl \
+"
+RDEPENDS_packagegroup-wpewebkit-depends-runtime-add_append_libc-glibc = "\
     glibc-localedatas \
     glibc-gconvs \
     glibc-charmaps \
