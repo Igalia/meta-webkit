@@ -2,7 +2,7 @@ before_script:
   - mkdir -p ~/yocto-webkit
   - cd ~/yocto-webkit
   - ulimit -n 4096
-  - repo init -u https://gitlab.com/saavedra.pablo/meta-perf-browser.git -m $MANIFEST -b nightly
+  - repo init -u https://$META_PERF_BROWSER_GIT_USER:$META_PERF_BROWSER_GIT_PASSWORD@gitlab.com/browsers/meta-perf-browser.git -m $MANIFEST -b nightly
   - repo sync --force-sync
   - pushd sources/meta-webkit
   - git remote remove tmp || true
