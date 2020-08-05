@@ -2,7 +2,7 @@ before_script:
   - mkdir -p ~/yocto-webkit
   - cd ~/yocto-webkit
   - ulimit -n 4096
-  - repo init -u https://gitlab.com/saavedra.pablo/meta-perf-browser.git -m $MANIFEST -b nightly
+  - repo init -u $CI_REPOSITORY_URL -m $MANIFEST -b $CI_COMMIT_SHA
   - repo sync --force-sync
   - pushd sources/meta-webkit
   - git remote remove tmp || true
@@ -10,78 +10,41 @@ before_script:
   - git fetch tmp
   - git checkout $CI_COMMIT_SHA
   - popd
-  - source setup-environment $SOURCE
+  - source sources/meta-webkit/.gitlab-ci/scripts/setup-environment $SOURCE
   - rm -rf tmp
 
-zeus-wandboard-mesa-weston-wpe-2.26:
+dunfell-raspberrypi3-mesa-weston-wpe-2.26:
   tags:
     - meta-webkit
   variables:
-    MANIFEST: manifest-zeus.xml
-    # setup-environment targetname machine distro bblayers presets --update-config
-    SOURCE: wandboard-mesa-wpe-2.26 wandboard-mesa browsers default mesa-wpe-2_26 --update-config
+    MANIFEST: .gitlab-ci/manifest/manifest-dunfell.xml
+    # setup-environment targetname machine distro bblayers presets
+    SOURCE: raspberrypi3-mesa-wpe-2.26 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_26
     BITBAKE_TARGET: wpewebkit
   script:
     - bitbake $BITBAKE_TARGET
     - rm -rf tmp
 
-zeus-wandboard-mesa-weston-wpe-2.28:
+dunfell-raspberrypi3-mesa-weston-wpe-2.28:
   tags:
     - meta-webkit
   variables:
-    MANIFEST: manifest-zeus.xml
-    # setup-environment targetname machine distro bblayers presets --update-config
-    SOURCE: wandboard-mesa-wpe-2.28 wandboard-mesa browsers default mesa-wpe-2_28 --update-config
+    MANIFEST: .gitlab-ci/manifest/manifest-dunfell.xml
+    # setup-environment targetname machine distro bblayers presets
+    SOURCE: raspberrypi3-mesa-wpe-2.28 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_28
     BITBAKE_TARGET: wpewebkit
   script:
     - bitbake $BITBAKE_TARGET
     - rm -rf tmp
 
-zeus-wandboard-mesa-weston-wpe-trunk:
+dunfell-raspberrypi3-mesa-weston-wpe-qt:
   allow_failure: true
   tags:
     - meta-webkit
   variables:
-    MANIFEST: manifest-zeus.xml
-    # setup-environment targetname machine distro bblayers presets --update-config
-    SOURCE: wandboard-mesa-wpe-trunk wandboard-mesa browsers default mesa-wpe-trunk --update-config
-    BITBAKE_TARGET: wpewebkit
-  script:
-    - bitbake $BITBAKE_TARGET
-    - rm -rf tmp
-
-zeus-wandboard-mesa-weston-wpe-qt:
-  allow_failure: true
-  tags:
-    - meta-webkit
-  variables:
-    MANIFEST: manifest-zeus.xml
-    # setup-environment targetname machine distro bblayers presets --update-config
-    SOURCE: wandboard-mesa-wpe-qt wandboard-mesa browsers qt5 mesa-wpe-qt --update-config
-    BITBAKE_TARGET: wpewebkit
-  script:
-    - bitbake $BITBAKE_TARGET
-    - rm -rf tmp
-
-zeus-rpi3-userland-wpe-2.26:
-  tags:
-    - meta-webkit
-  variables:
-    MANIFEST: manifest-zeus.xml
-    # setup-environment targetname machine distro bblayers presets --update-config
-    SOURCE: rpi3-userland-wpe-2.26 raspberrypi3-userland browsers default userland-wpe-2_26 --update-config
-    BITBAKE_TARGET: wpewebkit
-  script:
-    - bitbake $BITBAKE_TARGET
-    - rm -rf tmp
-
-zeus-rpi3-userland-wpe-2.28:
-  tags:
-    - meta-webkit
-  variables:
-    MANIFEST: manifest-zeus.xml
-    # setup-environment targetname machine distro bblayers presets --update-config
-    SOURCE: rpi3-userland-wpe-2.28 raspberrypi3-userland browsers default userland-wpe-2_28 --update-config
+    MANIFEST: .gitlab-ci/manifest/manifest-dunfell.xml
+    # setup-environment targetname machine distro bblayers presets
+    SOURCE: raspberrypi3-mesa-wpe-qt raspberrypi3-mesa poky qt5 mesa-wpe-qt
     BITBAKE_TARGET: wpewebkit
   script:
     - bitbake $BITBAKE_TARGET
