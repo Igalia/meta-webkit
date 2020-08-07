@@ -10,3 +10,4 @@ RCONFLICTS_${PN} = "libwpe (< 1.2) wpebackend-fdo (< 1.2)"
 
 SRC_URI_class-devupstream = "git://git.webkit.org/WebKit.git;branch=master"
 SRCREV_class-devupstream = "4d2d7cbbdbfef826e5f35107e71d908a87a86e92"
+
