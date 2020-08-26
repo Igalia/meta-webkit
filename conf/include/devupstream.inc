@@ -29,8 +29,10 @@ python devupstream_virtclass_handler_prepend () {
     if uri.scheme == "git":
         d.setVar("S", "${WORKDIR}/git")
 
-    # Trucating the 3rd value (patch).
+    # Trucating the last version number (usually patch).
     pv = ".".join(d.getVar("PV").split(".")[:-1])
+    if not pv:
+        pv = d.getVar("PV")
     proto_marker = "+" + uri.scheme
     # Modify the PV if the recipe hasn't already overridden it
     if proto_marker not in pv:
