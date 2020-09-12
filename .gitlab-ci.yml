@@ -13,18 +13,6 @@ before_script:
   - source sources/meta-webkit/.gitlab-ci/scripts/setup-environment $SOURCE
   - rm -rf tmp
 
-dunfell-raspberrypi3-mesa-weston-wpe-2.26:
-  tags:
-    - meta-webkit
-  variables:
-    MANIFEST: .gitlab-ci/manifest/manifest-dunfell.xml
-    # setup-environment targetname machine distro bblayers presets
-    SOURCE: raspberrypi3-mesa-wpe-2.26 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_26
-    BITBAKE_TARGET: wpewebkit
-  script:
-    - bitbake $BITBAKE_TARGET
-    - rm -rf tmp
-
 dunfell-raspberrypi3-mesa-weston-wpe-2.28:
   tags:
     - meta-webkit
@@ -32,6 +20,18 @@ dunfell-raspberrypi3-mesa-weston-wpe-2.28:
     MANIFEST: .gitlab-ci/manifest/manifest-dunfell.xml
     # setup-environment targetname machine distro bblayers presets
     SOURCE: raspberrypi3-mesa-wpe-2.28 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_28
+    BITBAKE_TARGET: wpewebkit
+  script:
+    - bitbake $BITBAKE_TARGET
+    - rm -rf tmp
+
+dunfell-raspberrypi3-mesa-weston-wpe-2.30:
+  tags:
+    - meta-webkit
+  variables:
+    MANIFEST: .gitlab-ci/manifest/manifest-dunfell.xml
+    # setup-environment targetname machine distro bblayers presets
+    SOURCE: raspberrypi3-mesa-wpe-2.30 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_30
     BITBAKE_TARGET: wpewebkit
   script:
     - bitbake $BITBAKE_TARGET
