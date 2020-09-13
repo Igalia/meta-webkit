@@ -3,9 +3,9 @@ require conf/include/devupstream.inc
 
 SRC_URI = "https://github.com/Igalia/cog/releases/download/v${PV}/cog-${PV}.tar.xz"
 
-SRC_URI[sha256sum] = "3bb940741b685e89305decc894acf0b4ed9fdc77f7878b70da48a1def2e71925"
+SRC_URI[sha256sum] = "181b1f4963cdf264b8068460a64d14c92a627f7138ebecc0f36fce085f4e92dd"
 
 SRC_URI_class-devupstream = "git://github.com/Igalia/cog.git;protocol=https;branch=master"
-SRCREV_class-devupstream = "e70c864cec3eb125ea6797d097da1aca88099da0"
+SRCREV_class-devupstream = "fcffa7a82b960dd514a2fee5edcce660acce73e7"
 
 RDEPENDS_${PN} += "wpewebkit (>= 2.28)"
