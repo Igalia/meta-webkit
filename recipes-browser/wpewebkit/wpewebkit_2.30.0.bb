@@ -1,7 +1,11 @@
 require wpewebkit.inc
 require conf/include/devupstream.inc
 
-SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+SRC_URI = "\
+    https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz \
+    file://216455_builds_with_ENABLE_SERVICE_WORKER_OFF.patch \
+"
 
 SRC_URI[sha256sum] = "d1a99383ac3344195d09b4a4256c15dc5269c8585b3d836f43a057e60bb6f460"
 

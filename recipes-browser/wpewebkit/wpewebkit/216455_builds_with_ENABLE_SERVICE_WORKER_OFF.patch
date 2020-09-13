@@ -1,0 +1,57 @@
+Subversion Revision: 266989
+diff --git a/Source/WebKit/UIProcess/API/glib/WebKitWebsiteData.cpp b/Source/WebKit/UIProcess/API/glib/WebKitWebsiteData.cpp
+--- a/Source/WebKit/UIProcess/API/glib/WebKitWebsiteData.cpp	2020-09-11 11:09:35.000000000 +0000
++++ b/Source/WebKit/UIProcess/API/glib/WebKitWebsiteData.cpp	2020-09-13 07:04:33.132907246 +0000
+@@ -80,7 +80,9 @@
+         WebsiteDataType::Cookies,
+         WebsiteDataType::DeviceIdHashSalt,
+         WebsiteDataType::ResourceLoadStatistics,
++#if ENABLE(SERVICE_WORKER)
+         WebsiteDataType::ServiceWorkerRegistrations,
++#endif
+         WebsiteDataType::DOMCache
+     });
+ }
+@@ -114,8 +116,10 @@
+         returnValue |= WEBKIT_WEBSITE_DATA_DEVICE_ID_HASH_SALT;
+     if (types.contains(WebsiteDataType::ResourceLoadStatistics))
+         returnValue |= WEBKIT_WEBSITE_DATA_ITP;
++#if ENABLE(SERVICE_WORKER)
+     if (types.contains(WebsiteDataType::ServiceWorkerRegistrations))
+         returnValue |= WEBKIT_WEBSITE_DATA_SERVICE_WORKER_REGISTRATIONS;
++#endif
+     if (types.contains(WebsiteDataType::DOMCache))
+         returnValue |= WEBKIT_WEBSITE_DATA_DOM_CACHE;
+     return static_cast<WebKitWebsiteDataTypes>(returnValue);
+diff --git a/Source/WebKit/UIProcess/API/glib/WebKitWebsiteDataManager.cpp b/Source/WebKit/UIProcess/API/glib/WebKitWebsiteDataManager.cpp
+--- a/Source/WebKit/UIProcess/API/glib/WebKitWebsiteDataManager.cpp	2020-09-11 11:09:35.000000000 +0000
++++ b/Source/WebKit/UIProcess/API/glib/WebKitWebsiteDataManager.cpp	2020-09-13 07:06:13.018079447 +0000
+@@ -935,8 +935,10 @@
+         returnValue.add(WebsiteDataType::DeviceIdHashSalt);
+     if (types & WEBKIT_WEBSITE_DATA_ITP)
+         returnValue.add(WebsiteDataType::ResourceLoadStatistics);
++#if ENABLE(SERVICE_WORKER)
+     if (types & WEBKIT_WEBSITE_DATA_SERVICE_WORKER_REGISTRATIONS)
+         returnValue.add(WebsiteDataType::ServiceWorkerRegistrations);
++#endif
+     if (types & WEBKIT_WEBSITE_DATA_DOM_CACHE)
+         returnValue.add(WebsiteDataType::DOMCache);
+     return returnValue;
+diff --git a/Source/WebKit/WebProcess/Network/WebLoaderStrategy.cpp b/Source/WebKit/WebProcess/Network/WebLoaderStrategy.cpp
+--- a/Source/WebKit/WebProcess/Network/WebLoaderStrategy.cpp	2020-09-11 11:09:35.000000000 +0000
++++ b/Source/WebKit/WebProcess/Network/WebLoaderStrategy.cpp	2020-09-13 07:10:36.537170533 +0000
+@@ -230,12 +230,14 @@
+     if (!tryLoadingUsingURLSchemeHandler(resourceLoader, trackingParameters)) {
+         WEBLOADERSTRATEGY_RELEASE_LOG_IF_ALLOWED("scheduleLoad: URL will be scheduled with the NetworkProcess");
+ 
++#if ENABLE(SERVICE_WORKER)
+         if (!resourceLoader.options().serviceWorkerRegistrationIdentifier && InspectorInstrumentationWebKit::shouldInterceptRequest(resourceLoader.frame(), resourceLoader.request())) {
+             InspectorInstrumentationWebKit::interceptRequest(resourceLoader, [this, protectedResourceLoader = makeRefPtr(&resourceLoader), trackingParameters, shouldClearReferrerOnHTTPSToHTTPRedirect, resource](const ResourceRequest& request) {
+                 scheduleLoadFromNetworkProcess(*protectedResourceLoader, request, trackingParameters, shouldClearReferrerOnHTTPSToHTTPRedirect, maximumBufferingTime(resource));
+             });
+             return;
+         }
++#endif
+         scheduleLoadFromNetworkProcess(resourceLoader, resourceLoader.request(), trackingParameters, shouldClearReferrerOnHTTPSToHTTPRedirect, maximumBufferingTime(resource));
+         return;
+     }
