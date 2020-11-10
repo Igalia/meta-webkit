@@ -1,0 +1,88 @@
+From f5c32a0d0b282eea9070e55a4823d3697d18e09c Mon Sep 17 00:00:00 2001
+From: Zan Dobersek <zdobersek@igalia.com>
+Date: Tue, 10 Nov 2020 09:23:16 +0100
+Subject: [PATCH 1/2] platform: add a common EGL proc address loader with dlsym
+ fallback
+
+Provide a common EGL proc address loader function that incorporates
+a dlsym-based fallback in case eglGetProcAddress() refuses to find
+an otherwise-existing entrypoint.
+
+This should avoid some drivers that fail to handle proc address
+requests for specific entrypoints, but have those entrypoints
+exported as regular symbols loadable through dlsym().
+---
+ platform/cog-platform-drm.c        |  4 +++-
+ platform/cog-platform-fdo.c        |  4 +++-
+ platform/common/egl-proc-address.h | 15 +++++++++++++++
+ 3 files changed, 21 insertions(+), 2 deletions(-)
+ create mode 100644 platform/common/egl-proc-address.h
+
+diff --git a/platform/cog-platform-drm.c b/platform/cog-platform-drm.c
+index 13d3c4b..79576d5 100644
+--- a/platform/cog-platform-drm.c
++++ b/platform/cog-platform-drm.c
+@@ -16,6 +16,8 @@
+ #include <EGL/egl.h>
+ #include <EGL/eglext.h>
+ 
++#include "common/egl-proc-address.h"
++
+ 
+ #if !defined(EGL_EXT_platform_base)
+ typedef EGLDisplay (EGLAPIENTRYP PFNEGLGETPLATFORMDISPLAYEXTPROC) (EGLenum platform, void *native_display, const EGLint *attrib_list);
+@@ -385,7 +387,7 @@ init_egl (void)
+ {
+     static PFNEGLGETPLATFORMDISPLAYEXTPROC s_eglGetPlatformDisplay = NULL;
+     if (!s_eglGetPlatformDisplay)
+-        s_eglGetPlatformDisplay = (PFNEGLGETPLATFORMDISPLAYEXTPROC) eglGetProcAddress ("eglGetPlatformDisplayEXT");
++        s_eglGetPlatformDisplay = (PFNEGLGETPLATFORMDISPLAYEXTPROC) load_egl_proc_address ("eglGetPlatformDisplayEXT");
+ 
+     if (s_eglGetPlatformDisplay)
+         egl_data.display = s_eglGetPlatformDisplay (EGL_PLATFORM_GBM_KHR, gbm_data.device, NULL);
+diff --git a/platform/cog-platform-fdo.c b/platform/cog-platform-fdo.c
+index cda6c2d..1204aa1 100644
+--- a/platform/cog-platform-fdo.c
++++ b/platform/cog-platform-fdo.c
+@@ -32,6 +32,8 @@
+ #include <xkbcommon/xkbcommon-compose.h>
+ #include <locale.h>
+ 
++#include "common/egl-proc-address.h"
++
+ #include "xdg-shell-client.h"
+ #include "fullscreen-shell-unstable-v1-client.h"
+ #include "presentation-time-client.h"
+@@ -1596,7 +1598,7 @@ on_export_fdo_egl_image(void *data, struct wpe_fdo_egl_exported_image *image)
+         s_eglCreateWaylandBufferFromImageWL;
+     if (s_eglCreateWaylandBufferFromImageWL == NULL) {
+         s_eglCreateWaylandBufferFromImageWL = (PFNEGLCREATEWAYLANDBUFFERFROMIMAGEWL)
+-            eglGetProcAddress ("eglCreateWaylandBufferFromImageWL");
++            load_egl_proc_address ("eglCreateWaylandBufferFromImageWL");
+         g_assert (s_eglCreateWaylandBufferFromImageWL);
+     }
+ 
+diff --git a/platform/common/egl-proc-address.h b/platform/common/egl-proc-address.h
+new file mode 100644
+index 0000000..44dd6a9
+--- /dev/null
++++ b/platform/common/egl-proc-address.h
+@@ -0,0 +1,15 @@
++#pragma once
++
++#define __USE_GNU
++#include <dlfcn.h>
++
++#include <EGL/egl.h>
++
++static void*
++load_egl_proc_address (const char *name)
++{
++    void *proc_address = eglGetProcAddress (name);
++    if (!proc_address)
++        proc_address = dlsym (RTLD_NEXT, name);
++    return proc_address;
++}
+-- 
+2.28.0
+
