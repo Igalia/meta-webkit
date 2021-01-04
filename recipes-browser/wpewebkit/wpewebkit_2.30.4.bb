@@ -5,10 +5,9 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI = "\
     https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz \
     file://216455_builds_with_ENABLE_SERVICE_WORKER_OFF.patch \
-    file://ICU-68.1-no-longer-exposes-FALSE-and-TRUE-macros-by-.patch \
 "
 
-SRC_URI[sha256sum] = "f2dfc1a6279810353f601bb9bd0d8ef671b41b38352d679b93d01631c2bf7b4b"
+SRC_URI[sha256sum] = "1e521d85cf8cf344b9fd08eabad7a1d18a330fb7862a77eaf78d7d7b10d5f6ef"
 
 DEPENDS += " libwpe"
 RCONFLICTS_${PN} = "libwpe (< 1.4) wpebackend-fdo (< 1.6)"
