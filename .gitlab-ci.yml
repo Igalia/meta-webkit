@@ -13,11 +13,11 @@ before_script:
   - source sources/meta-webkit/.gitlab-ci/scripts/setup-environment $SOURCE
   - rm -rf tmp
 
-dunfell-raspberrypi3-mesa-weston-wpe-2.28:
+gatesgarth-raspberrypi3-mesa-weston-wpe-2.28:
   tags:
     - meta-webkit
   variables:
-    MANIFEST: .gitlab-ci/manifest/manifest-dunfell.xml
+    MANIFEST: .gitlab-ci/manifest/manifest-gatesgarth.xml
     # setup-environment targetname machine distro bblayers presets
     SOURCE: raspberrypi3-mesa-wpe-2.28 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_28
     BITBAKE_TARGET: wpewebkit
@@ -25,11 +25,11 @@ dunfell-raspberrypi3-mesa-weston-wpe-2.28:
     - bitbake $BITBAKE_TARGET
     - rm -rf tmp
 
-dunfell-raspberrypi3-mesa-weston-wpe-2.30:
+gatesgarth-raspberrypi3-mesa-weston-wpe-2.30:
   tags:
     - meta-webkit
   variables:
-    MANIFEST: .gitlab-ci/manifest/manifest-dunfell.xml
+    MANIFEST: .gitlab-ci/manifest/manifest-gatesgarth.xml
     # setup-environment targetname machine distro bblayers presets
     SOURCE: raspberrypi3-mesa-wpe-2.30 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_30
     BITBAKE_TARGET: wpewebkit
@@ -37,12 +37,12 @@ dunfell-raspberrypi3-mesa-weston-wpe-2.30:
     - bitbake $BITBAKE_TARGET
     - rm -rf tmp
 
-dunfell-raspberrypi3-mesa-weston-wpe-qt:
+gatesgarth-raspberrypi3-mesa-weston-wpe-qt:
   allow_failure: true
   tags:
     - meta-webkit
   variables:
-    MANIFEST: .gitlab-ci/manifest/manifest-dunfell.xml
+    MANIFEST: .gitlab-ci/manifest/manifest-gatesgarth.xml
     # setup-environment targetname machine distro bblayers presets
     SOURCE: raspberrypi3-mesa-wpe-qt raspberrypi3-mesa poky qt5 mesa-wpe-qt
     BITBAKE_TARGET: wpewebkit
