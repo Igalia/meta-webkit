@@ -31,7 +31,7 @@ RDEPENDS_packagegroup-wpewebkit-depends = "\
 
 RDEPENDS_packagegroup-wpewebkit-depends-sys-extended = "\
     curl \
-    dhcp-client \
+    ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'warrior zeus dunfell', 'dhcp-client', 'dhcpcd', d)} \
     hdparm \
     libaio \
     lzo \
@@ -218,7 +218,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-video = " \
     gstreamer1.0-plugins-good-avi \
     gstreamer1.0-plugins-good-deinterlace \
     gstreamer1.0-plugins-good-interleave \
-    gstreamer1.0-plugins-bad-dashdemux \
+    ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'warrior zeus dunfell', 'gstreamer1.0-plugins-bad-dashdemux', 'gstreamer1.0-plugins-bad-dash', d)} \
     gstreamer1.0-plugins-bad-mpegtsdemux \
     gstreamer1.0-plugins-bad-smoothstreaming \
     gstreamer1.0-plugins-bad-videoparsersbad \
