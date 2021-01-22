@@ -9,10 +9,6 @@ DEPENDS_append_class-target = " wayland-native"
 PROVIDES += "virtual/wpebackend"
 RPROVIDES_${PN} += "virtual/wpebackend"
 
-# wpebackend-fdo uses meson since (not branched yet)
-#   https://github.com/Igalia/WPEBackend-fdo/commit/9c13d73bcc3726e2290c182d76d67b384f4c1318
-inherit ${@bb.utils.contains("SRCREV", 'INVALID', 'cmake', 'meson', d)}
-
 FILES_SOLIBSDEV = ""
 FILES_${PN} += "${libdir}/libWPEBackend-fdo-*.so"
 INSANE_SKIP_${PN} ="dev-so"
