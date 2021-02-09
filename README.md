@@ -35,3 +35,7 @@ Building the WPE engine or WebKitGTK+
 Please refer to the project Wiki for a detailed guide:
 
    - WiKi: https://github.com/Igalia/meta-webkit/wiki
+   
+How to contribute
+=====================================
+Contributions are welcomed. Please send your patches as [Pull Requests](https://github.com/Igalia/meta-webkit/pulls) or fill a [Issue report](https://github.com/Igalia/meta-webkit/issues) in case you need to ask for help.
