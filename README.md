@@ -7,15 +7,15 @@ use with OpenEmbedded and/or Yocto.
 This layer depends on:
 
     URI: git://git.openembedded.org/openembedded-core
-    branch: master
+    branch: main
     revision: HEAD
 
     URI: git://git.openembedded.org/meta-openembedded
-    branch: master
+    branch: main
     revision: HEAD
 
     URI: git://git.yoctoproject.org/meta-security
-    branch: master
+    branch: main
     revision: HEAD
 
 This layer optionally depends on:

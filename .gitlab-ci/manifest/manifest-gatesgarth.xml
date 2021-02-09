@@ -19,5 +19,5 @@
 
   <project remote="qt" revision="upstream/gatesgarth" name="meta-qt5.git" path="sources/meta-qt5"/>
 
-  <project remote="igalia" revision="master" name="meta-webkit.git" path="sources/meta-webkit"/>
+  <project remote="igalia" revision="main" name="meta-webkit.git" path="sources/meta-webkit"/>
 </manifest>
