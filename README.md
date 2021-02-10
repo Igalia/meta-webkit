@@ -29,6 +29,12 @@ The meta-security dependency is necessary to enable web process sandbox for WPE.
 If meta-qt5 is present, this layer will provide an opt-in Qt5 API as an
 alternative to other Qt5 web-engines such as QtWebKit and QtWebEngine.
 
+**Warning**: The default branch has been renamed to `main` because
+[#219](https://github.com/Igalia/meta-webkit/issues/219). The old default
+branch (`master`) will still be kept as a mirror of the `main` until February
+of 2022 [#220](https://github.com/Igalia/meta-webkit/issues/220). Please update
+any external reference from `master` to `main` as soon as possible.
+
 Building the WPE engine or WebKitGTK+
 =====================================
 
