@@ -13,7 +13,7 @@ DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn gnutls \
            sqlite3 libgcrypt"
 
 SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz"
-SRC_URI[sha256sum] = "d595a37c5001ff787266b155e303a5f2e5b48a6d466f2714c2f30c11392f7b24"
+SRC_URI[sha256sum] = "7d0dab08e3c5ae07bec80b2822ef42e952765d5724cac86eb23999bfed5a7f1f"
 
 RRECOMMENDS_${PN} = "${PN}-bin \
                      ca-certificates \
