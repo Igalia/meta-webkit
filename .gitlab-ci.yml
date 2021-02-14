@@ -3,6 +3,7 @@
     - mkdir -p ~/yocto-webkit
     - cd ~/yocto-webkit
     - ulimit -n 4096
+    - rm -rf sources .repo
     - repo init -u $CI_REPOSITORY_URL -m $MANIFEST -b $CI_COMMIT_SHA
     - repo sync --force-sync
     - pushd sources/meta-webkit
