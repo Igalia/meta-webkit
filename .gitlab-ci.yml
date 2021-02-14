@@ -60,6 +60,7 @@ gatesgarth-raspberrypi3-mesa-weston-wpe-2.30:
 dunfell-raspberrypi3-mesa-weston-wpe-2.30:
   extends:
     - .raspberrypi3-mesa-weston-wpe
+  allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-dunfell.xml
     SOURCE: raspberrypi3-mesa-wpe-2.30 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_30
@@ -67,6 +68,7 @@ dunfell-raspberrypi3-mesa-weston-wpe-2.30:
 zeus-raspberrypi3-mesa-weston-wpe-2.30:
   extends:
     - .raspberrypi3-mesa-weston-wpe
+  allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-zeus.xml
     SOURCE: raspberrypi3-mesa-wpe-2.30 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_30
