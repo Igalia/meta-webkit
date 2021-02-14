@@ -1,9 +1,19 @@
 .raspberrypi3-mesa-weston-wpe:
   before_script:
-    - mkdir -p ~/yocto-webkit
-    - cd ~/yocto-webkit
-    - ulimit -n 4096
-    - rm -rf sources .repo
+    - |
+      echo "Environment:"
+      echo "======================================================================"
+      echo "CI_REPOSITORY_URL=\"$CI_REPOSITORY_URL\""
+      echo "CI_COMMIT_SHA=\"$CI_COMMIT_SHA\""
+      echo "MANIFEST=\"$MANIFEST\""
+      echo "SOURCE=\"$SOURCE\""
+      echo "BITBAKE_TARGET=\"$BITBAKE_TARGET\""
+      echo "======================================================================"
+    - |
+      mkdir -p ~/yocto-webkit
+      cd ~/yocto-webkit
+      ulimit -n 4096
+      rm -rf sources .repo
     - repo init -u $CI_REPOSITORY_URL -m $MANIFEST -b $CI_COMMIT_SHA
     - repo sync --force-sync
     - pushd sources/meta-webkit
