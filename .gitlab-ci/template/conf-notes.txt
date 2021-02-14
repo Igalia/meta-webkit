@@ -1,2 +1,2 @@
 
-Yocto environment activcate for CI tests
+Yocto environment enabled for the CI tests
