@@ -30,7 +30,7 @@ inherit cmake lib_package pkgconfig perlnative python3native
 #   Temporarily support the old class name with a warning about future deprecation.
 inherit ${@bb.utils.contains_any("LAYERSERIES_CORENAMES", 'zeus warrior', 'distro_features_check', 'features_check', d)}
 
-S = "${WORKDIR}/webkitgtk-${PV}/"
+S = "${WORKDIR}/webkitgtk-${PV}"
 
 # To build with embedded gl support -> Enable *both* "opengl" and "gles2" option
 # To build with desktop  gl support -> Enable "opengl", but disable "gles2" option
