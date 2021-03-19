@@ -1,0 +1,68 @@
+From 1ede3a113f261c2d374c46642479e6b89b1e269d Mon Sep 17 00:00:00 2001
+From: Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+Date: Thu, 18 Mar 2021 16:12:16 +0000
+Subject: [PATCH] Fix compilation error caused by -Wdeprecated-copy
+
+Fixes the following compilation error using clang++-11 and libstdc++:
+
+DerivedSources/ForwardingHeaders/JavaScriptCore/ARMv7Assembler.h:449:14: warning: definition of implicit copy constructor for 'LinkRecord' is deprecated because it has a user-declared copy assignment operator [-Wdeprecated-copy]
+        void operator=(const LinkRecord& other)
+             ^
+wpewebkit/2.30.5-r0/recipe-sysroot/usr/lib//arm-poky-linux-gnueabi/9.3.0/../../../include/c++/9.3.0/bits/stl_heap.h:341:25: note: in implicit copy constructor for 'JSC::ARMv7Assembler::LinkRecord' first required here
+          _ValueType __value = _GLIBCXX_MOVE(*(__first + __parent));
+                               ^
+wpewebkit/2.30.5-r0/recipe-sysroot/usr/lib//arm-poky-linux-gnueabi/9.3.0/../../../include/c++/9.3.0/bits/move.h:158:30: note: expanded from macro '_GLIBCXX_MOVE'
+                             ^
+wpewebkit/2.30.5-r0/recipe-sysroot/usr/lib//arm-poky-linux-gnueabi/9.3.0/../../../include/c++/9.3.0/bits/stl_algo.h:1671:12: note: in instantiation of function template specialization 'std::__make_heap<JSC::ARMv7Assembler::LinkRecord *, __gnu_cxx::__ops::_Iter_comp_iter<bool (*)(const JSC::ARMv7Assembler::LinkRecord &, const JSC::ARMv7Assembler::LinkRecord &)>>' requested here
+      std::__make_heap(__first, __middle, __comp);
+           ^
+wpewebkit/2.30.5-r0/recipe-sysroot/usr/lib//arm-poky-linux-gnueabi/9.3.0/../../../include/c++/9.3.0/bits/stl_algo.h:1932:12: note: in instantiation of function template specialization 'std::__heap_select<JSC::ARMv7Assembler::LinkRecord *, __gnu_cxx::__ops::_Iter_comp_iter<bool (*)(const JSC::ARMv7Assembler::LinkRecord &, const JSC::ARMv7Assembler::LinkRecord &)>>' requested here
+      std::__heap_select(__first, __middle, __last, __comp);
+           ^
+wpewebkit/2.30.5-r0/recipe-sysroot/usr/lib//arm-poky-linux-gnueabi/9.3.0/../../../include/c++/9.3.0/bits/stl_algo.h:1947:13: note: in instantiation of function template specialization 'std::__partial_sort<JSC::ARMv7Assembler::LinkRecord *, __gnu_cxx::__ops::_Iter_comp_iter<bool (*)(const JSC::ARMv7Assembler::LinkRecord &, const JSC::ARMv7Assembler::LinkRecord &)>>' requested here
+              std::__partial_sort(__first, __last, __last, __comp);
+                   ^
+wpewebkit/2.30.5-r0/recipe-sysroot/usr/lib//arm-poky-linux-gnueabi/9.3.0/../../../include/c++/9.3.0/bits/stl_algo.h:1967:9: note: in instantiation of function template specialization 'std::__introsort_loop<JSC::ARMv7Assembler::LinkRecord *, int, __gnu_cxx::__ops::_Iter_comp_iter<bool (*)(const JSC::ARMv7Assembler::LinkRecord &, const JSC::ARMv7Assembler::LinkRecord &)>>' requested here
+          std::__introsort_loop(__first, __last,
+               ^
+wpewebkit/2.30.5-r0/recipe-sysroot/usr/lib//arm-poky-linux-gnueabi/9.3.0/../../../include/c++/9.3.0/bits/stl_algo.h:4899:12: note: in instantiation of function template specialization 'std::__sort<JSC::ARMv7Assembler::LinkRecord *, __gnu_cxx::__ops::_Iter_comp_iter<bool (*)(const JSC::ARMv7Assembler::LinkRecord &, const JSC::ARMv7Assembler::LinkRecord &)>>' requested here
+      std::__sort(__first, __last, __gnu_cxx::__ops::__iter_comp_iter(__comp));
+           ^
+DerivedSources/ForwardingHeaders/JavaScriptCore/ARMv7Assembler.h:2142:14: note: in instantiation of function template specialization 'std::sort<JSC::ARMv7Assembler::LinkRecord *, bool (*)(const JSC::ARMv7Assembler::LinkRecord &, const JSC
+::ARMv7Assembler::LinkRecord &)>' requested here
+        std::sort(m_jumpsToLink.begin(), m_jumpsToLink.end(), linkRecordSourceComparator);
+             ^
+1 warning generated.
+ninja: build stopped: subcommand failed.
+
+Signed-off-by: Damian Wrobel <dwrobel@ertelnet.rybnik.pl>
+---
+ Source/JavaScriptCore/assembler/ARMv7Assembler.h | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/Source/JavaScriptCore/assembler/ARMv7Assembler.h b/Source/JavaScriptCore/assembler/ARMv7Assembler.h
+index f3f7dd29d73c..89646eeabcf9 100644
+--- a/Source/JavaScriptCore/assembler/ARMv7Assembler.h
++++ b/Source/JavaScriptCore/assembler/ARMv7Assembler.h
+@@ -446,11 +446,14 @@ public:
+             data.realTypes.m_linkType = LinkInvalid;
+             data.realTypes.m_condition = condition;
+         }
+-        void operator=(const LinkRecord& other)
++        LinkRecord(const LinkRecord& other)
+         {
+-            data.copyTypes.content[0] = other.data.copyTypes.content[0];
+-            data.copyTypes.content[1] = other.data.copyTypes.content[1];
+-            data.copyTypes.content[2] = other.data.copyTypes.content[2];
++            data.copyTypes = other.data.copyTypes;
++        }
++        LinkRecord& operator=(const LinkRecord& other)
++        {
++            data.copyTypes = other.data.copyTypes;
++            return *this;
+         }
+         intptr_t from() const { return data.realTypes.m_from; }
+         void setFrom(intptr_t from) { data.realTypes.m_from = from; }
+-- 
+2.29.2
+
