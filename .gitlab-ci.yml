@@ -65,11 +65,3 @@ dunfell-raspberrypi3-mesa-weston-wpe-2.32:
     MANIFEST: .gitlab-ci/manifest/manifest-dunfell.xml
     SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.32
 
-zeus-raspberrypi3-mesa-weston-wpe-2.32:
-  extends:
-    - .raspberrypi3-mesa-weston-wpe
-  allow_failure: true
-  variables:
-    MANIFEST: .gitlab-ci/manifest/manifest-zeus.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.32
-
