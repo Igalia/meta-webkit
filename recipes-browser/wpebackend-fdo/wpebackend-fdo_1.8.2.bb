@@ -3,7 +3,7 @@ require wpebackend-fdo.inc
 inherit cmake
 
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz"
-SRC_URI[sha256sum] = "8adb4475be949ae4092370de6a37d7b9e1d3704cf4674867312e87de2ff0d880"
+SRC_URI[sha256sum] = "98c291071128326a72918d670a46ef63268c43267928560ac3b84b6aebb2d78d"
 
 # These dependencies are needed since wpebackend-fdo>=1.8.X
 # TODO: Promote it to the wpebackend-fdo.inc once wpebackend-fdo=1.6.1 is
