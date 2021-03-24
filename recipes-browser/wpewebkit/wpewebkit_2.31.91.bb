@@ -5,6 +5,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI = "\
     https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz \
     file://0001-EME-Fix-KeySystem-permission-handling.patch \
+    file://274943-GStreamer-Use-imxvideoconvert_g2d-element-inside-the.patch \
 "
 
 SRC_URI[sha256sum] = "e5bea1323ad810533bcb7ec7918b4bc2d342b0ea2a2fa61a3063cdd019bcd3f0"
