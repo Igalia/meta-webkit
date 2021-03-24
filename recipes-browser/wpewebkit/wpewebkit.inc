@@ -15,7 +15,7 @@ DEPENDS = " \
 inherit cmake pkgconfig perlnative python3native
 inherit ${@'cmake_qt5' if 'qt5-layer' in d.getVar('BBFILE_COLLECTIONS').split() else ''}
 
-CCACHE_DISABLE[unexport] = "1"
+export WK_USE_CCACHE="NO"
 
 PACKAGECONFIG ??= "fetchapi indexeddb mediasource video webaudio webcrypto woff2 gst_gl remote-inspector openjpeg unified-builds service-worker \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '' ,d)} \
