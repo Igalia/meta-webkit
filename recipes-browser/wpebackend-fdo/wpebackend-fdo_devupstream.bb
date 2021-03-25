@@ -14,3 +14,4 @@ DEPENDS = "glib-2.0 libxkbcommon wayland libepoxy libwpe"
 
 SRC_URI = "git://github.com/Igalia/WPEBackend-fdo.git;protocol=https;branch=master"
 SRCREV = "6796611f4a0c5b11ebc58466d73880ef2781e4ef"
+S = "${WORKDIR}/git"
