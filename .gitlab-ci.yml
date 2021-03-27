@@ -28,7 +28,7 @@
     - meta-webkit
   variables:
     # setup-environment targetname machine distro bblayers presets
-    # SOURCE: raspberrypi3-mesa-wpe-2.28 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_28
+    # SOURCE: raspberrypi3-mesa-wpe-2.30 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.30
     # MANIFEST: .gitlab-ci/manifest/manifest-gatesgarth.xml
     BITBAKE_TARGET: wpewebkit
   script:
@@ -43,33 +43,33 @@ gatesgarth-raspberrypi3-mesa-weston-wpe-qt:
     MANIFEST: .gitlab-ci/manifest/manifest-gatesgarth.xml
     SOURCE: raspberrypi3-mesa-wpe-qt raspberrypi3-mesa poky qt5 mesa-wpe-qt
 
-gatesgarth-raspberrypi3-mesa-weston-wpe-2.28:
-  extends:
-    - .raspberrypi3-mesa-weston-wpe
-  variables:
-    MANIFEST: .gitlab-ci/manifest/manifest-gatesgarth.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.28 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_28
-
 gatesgarth-raspberrypi3-mesa-weston-wpe-2.30:
   extends:
     - .raspberrypi3-mesa-weston-wpe
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-gatesgarth.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.30 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_30
+    SOURCE: raspberrypi3-mesa-wpe-2.30 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.30
 
-dunfell-raspberrypi3-mesa-weston-wpe-2.30:
+gatesgarth-raspberrypi3-mesa-weston-wpe-2.32:
+  extends:
+    - .raspberrypi3-mesa-weston-wpe
+  variables:
+    MANIFEST: .gitlab-ci/manifest/manifest-gatesgarth.xml
+    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.32
+
+dunfell-raspberrypi3-mesa-weston-wpe-2.32:
   extends:
     - .raspberrypi3-mesa-weston-wpe
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-dunfell.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.30 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_30
+    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.32
 
-zeus-raspberrypi3-mesa-weston-wpe-2.30:
+zeus-raspberrypi3-mesa-weston-wpe-2.32:
   extends:
     - .raspberrypi3-mesa-weston-wpe
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-zeus.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.30 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_30
+    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.32
 
