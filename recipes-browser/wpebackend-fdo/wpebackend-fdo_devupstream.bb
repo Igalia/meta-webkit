@@ -7,11 +7,6 @@ inherit meson
 
 DEFAULT_PREFERENCE = "-1"
 
-# These dependencies are needed since wpebackend-fdo>=1.8.X
-# TODO: Promote it to the wpebackend-fdo.inc once wpebackend-fdo=1.6.1 is
-# removed from this repo.
-DEPENDS = "glib-2.0 libxkbcommon wayland libepoxy libwpe"
-
 SRC_URI = "git://github.com/Igalia/WPEBackend-fdo.git;protocol=https;branch=master"
-SRCREV = "6796611f4a0c5b11ebc58466d73880ef2781e4ef"
+SRCREV = "99bd04019800f84a722ae99bf1a352f225d93002"
 S = "${WORKDIR}/git"
