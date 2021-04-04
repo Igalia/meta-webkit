@@ -161,6 +161,7 @@ FILES_${PN} += " \
         ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/specifications \
         ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/build_info \
         ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/extensions \
+        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/plugins \
         "
 
 FILES_${PN}-doc += " \
