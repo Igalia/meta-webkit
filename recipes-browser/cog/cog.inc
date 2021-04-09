@@ -9,6 +9,8 @@ BUGTRACKER = "https://github.com/Igalia/cog/issues"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bf1229cd7425b302d60cdb641b0ce5fb"
 
+BBCLASSEXTEND = "native"
+
 # Depend on wpewebkit unless the webkitgtk packageconfig option is selected.
 DEPENDS = " \
             ${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', 'webkitgtk', 'wpewebkit', d)} \
