@@ -14,6 +14,8 @@ DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn gnutls \
 
 SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz \
            file://musl.patch \
+           file://0001-ICU-69-deprecates-ubrk_safeClone-in-favor-of-ubrk_cl.patch \
+           file://0001-Move-cloneUBreakIterator-declaration-to-IntlWorkarou.patch \
            "
 SRC_URI[sha256sum] = "9d7df4dae9ada2394257565acc2a68ace9308c4c61c3fcc00111dc1f11076bf0"
 
