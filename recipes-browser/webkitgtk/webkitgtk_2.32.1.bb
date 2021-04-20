@@ -37,6 +37,8 @@ PACKAGECONFIG ??= " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)
                     ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'opengl gles2 webgl', '', d)} \
                     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '' ,d)} \
                     enchant \
+                    gold \
+                    jit \
                     libsecret \
                     openjpeg \
                     video \
@@ -63,7 +65,8 @@ PACKAGECONFIG[webgl] = "-DENABLE_WEBGL=ON,-DENABLE_WEBGL=OFF,virtual/libgl"
 PACKAGECONFIG[woff2] = "-DUSE_WOFF2=ON,-DUSE_WOFF2=OFF,woff2"
 PACKAGECONFIG[wperenderer] = "-DUSE_WPE_RENDERER=ON,-DUSE_WPE_RENDERER=OFF,libwpe wpebackend-fdo"
 PACKAGECONFIG[x11] = "-DENABLE_X11_TARGET=ON,-DENABLE_X11_TARGET=OFF,virtual/libx11 libxt"
-
+PACKAGECONFIG[jit] = "-DENABLE_JIT=ON -DENABLE_C_LOOP=OFF,-DENABLE_JIT=OFF -DENABLE_C_LOOP=ON,"
+PACKAGECONFIG[gold] = "-DUSE_LD_GOLD=ON,-DUSE_LD_GOLD=OFF,"
 
 EXTRA_OECMAKE = " \
                  -DPORT=GTK \
@@ -73,21 +76,22 @@ EXTRA_OECMAKE = " \
                  -G Ninja \
                 "
 
-# Javascript JIT is not supported on powerpc
-EXTRA_OECMAKE_append_powerpc = " -DENABLE_JIT=OFF "
-EXTRA_OECMAKE_append_powerpc64 = " -DENABLE_JIT=OFF "
-
-# ARM JIT code does not build on ARMv5/6 anymore, apparently they test only on v7 onwards
-EXTRA_OECMAKE_append_armv4 = " -DENABLE_JIT=OFF "
-EXTRA_OECMAKE_append_armv5 = " -DENABLE_JIT=OFF "
-EXTRA_OECMAKE_append_armv6 = " -DENABLE_JIT=OFF "
+# Javascript JIT is not supported on ppc/arm < v6/RISCV/mips64 and disable gold on mips/riscv
+PACKAGECONFIG_remove_powerpc = "jit"
+PACKAGECONFIG_remove_powerpc64 = "jit"
+PACKAGECONFIG_remove_powerpc64le = "jit"
+PACKAGECONFIG_remove_armv4 = "jit"
+PACKAGECONFIG_remove_armv5 = "jit"
+PACKAGECONFIG_remove_armv6 = "jit"
+PACKAGECONFIG_remove_riscv32 = "jit gold"
+PACKAGECONFIG_remove_riscv64 = "jit gold"
+PACKAGECONFIG_remove_mipsarchn64 = "jit gold"
+PACKAGECONFIG_remove_mipsarchn32 = "jit gold"
+PACKAGECONFIG_remove_mipsarcho32 = "gold"
 
 # binutils 2.25.1 has a bug on aarch64:
 # https://sourceware.org/bugzilla/show_bug.cgi?id=18430
-EXTRA_OECMAKE_append_aarch64 = " -DUSE_LD_GOLD=OFF "
-
-# JIT not supported on MIPS64 either
-EXTRA_OECMAKE_append_mips64 = " -DENABLE_JIT=OFF "
+PACKAGECONFIG_remove_aarch64 = "gold"
 
 # http://errors.yoctoproject.org/Errors/Details/20370/
 ARM_INSTRUCTION_SET_armv4 = "arm"

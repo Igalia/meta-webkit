@@ -17,7 +17,7 @@ inherit ${@'cmake_qt5' if 'qt5-layer' in d.getVar('BBFILE_COLLECTIONS').split() 
 
 export WK_USE_CCACHE="NO"
 
-PACKAGECONFIG ??= "fetchapi indexeddb mediasource video webaudio webcrypto woff2 gst_gl remote-inspector openjpeg unified-builds service-worker \
+PACKAGECONFIG ??= "fetchapi gold indexeddb jit mediasource video webaudio webcrypto woff2 gst_gl remote-inspector openjpeg unified-builds service-worker \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '' ,d)} \
                   "
 
@@ -52,6 +52,8 @@ PACKAGECONFIG[systemd] = "-DUSE_SYSTEMD=ON,-DUSE_SYSTEMD=OFF,systemd"
 PACKAGECONFIG[thunder] = "-DENABLE_THUNDER=ON,-DENABLE_THUNDER=OFF,virtual/open-cdm"
 PACKAGECONFIG[video-plane-display-dmabuf] = "-DUSE_WPE_VIDEO_PLANE_DISPLAY_DMABUF=ON,-DUSE_WPE_VIDEO_PLANE_DISPLAY_DMABUF=OFF,wpebackend-fdo"
 PACKAGECONFIG[webxr] = "-DENABLE_WEBXR=ON,-DENABLE_WEBXR=OFF,"
+PACKAGECONFIG[jit] = "-DENABLE_JIT=ON,-DENABLE_JIT=OFF -DENABLE_C_LOOP=ON,"
+PACKAGECONFIG[gold] = "-DUSE_LD_GOLD=ON,-DUSE_LD_GOLD=OFF,"
 #TODO: Add recipe for openxr:
 #  url: github_com:KhronosGroup/OpenXR-SDK.git
 #  track: master
@@ -62,9 +64,22 @@ EXTRA_OECMAKE = " -DPORT=WPE -G Ninja"
 # If SSE code compiles, assume it runs successfully (it can't actually run
 # because of cross compiling)
 EXTRA_OECMAKE_append_x86 = " -DHAVE_SSE2_EXTENSIONS_EXITCODE=0"
+# Javascript JIT is not supported on ppc/arm < v6/RISCV/mips64 and disable gold on mips/riscv
+PACKAGECONFIG_remove_powerpc = "jit"
+PACKAGECONFIG_remove_powerpc64 = "jit"
+PACKAGECONFIG_remove_powerpc64le = "jit"
+PACKAGECONFIG_remove_armv4 = "jit"
+PACKAGECONFIG_remove_armv5 = "jit"
+PACKAGECONFIG_remove_armv6 = "jit"
+PACKAGECONFIG_remove_riscv32 = "jit gold"
+PACKAGECONFIG_remove_riscv64 = "jit gold"
+PACKAGECONFIG_remove_mipsarchn64 = "jit"
+PACKAGECONFIG_remove_mipsarchn32 = "jit"
 # mips/gold does not yet implement
 # error: .gnu.hash is incompatible with the MIPS ABI
-EXTRA_OECMAKE_append_mipsarch = " -DUSE_LD_GOLD=OFF "
+PACKAGECONFIG_remove_mipsarcho32 = "gold"
+
+PACKAGECONFIG_remove_mipsarcho32_toolchain-clang = "jit"
 
 LDFLAGS_append_riscv64 = " -pthread"
 
