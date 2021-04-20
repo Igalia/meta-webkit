@@ -21,6 +21,7 @@ PACKAGECONFIG ??= "fetchapi indexeddb mediasource video webaudio webcrypto woff2
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '' ,d)} \
                   "
 
+PACKAGECONFIG[reduce-size] = "-DCMAKE_BUILD_TYPE=MinSizeRel,-DCMAKE_BUILD_TYPE=Release,,"
 # WPE features
 PACKAGECONFIG[accessibility] = "-DENABLE_ACCESSIBILITY=ON,-DENABLE_ACCESSIBILITY=OFF,atk at-spi2-atk"
 PACKAGECONFIG[bubblewrap] = "-DENABLE_BUBBLEWRAP_SANDBOX=ON,-DENABLE_BUBBLEWRAP_SANDBOX=OFF,bubblewrap xdg-dbus-proxy bubblewrap-native xdg-dbus-proxy-native libseccomp"
@@ -56,7 +57,7 @@ PACKAGECONFIG[webxr] = "-DENABLE_WEBXR=ON,-DENABLE_WEBXR=OFF,"
 #  track: master
 #  ref: release-1.0.11-0-ge3a4e41d61544d8e2eba73f00da99b6818ec472b
 
-EXTRA_OECMAKE = " -DPORT=WPE -DCMAKE_BUILD_TYPE=Release -G Ninja"
+EXTRA_OECMAKE = " -DPORT=WPE -G Ninja"
 
 # If SSE code compiles, assume it runs successfully (it can't actually run
 # because of cross compiling)
