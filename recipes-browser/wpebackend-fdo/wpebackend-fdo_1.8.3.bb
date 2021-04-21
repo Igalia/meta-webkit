@@ -2,7 +2,7 @@ require wpebackend-fdo.inc
 require conf/include/devupstream.inc
 
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz"
-SRC_URI[sha256sum] = "9652a99c75fe1c6eab0585b6395f4e104b2427e4d1f42969f1f77df29920d253"
+SRC_URI[sha256sum] = "3d0b4282a1bd9e0664d7a20abe14e982f3285296ac62de56cae2a404b9d28b9e"
 
 # Those dependencies shall be promoted to the next wpebackend-fdo 1.8.X releases
 # converving the older dependencies for packages previous to this version.
