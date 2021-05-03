@@ -14,6 +14,7 @@ DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn \
 
 SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz \
            file://musl.patch \
+           file://0001-MiniBrowser-Fix-reproduciblity.patch \
            "
 SRC_URI[sha256sum] = "9d7df4dae9ada2394257565acc2a68ace9308c4c61c3fcc00111dc1f11076bf0"
 
