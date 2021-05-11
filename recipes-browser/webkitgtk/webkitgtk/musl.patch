@@ -1,50 +1,5 @@
---- a/Source/JavaScriptCore/runtime/MachineContext.h
-+++ b/Source/JavaScriptCore/runtime/MachineContext.h
-@@ -196,7 +196,7 @@ static inline void*& stackPointerImpl(mc
- #error Unknown Architecture
- #endif
- 
--#elif OS(FUCHSIA) || defined(__GLIBC__) || defined(__BIONIC__)
-+#elif OS(FUCHSIA) || OS(LINUX)
- 
- #if CPU(X86)
-     return reinterpret_cast<void*&>((uintptr_t&) machineContext.gregs[REG_ESP]);
-@@ -347,7 +347,7 @@ static inline void*& framePointerImpl(mc
- #error Unknown Architecture
- #endif
- 
--#elif OS(FUCHSIA) || defined(__GLIBC__) || defined(__BIONIC__)
-+#elif OS(FUCHSIA) || OS(LINUX)
- 
- // The following sequence depends on glibc's sys/ucontext.h.
- #if CPU(X86)
-@@ -498,7 +498,7 @@ static inline void*& instructionPointerI
- #error Unknown Architecture
- #endif
- 
--#elif OS(FUCHSIA) || defined(__GLIBC__) || defined(__BIONIC__)
-+#elif OS(FUCHSIA) || OS(LINUX)
- 
- // The following sequence depends on glibc's sys/ucontext.h.
- #if CPU(X86)
-@@ -656,7 +656,7 @@ inline void*& argumentPointer<1>(mcontex
- #error Unknown Architecture
- #endif
- 
--#elif OS(FUCHSIA) || defined(__GLIBC__) || defined(__BIONIC__)
-+#elif OS(FUCHSIA) || OS(LINUX)
- 
- // The following sequence depends on glibc's sys/ucontext.h.
- #if CPU(X86)
-@@ -773,7 +773,7 @@ inline void*& llintInstructionPointer(mc
- #error Unknown Architecture
- #endif
- 
--#elif OS(FUCHSIA) || defined(__GLIBC__) || defined(__BIONIC__)
-+#elif OS(FUCHSIA) || OS(LINUX)
- 
- // The following sequence depends on glibc's sys/ucontext.h.
- #if CPU(X86)
+diff --git a/Source/JavaScriptCore/runtime/OptionsList.h b/Source/JavaScriptCore/runtime/OptionsList.h
+index bb6d2f1d..1e22d144 100644
 --- a/Source/JavaScriptCore/runtime/OptionsList.h
 +++ b/Source/JavaScriptCore/runtime/OptionsList.h
 @@ -71,6 +71,18 @@ JS_EXPORT_PRIVATE bool canUseJITCage();
@@ -79,29 +34,11 @@
      \
      v(Bool, crashOnDisallowedVMEntry, ASSERT_ENABLED, Normal, "Forces a crash if we attempt to enter the VM when disallowed") \
      v(Bool, crashIfCantAllocateJITMemory, false, Normal, nullptr) \
-@@ -608,7 +620,7 @@ public:
-     bool init(const char*);
-     bool isInRange(unsigned);
-     const char* rangeString() const { return (m_state > InitError) ? m_rangeString : s_nullRangeStr; }
--    
-+
-     void dump(PrintStream& out) const;
- 
- private:
---- a/Source/WTF/wtf/PlatformHave.h
-+++ b/Source/WTF/wtf/PlatformHave.h
-@@ -206,7 +206,7 @@
- #define HAVE_HOSTED_CORE_ANIMATION 1
- #endif
- 
--#if OS(DARWIN) || OS(FUCHSIA) || ((OS(FREEBSD) || defined(__GLIBC__) || defined(__BIONIC__)) && (CPU(X86) || CPU(X86_64) || CPU(ARM) || CPU(ARM64) || CPU(MIPS)))
-+#if OS(DARWIN) || OS(FUCHSIA) || ((OS(FREEBSD) || OS(LINUX)) && (CPU(X86) || CPU(X86_64) || CPU(ARM) || CPU(ARM64) || CPU(MIPS)))
- #define HAVE_MACHINE_CONTEXT 1
- #endif
- 
+diff --git a/Source/WTF/wtf/Threading.cpp b/Source/WTF/wtf/Threading.cpp
+index cb55426a..afbed9da 100644
 --- a/Source/WTF/wtf/Threading.cpp
 +++ b/Source/WTF/wtf/Threading.cpp
-@@ -52,6 +52,8 @@ static Optional<size_t> stackSize(Thread
+@@ -52,6 +52,8 @@ static Optional<size_t> stackSize(ThreadType threadType)
  #elif OS(DARWIN) && ASAN_ENABLED
      if (threadType == ThreadType::Compiler)
          return 1 * MB; // ASan needs more stack space (especially on Debug builds).
