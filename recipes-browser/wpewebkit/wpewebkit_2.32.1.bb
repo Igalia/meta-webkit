@@ -2,14 +2,14 @@ require wpewebkit.inc
 require conf/include/devupstream.inc
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+
 SRC_URI = "\
-    https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz \
-    file://musl.patch \
-    file://0001-ICU-69-deprecates-ubrk_safeClone-in-favor-of-ubrk_cl.patch \
-    file://0001-Move-cloneUBreakIterator-declaration-to-IntlWorkarou.patch \
+    https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
+    file://musl.patch;name=musl \
 "
 
-SRC_URI[sha256sum] = "6cfb18af9a180eeffffcaf34fea68d867ee59f633d811ced92bbead2d184b6ea"
+SRC_URI[tarball.sha256sum] = "7b6b39a12ccf3f84da4cc6ac59e02fbe328f7476eaeb9c23de9b9288c2c2f39c"
+SRC_URI[musl.sha256sum] = "327e1075554cf5ccffb8776bb61e13dcc02a19f52353fe53e726703e473f408d"
 
 DEPENDS += " libwpe"
 RCONFLICTS_${PN} = "libwpe (< 1.4) wpebackend-fdo (< 1.6)"
