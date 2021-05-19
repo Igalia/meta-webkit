@@ -1,0 +1,2 @@
+
+Yocto environment enabled for the CI tests

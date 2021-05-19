@@ -1,82 +1,51 @@
-before_script:
-  - mkdir -p ~/yocto-webkit
-  - cd ~/yocto-webkit
-  - ulimit -n 4096
-  - repo init -u https://gitlab.com/saavedra.pablo/meta-perf-browser.git -m $MANIFEST -b nightly
-  - repo sync --force-sync
-  - pushd sources/meta-webkit
-  - git remote remove tmp || true
-  - git remote add tmp $CI_REPOSITORY_URL
-  - git fetch tmp
-  - git checkout $CI_COMMIT_SHA
-  - popd
-  - source setup-environment $SOURCE
-  - rm -rf tmp
-
-thud-wandboard-mesa-weston-wpe-2.20:
+.raspberrypi3-mesa-weston-wpe:
+  before_script:
+    - |
+      echo "Environment:"
+      echo "======================================================================"
+      echo "CI_REPOSITORY_URL=\"$CI_REPOSITORY_URL\""
+      echo "CI_COMMIT_SHA=\"$CI_COMMIT_SHA\""
+      echo "MANIFEST=\"$MANIFEST\""
+      echo "SOURCE=\"$SOURCE\""
+      echo "BITBAKE_TARGET=\"$BITBAKE_TARGET\""
+      echo "======================================================================"
+    - |
+      mkdir -p ~/yocto-webkit
+      cd ~/yocto-webkit
+      ulimit -n 4096
+      rm -rf sources .repo
+    - repo init -u $CI_REPOSITORY_URL -m $MANIFEST -b $CI_COMMIT_SHA
+    - repo sync --force-sync
+    - pushd sources/meta-webkit
+    - git remote remove tmp || true
+    - git remote add tmp $CI_REPOSITORY_URL
+    - git fetch tmp
+    - git checkout $CI_COMMIT_SHA
+    - popd
+    - source sources/meta-webkit/.gitlab-ci/scripts/setup-environment $SOURCE
+    - rm -rf tmp
   tags:
     - meta-webkit
   variables:
-    MANIFEST: manifest-thud.xml
-    # setup-environment targetname machine distro bblayers presets --update-config
-    SOURCE: wandboard-mesa-wpe-2.20 wandboard-mesa browsers default mesa-wpe-2_20 --update-config
+    # setup-environment targetname machine distro bblayers presets
+    # SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.32
+    # MANIFEST: .gitlab-ci/manifest/manifest-thud.xml
     BITBAKE_TARGET: wpewebkit
   script:
     - bitbake $BITBAKE_TARGET
+    - rm -rf tmp
 
-thud-wandboard-mesa-weston-wpe-2.22:
-  tags:
-    - meta-webkit
+thud-raspberrypi3-mesa-weston-wpe-2.24:
+  extends:
+    - .raspberrypi3-mesa-weston-wpe
   variables:
-    MANIFEST: manifest-thud.xml
-    # setup-environment targetname machine distro bblayers presets --update-config
-    SOURCE: wandboard-mesa-wpe-2.22 wandboard-mesa browsers default mesa-wpe-2_22 --update-config
-    BITBAKE_TARGET: wpewebkit
-  script:
-    - bitbake $BITBAKE_TARGET
+    MANIFEST: .gitlab-ci/manifest/manifest-thud.xml
+    SOURCE: raspberrypi3-mesa-wpe-2.24 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_30
 
-thud-wandboard-mesa-weston-wpe-2.24:
-  tags:
-    - meta-webkit
+thud-raspberrypi3-mesa-weston-wpe-2.32:
+  extends:
+    - .raspberrypi3-mesa-weston-wpe
   variables:
-    MANIFEST: manifest-thud.xml
-    # setup-environment targetname machine distro bblayers presets --update-config
-    SOURCE: wandboard-mesa-wpe-2.24 wandboard-mesa browsers default mesa-wpe-2_24 --update-config
-    BITBAKE_TARGET: wpewebkit
-  script:
-    - bitbake $BITBAKE_TARGET
+    MANIFEST: .gitlab-ci/manifest/manifest-thud.xml
+    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_32
 
-thud-wandboard-mesa-weston-wpe-trunk:
-  allow_failure: true
-  tags:
-    - meta-webkit
-  variables:
-    MANIFEST: manifest-thud.xml
-    # setup-environment targetname machine distro bblayers presets --update-config
-    SOURCE: wandboard-mesa-wpe-trunk wandboard-mesa browsers default mesa-wpe-trunk --update-config
-    BITBAKE_TARGET: wpewebkit
-  script:
-    - bitbake $BITBAKE_TARGET
-
-thud-wandboard-mesa-weston-wpe-qt:
-  allow_failure: true
-  tags:
-    - meta-webkit
-  variables:
-    MANIFEST: manifest-thud.xml
-    # setup-environment targetname machine distro bblayers presets --update-config
-    SOURCE: wandboard-mesa-wpe-qt wandboard-mesa browsers default mesa-wpe-qt --update-config
-    BITBAKE_TARGET: wpewebkit
-  script:
-    - bitbake $BITBAKE_TARGET
-
-thud-rpi3-userland-wpe-2.22:
-  tags:
-    - meta-webkit
-  variables:
-    MANIFEST: manifest-thud.xml
-    # setup-environment targetname machine distro bblayers presets --update-config
-    SOURCE: rpi3-userland-wpe-2.22 raspberrypi3-userland browsers default userland-wpe-2_22 --update-config
-    BITBAKE_TARGET: wpewebkit
-  script:
-    - bitbake $BITBAKE_TARGET
