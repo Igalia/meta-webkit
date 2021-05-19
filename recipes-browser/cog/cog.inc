@@ -12,11 +12,19 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bf1229cd7425b302d60cdb641b0ce5fb"
 # Depend on wpewebkit unless the webkitgtk packageconfig option is selected.
 DEPENDS = " \
             ${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', 'webkitgtk', 'wpewebkit', d)} \
-            libsoup-2.4 glib-2.0 \
+            ${@bb.utils.contains('PACKAGECONFIG', 'fdo', 'wayland', '', d)} \
+            libsoup-2.4 glib-2.0 wayland-native wayland-protocols \
+            "
+
+DEPENDS_append_class-target = " \
+            ${@bb.utils.contains('PACKAGECONFIG', 'fdo', 'wayland-native', '', d)} \
             "
 
 # At run-time cog package should depend on virtual/wpebackend unless webkitgtk+ is enabled.
-RDEPENDS_${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', '', 'virtual/wpebackend', d)}"
+RDEPENDS_${PN} += "\
+    ${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', '', 'virtual/wpebackend', d)} \
+    xkeyboard-config \
+    "
 
 inherit cmake
 
@@ -32,9 +40,15 @@ FILES_SOLIBSDEV = "${libdir}/libcogcore*.so"
 FILES_${PN} += "${libdir}/libcogplatform*.so"
 INSANE_SKIP_${PN} = "dev-so"
 
+# Local user name starting cog with DBus system session enabled. This should be
+# set only if the dbus PACKAGECONFIG is enabled.
+COG_DBUS_OWN_USER ?= ""
+
 # Use WebKitGTK+ instead of WPEWebKit
 PACKAGECONFIG[webkitgtk] = "-DCOG_USE_WEBKITGTK=ON,-DCOG_USE_WEBKITGTK=OFF"
 # Expose remote control interface on system bus.
-PACKAGECONFIG[dbus] = "-DCOG_DBUS_SYSTEM_BUS=ON,-DCOG_DBUS_SYSTEM_BUS=OFF"
+PACKAGECONFIG[dbus] = "-DCOG_DBUS_SYSTEM_BUS=ON -DCOG_DBUS_OWN_USER=${COG_DBUS_OWN_USER},-DCOG_DBUS_SYSTEM_BUS=OFF"
 # Use wpebackend-fdo.
 PACKAGECONFIG[fdo] = "-DCOG_PLATFORM_FDO=ON,-DCOG_PLATFORM_FDO=OFF,wpebackend-fdo"
+PACKAGECONFIG[drm] = "-DCOG_PLATFORM_DRM=ON,-DCOG_PLATFORM_DRM=OFF,wpebackend-fdo libdrm virtual/libgbm libinput"
+PACKAGECONFIG[weston-direct-display] = "-DCOG_WESTON_DIRECT_DISPLAY=ON,-DCOG_WESTON_DIRECT_DISPLAY=OFF,weston"
