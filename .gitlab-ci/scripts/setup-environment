@@ -1,0 +1,77 @@
+#!/bin/bash
+
+BSPDIR="$(pwd)"
+TARGET="${1}"
+MACHINE="${2}"
+DISTRO="${3}"
+BBLAYERS="${4}"
+PRESETS="${5}"
+
+TEMPLATEDIR="${BSPDIR}/sources/meta-webkit/.gitlab-ci"
+TEMPLATECONF="${TEMPLATEDIR}/template"
+
+CONFBACKNAME="conf_$(date +%Y%m%d-%H%M%S)"
+OLDCONFSDIR="builds/${TARGET}/oldconfs"
+
+if [ "${0}" = "${BASH_SOURCE}" ]; then
+    echo "Please don't run the script but source it"
+    echo -e "\e[32mUsage:\e[1m source ${0} targetname\e[0m"
+    echo -e "\e[1m       source ${BASH_SOURCE} targetname machine distro bblayers presets"
+    return 1
+fi
+
+if [ "$#" -lt "1" ]
+then
+    echo -e "\e[32mUsage:\e[1m ${BASH_SOURCE} targetname\e[0m"
+    echo -e "\e[1m       ${BASH_SOURCE} targetname machine distro bblayers presets"
+    echo -e "\e[0m"
+    return 1
+fi
+
+test -d builds || mkdir builds
+test -d caches || mkdir caches
+
+if test -d "builds/${TARGET}/conf"; then
+    test -d "${OLDCONFSDIR}" || mkdir "${OLDCONFSDIR}"
+    mv "builds/${TARGET}/conf" "${OLDCONFSDIR}/${CONFBACKNAME}"
+    echo "Backuped current config to oldconfs/${CONFBACKNAME}"
+    echo "Resetting build config at conf/"
+fi
+
+OEROOT="${BSPDIR}/sources/poky"
+
+OESCRIPT="${OEROOT}/oe-init-build-env"
+if ! test -x "${OESCRIPT}"; then
+    echo "ERROR: Either repositories are not updated correctly or script not sourced from the topdir."
+    echo "Please see README file."
+    return 1
+fi
+
+# Variables that need to be passed to the poky script.
+export OEROOT
+export TEMPLATECONF
+export BASH_SOURCE="${OESCRIPT}"
+source "${OESCRIPT}" "${BSPDIR}/builds/${TARGET}"
+
+# cp include conf files
+cp -a ${TEMPLATECONF}/include ${BUILDDIR}/conf/
+cp -a ${TEMPLATECONF}/machine ${BUILDDIR}/conf/
+cp -a ${TEMPLATECONF}/presets ${BUILDDIR}/conf/
+cp -a ${TEMPLATECONF}/bblayers/bblayers.conf.${BBLAYERS} ${BUILDDIR}/conf/bblayers.conf
+
+sed -i "s|##MACHINE##|${MACHINE}|g"  "${BUILDDIR}/conf/local.conf"
+sed -i "s|##DISTRO##|${DISTRO}|g"    "${BUILDDIR}/conf/local.conf"
+sed -i "s|##PRESETS##|${PRESETS}|g"  "${BUILDDIR}/conf/local.conf"
+
+if test -d "conf"; then
+    if test -d "../../${OLDCONFSDIR}"; then
+        echo "Changes in the conf/"
+        diff -ur "../../${OLDCONFSDIR}/${CONFBACKNAME}" "conf" 2>&1 || true
+    fi
+fi
+
+alias oe-goto-deploy-images="pushd ${BUILDDIR}/tmp/deploy/images"
+alias oe-goto-sources="pushd ${BUILDDIR}/../../sources"
+alias oe-goto-builddir="pushd ${BUILDDIR}/"
+
+umask 002
