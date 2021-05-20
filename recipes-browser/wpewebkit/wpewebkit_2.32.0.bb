@@ -28,3 +28,4 @@ PACKAGECONFIG[webxr] = "-DENABLE_WEBXR=ON,-DENABLE_WEBXR=OFF,"
 
 FILES_${PN}-qtwpe-qml-plugin = "${libdir}/qt5/qml/org/wpewebkit/qtwpe/*"
 
+DEFAULT_PREFERENCE = "-1"
