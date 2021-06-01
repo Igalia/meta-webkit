@@ -9,6 +9,8 @@ BUGTRACKER = "https://github.com/Igalia/cog/issues"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bf1229cd7425b302d60cdb641b0ce5fb"
 
+SRC_URI = "https://wpewebkit.org/releases/${P}.tar.xz"
+
 # Depend on wpewebkit unless the webkitgtk packageconfig option is selected.
 DEPENDS = " \
             ${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', 'webkitgtk', 'wpewebkit', d)} \
@@ -47,3 +49,4 @@ PACKAGECONFIG[dbus] = "-DCOG_DBUS_SYSTEM_BUS=ON,-DCOG_DBUS_SYSTEM_BUS=OFF"
 # Use wpebackend-fdo.
 PACKAGECONFIG[fdo] = "-DCOG_PLATFORM_FDO=ON,-DCOG_PLATFORM_FDO=OFF,wpebackend-fdo"
 PACKAGECONFIG[drm] = "-DCOG_PLATFORM_DRM=ON,-DCOG_PLATFORM_DRM=OFF,wpebackend-fdo libdrm virtual/libgbm libinput"
+PACKAGECONFIG[weston-direct-display] = "-DCOG_WESTON_DIRECT_DISPLAY=ON,-DCOG_WESTON_DIRECT_DISPLAY=OFF,weston"
