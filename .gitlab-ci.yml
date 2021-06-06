@@ -35,6 +35,17 @@
     - bitbake $BITBAKE_TARGET
     - rm -rf tmp
 
+hardknott-raspberrypi3-mesa-weston-wpe-musl:
+  extends:
+    - .raspberrypi3-mesa-weston-wpe
+  allow_failure: true
+  variables:
+    MANIFEST: .gitlab-ci/manifest/manifest-hardknott.xml
+    SOURCE: raspberrypi3-mesa-wpe-musl raspberrypi3-mesa poky raspberrypi mesa-wpe-2_32
+  script:
+    - TCLIBC=musl bitbake $BITBAKE_TARGET
+    - rm -rf tmp
+
 hardknott-raspberrypi3-mesa-weston-wpe-qt:
   extends:
     - .raspberrypi3-mesa-weston-wpe
