@@ -31,7 +31,7 @@ inherit cmake
 # Cog can work with any wpebackend.
 # But for using wpebackend-fdo this has to be enabled at build time.
 PREFERRED_PROVIDER_virtual/wpebackend ?= "wpebackend-fdo"
-PACKAGECONFIG ?= " ${@bb.utils.contains('PREFERRED_PROVIDER_virtual/wpebackend', 'wpebackend-fdo', 'fdo', '', d)} "
+PACKAGECONFIG ?= " ${@bb.utils.contains('PREFERRED_PROVIDER_virtual/wpebackend', 'wpebackend-fdo', 'fdo', '', d)} ${@bb.utils.contains('PREFERRED_PROVIDER_virtual/wpebackend', 'wpebackend-rdk', 'drm', '', d)} "
 
 # libcogplatform*.so are plugins that should go on the main package (not on -dev)
 # https://github.com/Igalia/cog/commit/758ed08555e8152a2becd2178d1f3a4ce6e67af9
