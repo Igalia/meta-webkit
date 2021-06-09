@@ -1,3 +1,5 @@
+PACKAGE_ARCH = "${TUNE_PKGARCH}"
+
 inherit packagegroup
 
 PACKAGES = " \
@@ -70,11 +72,13 @@ RDEPENDS_packagegroup-wpewebkit-depends-misc = "\
     gettext-runtime \
     groff \
     lsof \
-    strace \
+    ${STRACE} \
     libusb1 \
     usbutils \
     rpm \
     "
+STRACE = "strace"
+STRACE_riscv32 = ""
 
 RDEPENDS_packagegroup-wpewebkit-depends-core = "\
     at \
