@@ -9,4 +9,4 @@ PACKAGECONFIG[headless] = "-DCOG_PLATFORM_HEADLESS=ON,-DCOG_PLATFORM_HEADLESS=OF
 SRC_URI_class-devupstream = "git://github.com/Igalia/cog.git;protocol=https;branch=master"
 SRCREV_class-devupstream = "10f0360cd1ef9f8258d7d4a06d4ab113f5635995"
 
-RDEPENDS_${PN} += "wpewebkit (>= 2.28)"
+RDEPENDS_${PN} += "wpewebkit (>= 2.32)"
