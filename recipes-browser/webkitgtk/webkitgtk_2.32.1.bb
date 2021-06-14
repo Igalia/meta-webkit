@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf
 
 # you need harfbuzz with icu enabled, you can add this to your config:
 # PACKAGECONFIG_append_pn-harfbuzz = " icu"
-DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn \
+DEPENDS = "zlib libsoup-3 curl libxml2 cairo libxslt libidn \
            gtk+3 gstreamer1.0 gstreamer1.0-plugins-base flex-native icu \
            gperf-native perl-native ruby-native ccache-native ninja-native \
            libwebp harfbuzz glib-2.0 gettext-native glib-2.0-native \

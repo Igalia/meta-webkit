@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf
 DEPENDS = " \
     bison-native gperf-native harfbuzz-native libxml2-native ccache-native ninja-native ruby-native cairo \
     fontconfig freetype glib-2.0 harfbuzz icu jpeg pcre sqlite3 zlib libpng \
-    libsoup-2.4 libwebp libxml2 libxslt virtual/egl virtual/libgles2 libepoxy libgcrypt \
+    libsoup-3 libwebp libxml2 libxslt virtual/egl virtual/libgles2 libepoxy libgcrypt \
 "
 
 inherit cmake pkgconfig perlnative python3native
