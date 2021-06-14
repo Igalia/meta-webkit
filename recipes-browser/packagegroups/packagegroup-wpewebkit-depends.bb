@@ -129,7 +129,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-core = "\
     sqlite3 \
     zlib \
     libpng \
-    libsoup-2.4 \
+    libsoup-3 \
     libwebp \
     libxml2 \
     libxslt \
@@ -257,7 +257,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-tests = " \
     ruby-highline \
     ruby-json \
     brotli \
-    libsoup-2.4 \
+    libsoup-3 \
     cairo \
     fontconfig \
     freetype \
