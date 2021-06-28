@@ -39,7 +39,14 @@ PACKAGECONFIG ?= " ${@bb.utils.contains('PREFERRED_PROVIDER_virtual/wpebackend',
 # https://github.com/Igalia/cog/commit/758ed08555e8152a2becd2178d1f3a4ce6e67af9
 # Also libWPEBackend-default.so should go into the main package.
 FILES_SOLIBSDEV = "${libdir}/libcogcore*.so"
-FILES_${PN} += "${libdir}/libcogplatform*.so"
+
+# cog < 0.10.0 installed D-Bus policy configuration into sysconfdir
+# cog >= 0.10.0 installs it into datadir, see https://github.com/Igalia/cog/pull/296
+FILES_${PN} += " \
+    ${libdir}/libcogplatform*.so \
+    ${sysconfdir}/dbus-1/system.d/com.igalia.Cog.conf \
+    ${datadir}/dbus-1/system.d/com.igalia.Cog.conf \
+"
 INSANE_SKIP_${PN} = "dev-so"
 
 # Local user name starting cog with DBus system session enabled. This should be
