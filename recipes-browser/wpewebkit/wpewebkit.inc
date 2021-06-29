@@ -83,6 +83,7 @@ ARM_INSTRUCTION_SET_armv7ve = "thumb"
 
 # Extra runtime depends
 RDEPENDS_${PN} += " \
+    libgles2 \
     virtual/wpebackend \
     ${@bb.utils.contains('PACKAGECONFIG', 'mediasource', 'gstreamer1.0-plugins-good-isomp4', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'webaudio', 'gstreamer1.0-plugins-good-wavparse', '', d)} \
