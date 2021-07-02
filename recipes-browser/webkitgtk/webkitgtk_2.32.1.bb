@@ -6,14 +6,17 @@ LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf
 
 # you need harfbuzz with icu enabled, you can add this to your config:
 # PACKAGECONFIG_append_pn-harfbuzz = " icu"
-DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn gnutls \
+DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn \
            gtk+3 gstreamer1.0 gstreamer1.0-plugins-base flex-native icu \
            gperf-native perl-native ruby-native ccache-native ninja-native \
            libwebp harfbuzz glib-2.0 gettext-native glib-2.0-native \
            sqlite3 libgcrypt"
 
-SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz"
-SRC_URI[sha256sum] = "9d7df4dae9ada2394257565acc2a68ace9308c4c61c3fcc00111dc1f11076bf0"
+SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
+           file://0001-MiniBrowser-Fix-reproduciblity.patch;name=minibrowser \
+           "
+SRC_URI[tarball.sha256sum] = "136117317f70f66486f71b8edf5e46f8776403c5d8a296e914b11a36ef836917"
+SRC_URI[minibrowser.sha256sum] = "5729da9f7379ddc4e669f4c80d60d38bef8e84f7e0146dc319a63061cee4ceeb"
 
 RRECOMMENDS_${PN} = "${PN}-bin \
                      ca-certificates \
@@ -32,6 +35,7 @@ S = "${WORKDIR}/webkitgtk-${PV}"
 PACKAGECONFIG ??= " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)} \
                     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland wperenderer', '', d)} \
                     ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'opengl gles2 webgl', '', d)} \
+                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '' ,d)} \
                     enchant \
                     libsecret \
                     openjpeg \
@@ -40,8 +44,10 @@ PACKAGECONFIG ??= " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)
                     woff2 \
                   "
 
+PACKAGECONFIG[reduce-size] = "-DCMAKE_BUILD_TYPE=MinSizeRel,-DCMAKE_BUILD_TYPE=Release,,"
 PACKAGECONFIG[bubblewrap] = "-DENABLE_BUBBLEWRAP_SANDBOX=ON,-DENABLE_BUBBLEWRAP_SANDBOX=OFF,bubblewrap xdg-dbus-proxy bubblewrap-native xdg-dbus-proxy-native libseccomp"
 PACKAGECONFIG[enchant] = "-DENABLE_SPELLCHECK=ON,-DENABLE_SPELLCHECK=OFF,enchant2"
+PACKAGECONFIG[gamepad] = "-DENABLE_GAMEPAD=ON,-DENABLE_GAMEPAD=OFF,libmanette"
 PACKAGECONFIG[geoclue] = "-DENABLE_GEOLOCATION=ON,-DENABLE_GEOLOCATION=OFF,geoclue"
 PACKAGECONFIG[gles2] = "-DENABLE_GLES2=ON,-DENABLE_GLES2=OFF,virtual/libgles2"
 PACKAGECONFIG[libhyphen] = "-DUSE_LIBHYPHEN=ON,-DUSE_LIBHYPHEN=OFF,libhyphen"
@@ -49,6 +55,7 @@ PACKAGECONFIG[libnotify] = "-DUSE_LIBNOTIFY=ON,-DUSE_LIBNOTIFY=OFF,libnotify"
 PACKAGECONFIG[libsecret] = "-DUSE_LIBSECRET=ON,-DUSE_LIBSECRET=OFF,libsecret"
 PACKAGECONFIG[opengl] = "-DENABLE_OPENGL=ON,-DENABLE_OPENGL=OFF,virtual/libgl"
 PACKAGECONFIG[openjpeg] = "-DUSE_OPENJPEG=ON,-DUSE_OPENJPEG=OFF,openjpeg"
+PACKAGECONFIG[systemd] = "-DUSE_SYSTEMD=ON,-DUSE_SYSTEMD=OFF,systemd"
 PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON,-DENABLE_VIDEO=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad"
 PACKAGECONFIG[wayland] = "-DENABLE_WAYLAND_TARGET=ON,-DENABLE_WAYLAND_TARGET=OFF,wayland wayland-native"
 PACKAGECONFIG[webcrypto] = "-DENABLE_WEB_CRYPTO=ON,-DENABLE_WEB_CRYPTO=OFF,libgcrypt libtasn1"
@@ -58,11 +65,8 @@ PACKAGECONFIG[wperenderer] = "-DUSE_WPE_RENDERER=ON,-DUSE_WPE_RENDERER=OFF,libwp
 PACKAGECONFIG[x11] = "-DENABLE_X11_TARGET=ON,-DENABLE_X11_TARGET=OFF,virtual/libx11 libxt"
 
 
-WEBKIT_BUILD_TYPE ??= "Release"
-
 EXTRA_OECMAKE = " \
                  -DPORT=GTK \
-                 -DCMAKE_BUILD_TYPE=${WEBKIT_BUILD_TYPE} \
                  -DENABLE_INTROSPECTION=OFF \
                  -DENABLE_GTKDOC=OFF \
                  -DENABLE_MINIBROWSER=ON \

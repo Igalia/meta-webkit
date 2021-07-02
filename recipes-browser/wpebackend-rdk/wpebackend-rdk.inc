@@ -5,8 +5,12 @@ BUGTRACKER = "https://github.com/WebPlatformForEmbedded/WPEBackend-rdk/issues"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://src/wayland/display.h;;beginline=5;endline=24;md5=b1c8cb6b0857048a21b33611f01c575a"
 
+SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=git;branch=master"
+
 PROVIDES += "virtual/wpebackend"
 RPROVIDES_${PN} += "virtual/wpebackend"
+
+DEPENDS = "libwpe glib-2.0 libinput"
 
 inherit cmake pkgconfig
 
