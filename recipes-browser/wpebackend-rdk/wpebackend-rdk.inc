@@ -6,16 +6,31 @@ LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://src/wayland/display.h;;beginline=5;endline=24;md5=b1c8cb6b0857048a21b33611f01c575a"
 
 SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=git;branch=master"
+S = "${WORKDIR}/git"
 
 PROVIDES += "virtual/wpebackend"
 RPROVIDES_${PN} += "virtual/wpebackend"
 
-DEPENDS = "libwpe glib-2.0 libinput"
+DEPENDS = "libwpe glib-2.0"
 
 inherit cmake pkgconfig
 
+PACKAGECONFIG ?= "wayland virtualinput"
 
-PACKAGECONFIG ?= "wayland"
+# Wayland selectors
+PACKAGECONFIG[wpeframework] = "-DUSE_BACKEND_WPEFRAMEWORK=ON -DUSE_KEY_INPUT_HANDLING_LINUX_INPUT=OFF -DUSE_INPUT_LIBINPUT=OFF,,wpeframework-clientlibraries wpeframework-plugins libxkbcommon xkeyboard-config"
+
+# other switches
+PACKAGECONFIG[debug]            = "-DCMAKE_BUILD_TYPE=Debug,-DCMAKE_BUILD_TYPE=Release,"
+PACKAGECONFIG[libinput]         = "-DUSE_INPUT_LIBINPUT=ON,-DUSE_INPUT_LIBINPUT=OFF,libinput,"
+PACKAGECONFIG[libinput-udev]    = "-DUSE_INPUT_UDEV=ON,-DUSE_INPUT_UDEV=OFF,libinput eudev,"
+PACKAGECONFIG[virtualinput]     = "-DUSE_VIRTUAL_KEYBOARD=ON,-DUSE_VIRTUAL_KEYBOARD=OFF,wpeframework-clientlibraries,"
+
+# MESA
+PACKAGECONFIG[westeros-mesa]    = "-DUSE_BACKEND_WESTEROS_MESA=ON,,"
+
+# FIXME RDEPENDS on PACKAGECONFIG is not behaving as it should
+RDEPENDS_${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'wpeframework', 'xkeyboard-config', '', d)}"
 
 # device specific backends
 PACKAGECONFIG[intelce] = "-DUSE_BACKEND_INTEL_CE=ON -DUSE_KEY_INPUT_HANDLING_LINUX_INPUT=ON,,intelce-display"
