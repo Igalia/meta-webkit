@@ -11,9 +11,12 @@ inherit meson pkgconfig
 PV = "2021.0"
 
 SRC_URI = "git://github.com/Sparkle-CDM/sparkle-cdm.git;protocol=https;branch=main"
-SRCREV = "31e063770f43acc343df1bfd920a5baa76722af0"
+SRCREV = "80f71eb07125111ecf60247da990cc97c8aac84f"
 
 S = "${WORKDIR}/git"
+
+PACKAGECONFIG ?= ""
+PACKAGECONFIG[sample-player] = "-Dsample-player=enabled,-Dsample-player=disabled,libsoup-2.4"
 
 BBCLASSEXTEND = "devupstream:target"
 LIC_FILES_CHKSUM-devupstream = "file://COPYING;md5=5d34cbc44b66f4a9ddc9afa73e13eda5"
@@ -25,6 +28,11 @@ S_class-devupstream = "${WORKDIR}/git"
 PROVIDES += "virtual/open-cdm"
 RPROVIDES_${PN} += "virtual/open-cdm"
 
-FILES_${PN} += "${libdir}/libocdm.so"
+PACKAGES =+ "${PN}-sample-player"
+
+FILES_${PN} += "${libdir}/libocdm.so \
+                ${libdir}/gstreamer-1.0/libgstsprkl.so \
+"
+FILES_${PN}-sample-player += "${bindir}/sample-player"
 FILES_SOLIBSDEV = ""
 
