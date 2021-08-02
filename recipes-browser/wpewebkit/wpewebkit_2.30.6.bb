@@ -1,6 +1,6 @@
 require wpewebkit.inc
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI = "\
     https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
@@ -13,5 +13,5 @@ SRC_URI[216455.sha256sum] = "ddbc5ad149d1448025f0a4437ad45bcb4d21b44ca6b7e426775
 SRC_URI[274943.sha256sum] = "efd5722f95a74503983aba0f844765a9bffa0ee4779dfc65000bf099122bca0c"
 
 DEPENDS += " libwpe"
-RCONFLICTS_${PN} = "libwpe (< 1.4) wpebackend-fdo (< 1.6)"
+RCONFLICTS:${PN} = "libwpe (< 1.4) wpebackend-fdo (< 1.6)"
 

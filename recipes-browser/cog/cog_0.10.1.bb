@@ -11,7 +11,7 @@ PACKAGECONFIG[wl] = "-DCOG_PLATFORM_WL=ON,-DCOG_PLATFORM_WL=OFF,wpebackend-fdo"
 
 PACKAGECONFIG_class-devupstream ?= " ${@bb.utils.contains('PREFERRED_PROVIDER_virtual/wpebackend', 'wpebackend-fdo', 'fdo wl drm', '', d)} "
 
-SRC_URI_class-devupstream = "git://github.com/Igalia/cog.git;protocol=https;branch=cog-0.10"
-SRCREV_class-devupstream = "cfbbde0331e11b5b9ab5b4cc0749d55cf74b3d05"
+SRC_URI:class-devupstream = "git://github.com/Igalia/cog.git;protocol=https;branch=cog-0.10"
+SRCREV:class-devupstream = "cfbbde0331e11b5b9ab5b4cc0749d55cf74b3d05"
 
-RDEPENDS_${PN} += "wpewebkit (>= 2.32)"
+RDEPENDS:${PN} += "wpewebkit (>= 2.32)"

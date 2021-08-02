@@ -14,7 +14,7 @@ PACKAGES = "${PN}"
 
 # Note: this recipe depends on meta-openembedded/meta-python for python-psutil
 # And the dromaeo test needs the crc32 binary that is provided by libarchive-zip-perl
-RDEPENDS_${PN} = " curl make patch perl procps psmisc python python-misc \
+RDEPENDS:${PN} = " curl make patch perl procps psmisc python python-misc \
                    python-modules python-psutil python-setuptools \
                    gobject-introspection python-pygobject gtk+3 ruby \
                    subversion libarchive-zip-perl"
@@ -37,4 +37,4 @@ do_install() {
     cp -dr --preserve=mode,timestamp ${S}/webkitpy ${D}${PYTHON_SITEPACKAGES_DIR}/
 }
 
-FILES_${PN} = "${bindir}/* ${PYTHON_SITEPACKAGES_DIR}/*"
+FILES:${PN} = "${bindir}/* ${PYTHON_SITEPACKAGES_DIR}/*"

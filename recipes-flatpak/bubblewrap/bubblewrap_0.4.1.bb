@@ -14,7 +14,7 @@ AUTO_LIBNAME_PKGS = ""
 # possible package configurations
 PACKAGECONFIG ??= ""
 
-EXTRA_OECONF_class-target += "--disable-man --without-bash-completion-dir"
-EXTRA_OECONF_class-native += "--disable-man --without-bash-completion-dir"
+EXTRA_OECONF:class-target += "--disable-man --without-bash-completion-dir"
+EXTRA_OECONF:class-native += "--disable-man --without-bash-completion-dir"
 
 BBCLASSEXTEND = "native"
