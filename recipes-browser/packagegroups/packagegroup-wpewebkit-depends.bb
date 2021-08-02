@@ -17,7 +17,7 @@ PACKAGES = " \
     packagegroup-wpewebkit-depends-tests \
 "
 
-RDEPENDS_packagegroup-wpewebkit-depends = "\
+RDEPENDS:packagegroup-wpewebkit-depends = "\
     packagegroup-wpewebkit-depends-sys-extended \
     packagegroup-wpewebkit-depends-perl \
     packagegroup-wpewebkit-depends-python \
@@ -31,7 +31,7 @@ RDEPENDS_packagegroup-wpewebkit-depends = "\
     packagegroup-wpewebkit-depends-tests \
 "
 
-RDEPENDS_packagegroup-wpewebkit-depends-sys-extended = "\
+RDEPENDS:packagegroup-wpewebkit-depends-sys-extended = "\
     curl \
     ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell', 'dhcp-client', 'dhcpcd', d)} \
     hdparm \
@@ -46,7 +46,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-sys-extended = "\
     zip \
     "
 
-RDEPENDS_packagegroup-wpewebkit-depends-perl = "\
+RDEPENDS:packagegroup-wpewebkit-depends-perl = "\
     gdbm \
     perl \
     perl-modules \
@@ -56,7 +56,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-perl = "\
     zlib \
 "
 
-RDEPENDS_packagegroup-wpewebkit-depends-python = "\
+RDEPENDS:packagegroup-wpewebkit-depends-python = "\
     expat \
     gdbm \
     gmp \
@@ -67,7 +67,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-python = "\
     zip \
 "
 
-RDEPENDS_packagegroup-wpewebkit-depends-misc = "\
+RDEPENDS:packagegroup-wpewebkit-depends-misc = "\
     gettext \
     gettext-runtime \
     groff \
@@ -78,9 +78,9 @@ RDEPENDS_packagegroup-wpewebkit-depends-misc = "\
     rpm \
     "
 STRACE = "strace"
-STRACE_riscv32 = ""
+STRACE:riscv32 = ""
 
-RDEPENDS_packagegroup-wpewebkit-depends-core = "\
+RDEPENDS:packagegroup-wpewebkit-depends-core = "\
     at \
     bash \
     bc \
@@ -144,12 +144,12 @@ RDEPENDS_packagegroup-wpewebkit-depends-core = "\
     ${@bb.utils.contains('BBFILE_COLLECTIONS', 'security', 'libseccomp', '', d)} \
     libicudata \
 "
-RDEPENDS_packagegroup-wpewebkit-depends-core_append_libc-glibc = "\
+RDEPENDS:packagegroup-wpewebkit-depends-core:append:libc-glibc = "\
     glibc \
     glibc-utils \
     localedef \
 "
-RDEPENDS_packagegroup-wpewebkit-depends-desktop = "\
+RDEPENDS:packagegroup-wpewebkit-depends-desktop = "\
     libxt \
     libxxf86vm \
     libdrm \
@@ -169,7 +169,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-desktop = "\
     alsa-lib \
 "
 
-RDEPENDS_packagegroup-wpewebkit-depends-runtime-add = "\
+RDEPENDS:packagegroup-wpewebkit-depends-runtime-add = "\
     ldd \
     e2fsprogs-mke2fs \
     mkfontdir \
@@ -178,7 +178,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-runtime-add = "\
     libxml-perl \
     libxml-sax-perl \
 "
-RDEPENDS_packagegroup-wpewebkit-depends-runtime-add_append_libc-glibc = "\
+RDEPENDS:packagegroup-wpewebkit-depends-runtime-add:append:libc-glibc = "\
     glibc-localedatas \
     glibc-gconvs \
     glibc-charmaps \
@@ -188,7 +188,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-runtime-add_append_libc-glibc = "\
     glibc-pcprofile \
 "
 
-RDEPENDS_packagegroup-wpewebkit-depends-alternative = " \
+RDEPENDS:packagegroup-wpewebkit-depends-alternative = " \
     geoclue \
     libtasn1 \
     woff2 \
@@ -201,7 +201,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-alternative = " \
     openh264 \
 "
 
-RDEPENDS_packagegroup-wpewebkit-depends-video = " \
+RDEPENDS:packagegroup-wpewebkit-depends-video = " \
     gstreamer1.0 \
     gstreamer1.0-plugins-base \
     gstreamer1.0-plugins-good \
@@ -231,7 +231,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-video = " \
     gstreamer1.0-plugins-bad-videoparsersbad \
 "
 
-RDEPENDS_packagegroup-wpewebkit-depends-extra = " \
+RDEPENDS:packagegroup-wpewebkit-depends-extra = " \
     ca-certificates \
     shared-mime-info \
     ttf-dejavu-sans \
@@ -242,7 +242,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-extra = " \
     gstreamer1.0-plugins-bad-meta \
 "
 
-RDEPENDS_packagegroup-wpewebkit-depends-tests = " \
+RDEPENDS:packagegroup-wpewebkit-depends-tests = " \
     pkgconfig \
     p7zip \
     git \

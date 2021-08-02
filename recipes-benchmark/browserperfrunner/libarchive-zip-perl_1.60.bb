@@ -12,7 +12,7 @@ S = "${WORKDIR}/Archive-Zip-${PV}"
 
 # crc32 at least depends on perl-module-lib, perl-module-cwd, perl-module-zip* ...
 # so let's just depend on the perl-modules meta-package for simplicity.
-RDEPENDS_${PN} += "perl-modules"
+RDEPENDS:${PN} += "perl-modules"
 
 inherit cpan
 

@@ -26,6 +26,6 @@ do_install() {
    make install
 }
 
-FILES_${PN} = " \
+FILES:${PN} = " \
 /webkitgtk-test-dicts/* \
 "
