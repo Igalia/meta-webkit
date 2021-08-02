@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://src/wayland/display.h;;beginline=5;endline=24;md5=b1c
 SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=git;branch=master"
 
 PROVIDES += "virtual/wpebackend"
-RPROVIDES_${PN} += "virtual/wpebackend"
+RPROVIDES:${PN} += "virtual/wpebackend"
 
 DEPENDS = "libwpe glib-2.0 libinput"
 
@@ -37,5 +37,5 @@ do_install() {
 }
 
 FILES_SOLIBSDEV = ""
-FILES_${PN} += "${libdir}/libWPEBackend-default.so ${libdir}/libWPEBackend-rdk.so"
+FILES:${PN} += "${libdir}/libWPEBackend-default.so ${libdir}/libWPEBackend-rdk.so"
 INSANE_SKIP ="dev-so"

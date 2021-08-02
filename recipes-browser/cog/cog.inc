@@ -18,12 +18,12 @@ DEPENDS = " \
             libsoup-2.4 glib-2.0 wayland-native wayland-protocols \
             "
 
-DEPENDS_append_class-target = " \
+DEPENDS:append:class-target = " \
             ${@bb.utils.contains('PACKAGECONFIG', 'fdo', 'wayland-native', '', d)} \
             "
 
 # At run-time cog package should depend on virtual/wpebackend unless webkitgtk+ is enabled.
-RDEPENDS_${PN} += "\
+RDEPENDS:${PN} += "\
     ${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', '', 'virtual/wpebackend', d)} \
     xkeyboard-config \
     "
@@ -42,12 +42,12 @@ FILES_SOLIBSDEV = "${libdir}/libcogcore*.so"
 
 # cog < 0.10.0 installed D-Bus policy configuration into sysconfdir
 # cog >= 0.10.0 installs it into datadir, see https://github.com/Igalia/cog/pull/296
-FILES_${PN} += " \
+FILES:${PN} += " \
     ${libdir}/libcogplatform*.so \
     ${sysconfdir}/dbus-1/system.d/com.igalia.Cog.conf \
     ${datadir}/dbus-1/system.d/com.igalia.Cog.conf \
 "
-INSANE_SKIP_${PN} = "dev-so"
+INSANE_SKIP:${PN} = "dev-so"
 
 # Local user name starting cog with DBus system session enabled. This should be
 # set only if the dbus PACKAGECONFIG is enabled.

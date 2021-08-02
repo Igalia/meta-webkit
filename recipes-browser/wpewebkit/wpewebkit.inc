@@ -42,7 +42,7 @@ PACKAGECONFIG[webaudio] = "-DENABLE_WEB_AUDIO=ON,-DENABLE_WEB_AUDIO=OFF,gstreame
 PACKAGECONFIG[webcrypto] = "-DENABLE_WEB_CRYPTO=ON,-DENABLE_WEB_CRYPTO=OFF,libgcrypt libtasn1"
 PACKAGECONFIG[webgl2] = "-DENABLE_WEBGL2=ON,-DENABLE_WEBGL2=OFF,"
 PACKAGECONFIG[woff2] = "-DUSE_WOFF2=ON,-DUSE_WOFF2=OFF,woff2"
-# 2dcanvas requires cairo with opengl support. Try by setting in local.conf: PACKAGECONFIG_append_pn-cairo = " glesv2"
+# 2dcanvas requires cairo with opengl support. Try by setting in local.conf: PACKAGECONFIG:append:pn-cairo = " glesv2"
 PACKAGECONFIG[2dcanvas] = "-DENABLE_ACCELERATED_2D_CANVAS=ON,-DENABLE_ACCELERATED_2D_CANVAS=OFF,"
 PACKAGECONFIG[remote-inspector] = "-DENABLE_REMOTE_INSPECTOR=ON,-DENABLE_REMOTE_INSPECTOR=OFF,"
 PACKAGECONFIG[webrtc] = "-DENABLE_WEB_RTC=ON,-DENABLE_WEB_RTC=OFF,libvpx libevent libopus openh264"
@@ -60,45 +60,45 @@ EXTRA_OECMAKE = " -DPORT=WPE -G Ninja"
 
 # If SSE code compiles, assume it runs successfully (it can't actually run
 # because of cross compiling)
-EXTRA_OECMAKE_append_x86 = " -DHAVE_SSE2_EXTENSIONS_EXITCODE=0"
+EXTRA_OECMAKE:append:x86 = " -DHAVE_SSE2_EXTENSIONS_EXITCODE=0"
 # Javascript JIT is not supported on ppc/arm < v6/RISCV/mips64 and disable gold on mips/riscv
-PACKAGECONFIG_remove_powerpc = "jit"
-PACKAGECONFIG_remove_powerpc64 = "jit"
-PACKAGECONFIG_remove_powerpc64le = "jit"
-PACKAGECONFIG_remove_armv4 = "jit"
-PACKAGECONFIG_remove_armv5 = "jit"
-PACKAGECONFIG_remove_armv6 = "jit"
-PACKAGECONFIG_remove_riscv32 = "jit gold"
-PACKAGECONFIG_remove_riscv64 = "jit gold"
-PACKAGECONFIG_remove_mipsarchn64 = "jit"
-PACKAGECONFIG_remove_mipsarchn32 = "jit"
+PACKAGECONFIG:remove:powerpc = "jit"
+PACKAGECONFIG:remove:powerpc64 = "jit"
+PACKAGECONFIG:remove:powerpc64le = "jit"
+PACKAGECONFIG:remove:armv4 = "jit"
+PACKAGECONFIG:remove:armv5 = "jit"
+PACKAGECONFIG:remove:armv6 = "jit"
+PACKAGECONFIG:remove:riscv32 = "jit gold"
+PACKAGECONFIG:remove:riscv64 = "jit gold"
+PACKAGECONFIG:remove:mipsarchn64 = "jit"
+PACKAGECONFIG:remove:mipsarchn32 = "jit"
 # mips/gold does not yet implement
 # error: .gnu.hash is incompatible with the MIPS ABI
-PACKAGECONFIG_remove_mipsarcho32 = "gold"
+PACKAGECONFIG:remove:mipsarcho32 = "gold"
 
-PACKAGECONFIG_remove_mipsarcho32_toolchain-clang = "jit"
+PACKAGECONFIG:remove:mipsarcho32:toolchain-clang = "jit"
 
-LDFLAGS_append_riscv64 = " -pthread"
+LDFLAGS:append:riscv64 = " -pthread"
 
-FULL_OPTIMIZATION_remove = "-g"
+FULL_OPTIMIZATION:remove = "-g"
 
 LEAD_SONAME = "libWPEWebKit.so"
 PACKAGES =+ "${PN}-web-inspector-plugin ${PN}-qtwpe-qml-plugin"
-FILES_${PN} += "${libdir}/wpe-webkit*/injected-bundle/libWPEInjectedBundle.so"
-FILES_${PN}-web-inspector-plugin += "${libdir}/libWPEWebInspectorResources.so ${libdir}/wpe-webkit-*/libWPEWebInspectorResources.so"
-INSANE_SKIP_${PN}-web-inspector-plugin = "dev-so"
+FILES:${PN} += "${libdir}/wpe-webkit*/injected-bundle/libWPEInjectedBundle.so"
+FILES:${PN}-web-inspector-plugin += "${libdir}/libWPEWebInspectorResources.so ${libdir}/wpe-webkit-*/libWPEWebInspectorResources.so"
+INSANE_SKIP:${PN}-web-inspector-plugin = "dev-so"
 
-FILES_${PN}-qtwpe-qml-plugin += "${libdir}/qt5/qml/org/wpewebkit/qtwpe/*"
-INSANE_SKIP_${PN}-qtwpe-qml-plugin = "dev-so"
+FILES:${PN}-qtwpe-qml-plugin += "${libdir}/qt5/qml/org/wpewebkit/qtwpe/*"
+INSANE_SKIP:${PN}-qtwpe-qml-plugin = "dev-so"
 
 # JSC JIT on ARMv7 is better supported with Thumb2 instruction set.
-ARM_INSTRUCTION_SET_armv7a = "thumb"
-ARM_INSTRUCTION_SET_armv7r = "thumb"
-ARM_INSTRUCTION_SET_armv7m = "thumb"
-ARM_INSTRUCTION_SET_armv7ve = "thumb"
+ARM_INSTRUCTION_SET:armv7a = "thumb"
+ARM_INSTRUCTION_SET:armv7r = "thumb"
+ARM_INSTRUCTION_SET:armv7m = "thumb"
+ARM_INSTRUCTION_SET:armv7ve = "thumb"
 
 # Extra runtime depends
-RDEPENDS_${PN} += " \
+RDEPENDS:${PN} += " \
     libgles2 \
     virtual/wpebackend \
     ${@bb.utils.contains('PACKAGECONFIG', 'mediasource', 'gstreamer1.0-plugins-good-isomp4', '', d)} \
@@ -123,7 +123,7 @@ RDEPENDS_${PN} += " \
 "
 
 # Extra runtime recommends
-RRECOMMENDS_${PN} += " \
+RRECOMMENDS:${PN} += " \
     ca-certificates \
     shared-mime-info \
     ttf-bitstream-vera \
