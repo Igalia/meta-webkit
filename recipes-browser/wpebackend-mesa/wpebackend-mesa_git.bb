@@ -3,7 +3,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6ae4db0d4b812334e1539cd5aa6e2f46"
 
 DEPENDS = "wpebackend glib-2.0 libxkbcommon wayland virtual/libgl"
 PROVIDES += "virtual/wpebackend"
-RPROVIDES_${PN} += "virtual/wpebackend"
+RPROVIDES:${PN} += "virtual/wpebackend"
 
 SRCREV = "3f9f87d5f42c27a22273d67db072bd7f2cba6135"
 SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEBackend-mesa.git;protocol=http;branch=master"
@@ -25,5 +25,5 @@ do_install() {
 }
 
 FILES_SOLIBSDEV = ""
-FILES_${PN} += "${libdir}/libWPEBackend-default.so ${libdir}/libWPEBackend-mesa.so"
+FILES:${PN} += "${libdir}/libWPEBackend-default.so ${libdir}/libWPEBackend-mesa.so"
 INSANE_SKIP ="dev-so"

@@ -24,7 +24,7 @@
 
 BBCLASSEXTEND += "devupstream:target"
 
-python devupstream_virtclass_handler_prepend () {
+python devupstream_virtclass_handler:prepend () {
     uri = bb.fetch2.URI(d.getVar("SRC_URI").split()[0])
     if uri.scheme == "git":
         d.setVar("S", "${WORKDIR}/git")

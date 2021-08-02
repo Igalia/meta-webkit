@@ -5,21 +5,21 @@ LICENSE = "BSD & LGPLv2+"
 LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf8b8a7c36b6eec80 "
 
 # you need harfbuzz with icu enabled, you can add this to your config:
-# PACKAGECONFIG_append_pn-harfbuzz = " icu"
+# PACKAGECONFIG:append:pn-harfbuzz = " icu"
 DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn \
            gtk+3 gstreamer1.0 gstreamer1.0-plugins-base flex-native icu \
            gperf-native perl-native ruby-native ccache-native ninja-native \
            libwebp harfbuzz glib-2.0 gettext-native glib-2.0-native \
            sqlite3 libgcrypt"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI = " \
     https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
     file://0001-WPE-GTK-Multiple-build-issues-with-ENABLE_VIDEO-OFF.patch \
 "
 SRC_URI[tarball.sha256sum] = "443c1316705de024741748e85fe32324d299d9ee68e6feb340b89e4a04073dee"
 
-RRECOMMENDS_${PN} = "${PN}-bin \
+RRECOMMENDS:${PN} = "${PN}-bin \
                      ca-certificates \
                      shared-mime-info \
                      ttf-dejavu-sans \
@@ -27,7 +27,7 @@ RRECOMMENDS_${PN} = "${PN}-bin \
                      ttf-dejavu-serif \
                      ${@bb.utils.contains('PACKAGECONFIG', 'video', 'gstreamer1.0-plugins-base-meta gstreamer1.0-plugins-good-meta gstreamer1.0-plugins-bad-meta', '', d)} \
                      "
-RRECOMMENDS_${PN}-bin = "adwaita-icon-theme librsvg-gtk"
+RRECOMMENDS:${PN}-bin = "adwaita-icon-theme librsvg-gtk"
 
 inherit cmake lib_package pkgconfig perlnative python3native
 
@@ -81,44 +81,44 @@ EXTRA_OECMAKE = " \
                 "
 
 # Javascript JIT is not supported on ppc/arm < v6/RISCV/mips64 and disable gold on mips/riscv
-PACKAGECONFIG_remove_powerpc = "jit"
-PACKAGECONFIG_remove_powerpc64 = "jit"
-PACKAGECONFIG_remove_powerpc64le = "jit"
-PACKAGECONFIG_remove_armv4 = "jit"
-PACKAGECONFIG_remove_armv5 = "jit"
-PACKAGECONFIG_remove_armv6 = "jit"
-PACKAGECONFIG_remove_riscv32 = "jit gold"
-PACKAGECONFIG_remove_riscv64 = "jit gold"
-PACKAGECONFIG_remove_mipsarchn64 = "jit gold"
-PACKAGECONFIG_remove_mipsarchn32 = "jit gold"
-PACKAGECONFIG_remove_mipsarcho32 = "gold"
+PACKAGECONFIG:remove:powerpc = "jit"
+PACKAGECONFIG:remove:powerpc64 = "jit"
+PACKAGECONFIG:remove:powerpc64le = "jit"
+PACKAGECONFIG:remove:armv4 = "jit"
+PACKAGECONFIG:remove:armv5 = "jit"
+PACKAGECONFIG:remove:armv6 = "jit"
+PACKAGECONFIG:remove:riscv32 = "jit gold"
+PACKAGECONFIG:remove:riscv64 = "jit gold"
+PACKAGECONFIG:remove:mipsarchn64 = "jit gold"
+PACKAGECONFIG:remove:mipsarchn32 = "jit gold"
+PACKAGECONFIG:remove:mipsarcho32 = "gold"
 
 # binutils 2.25.1 has a bug on aarch64:
 # https://sourceware.org/bugzilla/show_bug.cgi?id=18430
-PACKAGECONFIG_remove_aarch64 = "gold"
+PACKAGECONFIG:remove:aarch64 = "gold"
 
 # http://errors.yoctoproject.org/Errors/Details/20370/
-ARM_INSTRUCTION_SET_armv4 = "arm"
-ARM_INSTRUCTION_SET_armv5 = "arm"
-ARM_INSTRUCTION_SET_armv6 = "arm"
+ARM_INSTRUCTION_SET:armv4 = "arm"
+ARM_INSTRUCTION_SET:armv5 = "arm"
+ARM_INSTRUCTION_SET:armv6 = "arm"
 
 # https://bugzilla.yoctoproject.org/show_bug.cgi?id=9474
 # https://bugs.webkit.org/show_bug.cgi?id=159880
 # JSC JIT can build on ARMv7 with -marm, but doesn't work on runtime.
 # Upstream only tests regularly the JSC JIT on ARMv7 with Thumb2 (-mthumb).
-ARM_INSTRUCTION_SET_armv7a = "thumb"
-ARM_INSTRUCTION_SET_armv7r = "thumb"
-ARM_INSTRUCTION_SET_armv7m = "thumb"
-ARM_INSTRUCTION_SET_armv7ve = "thumb"
+ARM_INSTRUCTION_SET:armv7a = "thumb"
+ARM_INSTRUCTION_SET:armv7r = "thumb"
+ARM_INSTRUCTION_SET:armv7m = "thumb"
+ARM_INSTRUCTION_SET:armv7ve = "thumb"
 
 # Install MiniBrowser in PATH
-do_install_append() {
+do_install:append() {
     if test -f ${D}${libexecdir}/webkit2gtk-4.0/MiniBrowser; then
         mkdir -p ${D}${bindir}
         mv ${D}${libexecdir}/webkit2gtk-4.0/MiniBrowser ${D}${bindir}
     fi
 }
 
-FILES_${PN} += "${libdir}/webkit2gtk-4.0/injected-bundle/libwebkit2gtkinjectedbundle.so"
-FILES_${PN}-dbg += "${libdir}/webkit2gtk-4.0/injected-bundle/.debug/libwebkit2gtkinjectedbundle.so"
-FILES_${PN}-dbg += "${libdir}/webkitgtk/webkit2gtk-4.0/.debug/*"
+FILES:${PN} += "${libdir}/webkit2gtk-4.0/injected-bundle/libwebkit2gtkinjectedbundle.so"
+FILES:${PN}-dbg += "${libdir}/webkit2gtk-4.0/injected-bundle/.debug/libwebkit2gtkinjectedbundle.so"
+FILES:${PN}-dbg += "${libdir}/webkitgtk/webkit2gtk-4.0/.debug/*"
