@@ -37,6 +37,18 @@ dunfell-raspberrypi3-mesa-weston-wpe-2.30:
     - bitbake $BITBAKE_TARGET
     - rm -rf tmp
 
+dunfell-raspberrypi3-mesa-weston-wpe-2.32:
+  tags:
+    - meta-webkit
+  variables:
+    MANIFEST: .gitlab-ci/manifest/manifest-dunfell.xml
+    # setup-environment targetname machine distro bblayers presets
+    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_32
+    BITBAKE_TARGET: wpewebkit
+  script:
+    - bitbake $BITBAKE_TARGET
+    - rm -rf tmp
+
 dunfell-raspberrypi3-mesa-weston-wpe-qt:
   allow_failure: true
   tags:
