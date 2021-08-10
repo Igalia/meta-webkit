@@ -196,6 +196,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-alternative = " \
     libevent \
     libopus \
     openjpeg \
+    openxr \
 "
 
 RDEPENDS_packagegroup-wpewebkit-depends-video = " \
