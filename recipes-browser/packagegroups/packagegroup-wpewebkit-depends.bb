@@ -192,6 +192,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-alternative = " \
     geoclue \
     libtasn1 \
     woff2 \
+    libavif \
     libvpx \
     libevent \
     libopus \

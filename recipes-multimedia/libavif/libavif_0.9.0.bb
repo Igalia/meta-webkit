@@ -1,0 +1,2 @@
+require libavif.inc
+
