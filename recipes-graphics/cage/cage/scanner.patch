@@ -1,0 +1,11 @@
+--- a/meson.build
++++ b/meson.build
+@@ -42,7 +42,7 @@ xkbcommon      = dependency('xkbcommon')
+ math           = cc.find_library('m')
+ 
+ wl_protocol_dir = wayland_protos.get_pkgconfig_variable('pkgdatadir')
+-wayland_scanner = find_program('wayland-scanner')
++wayland_scanner = find_program('wayland-scanner', native: true)
+ wayland_scanner_server = generator(
+   wayland_scanner,
+   output: '@BASENAME@-protocol.h',
