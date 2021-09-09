@@ -1,0 +1,33 @@
+name: 'Manual clean-up of the mirrored external Pull Requests'
+on:
+  workflow_dispatch:
+
+jobs:
+  check-external-pr:
+    runs-on: ubuntu-latest
+    name: Create an internal branch for check the MR into the CI
+    env:
+      BOT_USER: "meta-webkit bot"
+      BOT_EMAIL: "meta-webkit@igalia.com"
+      MIRROR: git@gitlab.com:browsers/meta-webkit.git
+    steps:
+    - run: |
+       # Set the $SSH_PRIVATE_KEY environment variable in the CI to the base64
+       # encoded private key generated like this:
+       #   ssh-keygen  -t ecdsa -f runner_ecdsa
+       #   cat runner_ecdsa | base64 -w0
+       echo "Creating branch for Pull request \#${{ github.event.inputs.pr-id }}"
+       eval $(ssh-agent -s)
+       (echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 --decode | ssh-add -) || true
+       mkdir -p ~/.ssh
+       chmod 700 ~/.ssh
+       ssh-keyscan -t rsa gitlab.com >> ~/.ssh/known_hosts
+       git config --global user.name "${{ env.BOT_USER }}"
+       git config --global user.email "${{ env.BOT_EMAIL }}"
+       git config --global pull.rebase "preserve"
+       git clone ${{ env.MIRROR }} repo
+       cd repo
+       for b in $(git branch --remote --list origin/pull*)
+         do
+           git push origin --delete "$(echo ${b} | cut -f 2- -d '/')"
+       done
