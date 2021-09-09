@@ -5,7 +5,7 @@ on:
 jobs:
   check-external-pr:
     runs-on: ubuntu-latest
-    name: Create an internal branch for check the MR into the CI
+    name: Clean-up of the mirrored external Pull Requests
     env:
       BOT_USER: "meta-webkit bot"
       BOT_EMAIL: "meta-webkit@igalia.com"
