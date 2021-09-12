@@ -15,7 +15,7 @@ DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn \
 SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
            file://0001-MiniBrowser-Fix-reproduciblity.patch;name=minibrowser \
            "
-SRC_URI[tarball.sha256sum] = "136117317f70f66486f71b8edf5e46f8776403c5d8a296e914b11a36ef836917"
+SRC_URI[tarball.sha256sum] = "c1f496f5ac654efe4cef62fbd4f2fbeeef265a07c5e7419e5d2900bfeea52cbc"
 SRC_URI[minibrowser.sha256sum] = "5729da9f7379ddc4e669f4c80d60d38bef8e84f7e0146dc319a63061cee4ceeb"
 
 RRECOMMENDS_${PN} = "${PN}-bin \
