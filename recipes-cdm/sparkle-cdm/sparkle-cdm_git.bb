@@ -11,7 +11,7 @@ inherit meson pkgconfig
 PV = "2021.0"
 
 SRC_URI = "git://github.com/Sparkle-CDM/sparkle-cdm.git;protocol=https;branch=main"
-SRCREV = "80f71eb07125111ecf60247da990cc97c8aac84f"
+SRCREV = "552b203b85f3498ee7c336a0e6eb029cb282af73"
 
 S = "${WORKDIR}/git"
 
