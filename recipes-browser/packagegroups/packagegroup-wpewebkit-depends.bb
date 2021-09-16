@@ -198,6 +198,7 @@ RDEPENDS_packagegroup-wpewebkit-depends-alternative = " \
     libopus \
     openjpeg \
     openxr \
+    openh264 \
 "
 
 RDEPENDS_packagegroup-wpewebkit-depends-video = " \
