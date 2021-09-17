@@ -41,7 +41,7 @@ kirkstone-raspberrypi3-mesa-weston-wpe-2.32:
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-kirkstone.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_32
+    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi_honister mesa-wpe-2_32
 
 honister-raspberrypi3-mesa-weston-wpe-musl:
   extends:
@@ -49,7 +49,7 @@ honister-raspberrypi3-mesa-weston-wpe-musl:
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-honister.xml
-    SOURCE: raspberrypi3-mesa-wpe-musl raspberrypi3-mesa poky raspberrypi mesa-wpe-2_32
+    SOURCE: raspberrypi3-mesa-wpe-musl raspberrypi3-mesa poky raspberrypi_honister mesa-wpe-2_32
   script:
     - TCLIBC=musl bitbake $BITBAKE_TARGET
     - rm -rf tmp
@@ -67,28 +67,28 @@ honister-raspberrypi3-mesa-weston-wpe-2.30:
     - .raspberrypi3-mesa-weston-wpe
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-honister.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.30 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_30
+    SOURCE: raspberrypi3-mesa-wpe-2.30 raspberrypi3-mesa poky raspberrypi_honister mesa-wpe-2_30
 
 honister-raspberrypi3-mesa-weston-wpe-2.32:
   extends:
     - .raspberrypi3-mesa-weston-wpe
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-honister.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_32
+    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi_honister mesa-wpe-2_32
 
 hardknott-raspberrypi3-mesa-weston-wpe-2.32:
   extends:
     - .raspberrypi3-mesa-weston-wpe
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-hardknott.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.32
+    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi_honister mesa-wpe-2.32
 
 gatesgarth-raspberrypi3-mesa-weston-wpe-2.32:
   extends:
     - .raspberrypi3-mesa-weston-wpe
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-gatesgarth.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.32
+    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi_honister mesa-wpe-2.32
 
 dunfell-raspberrypi3-mesa-weston-wpe-2.32:
   extends:

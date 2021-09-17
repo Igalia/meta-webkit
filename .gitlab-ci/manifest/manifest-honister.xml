@@ -15,8 +15,6 @@
   <project remote="yocto" revision="honister" name="poky" path="sources/poky"/>
   <project remote="yocto" revision="master" name="meta-raspberrypi" path="sources/meta-raspberrypi"/>
 
-  <project remote="github" revision="psaavedra/add_honister" name="psaavedra/meta-gstreamer1.0.git" path="sources/meta-gstreamer1.0"/>
-
   <project remote="qt" revision="honister" name="meta-qt5.git" path="sources/meta-qt5"/>
 
   <project remote="igalia" revision="main" name="meta-webkit.git" path="sources/meta-webkit"/>

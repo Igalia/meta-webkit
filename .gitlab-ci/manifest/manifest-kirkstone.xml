@@ -15,8 +15,6 @@
   <project remote="yocto" revision="master" name="poky" path="sources/poky"/>
   <project remote="yocto" revision="master" name="meta-raspberrypi" path="sources/meta-raspberrypi"/>
 
-  <project remote="github" revision="psaavedra/add_kirkstone" name="psaavedra/meta-gstreamer1.0.git" path="sources/meta-gstreamer1.0"/>
-
   <project remote="qt" revision="master" name="meta-qt5.git" path="sources/meta-qt5"/>
 
   <project remote="igalia" revision="main" name="meta-webkit.git" path="sources/meta-webkit"/>
