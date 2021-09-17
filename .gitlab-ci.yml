@@ -35,6 +35,15 @@
     - bitbake $BITBAKE_TARGET
     - rm -rf tmp
 
+hardknott-raspberrypi3-mesa-weston-gtk:
+  extends:
+    - .raspberrypi3-mesa-weston-wpe
+  allow_failure: true
+  variables:
+    MANIFEST: .gitlab-ci/manifest/manifest-hardknott.xml
+    SOURCE: raspberrypi3-mesa-webkitgtk-2.32 raspberrypi3-mesa poky raspberrypi ""
+    BITBAKE_TARGET: webkitgtk
+
 hardknott-raspberrypi3-mesa-weston-wpe-musl:
   extends:
     - .raspberrypi3-mesa-weston-wpe
