@@ -15,9 +15,5 @@
   <project remote="yocto" revision="hardknott" name="poky" path="sources/poky"/>
   <project remote="yocto" revision="hardknott" name="meta-raspberrypi" path="sources/meta-raspberrypi"/>
 
-  <project remote="github" revision="master" name="OSSystems/meta-gstreamer1.0.git" path="sources/meta-gstreamer1.0"/>
-
-  <project remote="qt" revision="upstream/hardknott" name="meta-qt5.git" path="sources/meta-qt5"/>
-
   <project remote="igalia" revision="main" name="meta-webkit.git" path="sources/meta-webkit"/>
 </manifest>
