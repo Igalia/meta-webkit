@@ -15,8 +15,5 @@ BBLAYERS = " \
   \
   ${BSPDIR}/sources/meta-raspberrypi \
   \
-  ${BSPDIR}/sources/meta-gstreamer1.0 \
-  ${BSPDIR}/sources/meta-qt5 \
-  \
   ${BSPDIR}/sources/meta-webkit \
 "
