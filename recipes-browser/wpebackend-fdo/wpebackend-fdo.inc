@@ -14,3 +14,7 @@ RPROVIDES_${PN} += "virtual/wpebackend"
 FILES_SOLIBSDEV = ""
 FILES_${PN} += "${libdir}/libWPEBackend-fdo-*.so"
 INSANE_SKIP_${PN} ="dev-so"
+
+inherit meson features_check pkgconfig
+
+REQUIRED_DISTRO_FEATURES = "opengl"
