@@ -1,0 +1,56 @@
+From eb0d2c450e717b611716da0279bbbc5d9f1b6101 Mon Sep 17 00:00:00 2001
+From: Pablo Saavedra <psaavedra@igalia.com>
+Date: Mon, 18 Oct 2021 12:37:49 +0200
+gallium/dri: Make YUV formats we're going to emulate external-only.
+
+If we're going to have to bind them as separate planes with colorspace
+conversion for sampling on the frontend, then we need to report that
+they're only for external-image samplers, otherwise the lowering won't be
+applied.
+
+Fixes: 4e3a7dcf ("gallium: enable EGL_EXT_image_dma_buf_import_modifiers unconditionally")
+Reviewed-by: Jose Maria Casanova Crespo <jmcasanova@igalia.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/13038>
+
+Upstream-Status: Accepted [https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/13038]
+Yocto-Status: Submitted [https://lists.openembedded.org/g/openembedded-core/message/157080]
+
+---
+ src/gallium/frontends/dri/dri2.c | 20 ++++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
+
+diff --git a/src/gallium/frontends/dri/dri2.c b/src/gallium/frontends/dri/dri2.c
+index b0c0d7e..ef8df5a 100644
+--- a/src/gallium/frontends/dri/dri2.c
++++ b/src/gallium/frontends/dri/dri2.c
+@@ -1445,16 +1445,24 @@ dri2_query_dma_buf_modifiers(__DRIscreen *_screen, int fourcc, int max,
+ 
+    format = map->pipe_format;
+ 
++   bool native_sampling = pscreen->is_format_supported(pscreen, format, screen->target, 0, 0,
++                                                       PIPE_BIND_SAMPLER_VIEW);
+    if (pscreen->is_format_supported(pscreen, format, screen->target, 0, 0,
+-                                     PIPE_BIND_RENDER_TARGET) ||
+-        pscreen->is_format_supported(pscreen, format, screen->target, 0, 0,
+-                                     PIPE_BIND_SAMPLER_VIEW) ||
+-        dri2_yuv_dma_buf_supported(screen, map)) {
+-      if (pscreen->query_dmabuf_modifiers != NULL)
++                                    PIPE_BIND_RENDER_TARGET) ||
++       native_sampling ||
++       dri2_yuv_dma_buf_supported(screen, map))  {
++      if (pscreen->query_dmabuf_modifiers != NULL) {
+          pscreen->query_dmabuf_modifiers(pscreen, format, max, modifiers,
+                                          external_only, count);
+-      else
++         if (!native_sampling && external_only) {
++            /* To support it using YUV lowering, we need it to be samplerExternalOES.
++             */
++            for (int i = 0; i < *count; i++)
++               external_only[i] = true;
++         }
++      } else {
+          *count = 0;
++      }
+       return true;
+    }
+    return false;
