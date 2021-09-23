@@ -28,7 +28,7 @@ RDEPENDS_${PN} += "\
     xkeyboard-config \
     "
 
-inherit cmake
+inherit cmake pkgconfig
 
 # Cog can work with any wpebackend.
 # But for using wpebackend-fdo this has to be enabled at build time.
