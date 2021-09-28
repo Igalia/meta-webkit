@@ -13,10 +13,8 @@ DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn \
            sqlite3 libgcrypt"
 
 SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
-           file://0001-MiniBrowser-Fix-reproduciblity.patch;name=minibrowser \
            "
-SRC_URI[tarball.sha256sum] = "00ce2d3f798d7bc5e9039d9059f0c3c974d51de38c8b716f00e94452a177d3fd"
-SRC_URI[minibrowser.sha256sum] = "5729da9f7379ddc4e669f4c80d60d38bef8e84f7e0146dc319a63061cee4ceeb"
+SRC_URI[tarball.sha256sum] = "880c8ee626f67019f67557ca09e59a23ecf245e60f6173215f1a8823cb09af34"
 
 RRECOMMENDS_${PN} = "${PN}-bin \
                      ca-certificates \
