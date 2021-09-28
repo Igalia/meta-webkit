@@ -73,6 +73,7 @@ EXTRA_OECMAKE = " \
                  -DENABLE_INTROSPECTION=OFF \
                  -DENABLE_GTKDOC=OFF \
                  -DENABLE_MINIBROWSER=ON \
+                 -DUSE_SOUP2=ON \
                  -G Ninja \
                 "
 
