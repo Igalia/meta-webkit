@@ -139,6 +139,7 @@ ARM_INSTRUCTION_SET_armv7ve = "thumb"
 RDEPENDS_${PN} += " \
     libgles2 \
     virtual/wpebackend \
+    ${@bb.utils.contains('PACKAGECONFIG', 'remote-inspector', '${PN}-web-inspector-plugin', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'mediasource', 'gstreamer1.0-plugins-good-isomp4', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'webaudio', 'gstreamer1.0-plugins-good-wavparse', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'gst_gl', 'gstreamer1.0-plugins-base-opengl', '', d)} \
@@ -160,12 +161,14 @@ RDEPENDS_${PN} += " \
                                                     ', '', d)} \
 "
 
+RDEPENDS_${PN}-web-inspector-plugin += " \
+    shared-mime-info \
+"
+
 # Extra runtime recommends
 RRECOMMENDS_${PN} += " \
     ca-certificates \
-    shared-mime-info \
     ttf-bitstream-vera \
-    ${PN}-web-inspector-plugin \
     ${PN}-qtwpe-qml-plugin \
     ${@bb.utils.contains('PACKAGECONFIG', 'video', 'gstreamer1.0-plugins-base-meta gstreamer1.0-plugins-good-meta gstreamer1.0-plugins-bad-meta', '', d)} \
 "
