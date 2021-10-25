@@ -234,7 +234,9 @@ RDEPENDS_packagegroup-wpewebkit-depends-video = " \
 RDEPENDS_packagegroup-wpewebkit-depends-extra = " \
     ca-certificates \
     shared-mime-info \
-    ttf-bitstream-vera \
+    ttf-dejavu-sans \
+    ttf-dejavu-sans-mono \
+    ttf-dejavu-serif \
     gstreamer1.0-plugins-base-meta \
     gstreamer1.0-plugins-good-meta \
     gstreamer1.0-plugins-bad-meta \

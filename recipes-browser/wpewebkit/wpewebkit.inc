@@ -164,7 +164,9 @@ RDEPENDS_${PN} += " \
 RRECOMMENDS_${PN} += " \
     ca-certificates \
     shared-mime-info \
-    ttf-bitstream-vera \
+    ttf-dejavu-sans \
+    ttf-dejavu-sans-mono \
+    ttf-dejavu-serif \
     ${PN}-web-inspector-plugin \
     ${PN}-qtwpe-qml-plugin \
     ${@bb.utils.contains('PACKAGECONFIG', 'video', 'gstreamer1.0-plugins-base-meta gstreamer1.0-plugins-good-meta gstreamer1.0-plugins-bad-meta', '', d)} \
