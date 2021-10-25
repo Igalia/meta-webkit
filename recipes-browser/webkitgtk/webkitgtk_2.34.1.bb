@@ -14,7 +14,7 @@ DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn \
 
 SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
            "
-SRC_URI[tarball.sha256sum] = "880c8ee626f67019f67557ca09e59a23ecf245e60f6173215f1a8823cb09af34"
+SRC_URI[tarball.sha256sum] = "443c1316705de024741748e85fe32324d299d9ee68e6feb340b89e4a04073dee"
 
 RRECOMMENDS_${PN} = "${PN}-bin \
                      ca-certificates \
