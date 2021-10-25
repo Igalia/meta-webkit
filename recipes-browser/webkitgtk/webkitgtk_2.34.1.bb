@@ -22,7 +22,9 @@ SRC_URI[tarball.sha256sum] = "443c1316705de024741748e85fe32324d299d9ee68e6feb340
 RRECOMMENDS_${PN} = "${PN}-bin \
                      ca-certificates \
                      shared-mime-info \
-                     ttf-bitstream-vera \
+                     ttf-dejavu-sans \
+                     ttf-dejavu-sans-mono \
+                     ttf-dejavu-serif \
                      ${@bb.utils.contains('PACKAGECONFIG', 'video', 'gstreamer1.0-plugins-base-meta gstreamer1.0-plugins-good-meta gstreamer1.0-plugins-bad-meta', '', d)} \
                      "
 RRECOMMENDS_${PN}-bin = "adwaita-icon-theme librsvg-gtk"
