@@ -28,7 +28,7 @@
     - meta-webkit
   variables:
     # setup-environment targetname machine distro bblayers presets
-    # SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.32
+    # SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.34
     # MANIFEST: .gitlab-ci/manifest/manifest-hardknott.xml
     BITBAKE_TARGET: wpewebkit
   script:
@@ -50,7 +50,7 @@ hardknott-raspberrypi3-mesa-weston-wpe-musl:
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-hardknott.xml
-    SOURCE: raspberrypi3-mesa-wpe-musl raspberrypi3-mesa poky raspberrypi mesa-wpe-2_32
+    SOURCE: raspberrypi3-mesa-wpe-musl raspberrypi3-mesa poky raspberrypi mesa-wpe-2_34
   script:
     - TCLIBC=musl bitbake $BITBAKE_TARGET
     - rm -rf tmp
@@ -63,32 +63,32 @@ hardknott-raspberrypi3-mesa-weston-wpe-qt:
     MANIFEST: .gitlab-ci/manifest/manifest-hardknott.xml
     SOURCE: raspberrypi3-mesa-wpe-qt raspberrypi3-mesa poky qt5 mesa-wpe-qt
 
-hardknott-raspberrypi3-mesa-weston-wpe-2.30:
+hardknott-raspberrypi3-mesa-weston-wpe-2.34:
   extends:
     - .raspberrypi3-mesa-weston-wpe
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-hardknott.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.30 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_30
+    SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_32
 
-hardknott-raspberrypi3-mesa-weston-wpe-2.32:
+hardknott-raspberrypi3-mesa-weston-wpe-2.34:
   extends:
     - .raspberrypi3-mesa-weston-wpe
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-hardknott.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_32
+    SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky raspberrypi mesa-wpe-2_34
 
-gatesgarth-raspberrypi3-mesa-weston-wpe-2.32:
+gatesgarth-raspberrypi3-mesa-weston-wpe-2.34:
   extends:
     - .raspberrypi3-mesa-weston-wpe
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-gatesgarth.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.32
+    SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.34
 
-dunfell-raspberrypi3-mesa-weston-wpe-2.32:
+dunfell-raspberrypi3-mesa-weston-wpe-2.34:
   extends:
     - .raspberrypi3-mesa-weston-wpe
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-dunfell.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.32
+    SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.34
 
