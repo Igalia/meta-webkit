@@ -28,7 +28,7 @@
     - meta-webkit
   variables:
     # setup-environment targetname machine distro bblayers presets
-    # SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky raspberrypi mesa-wpe-2.34
+    # SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky core.python2.raspberrypi.qt5.webkit mesa-wpe-2.34
     # MANIFEST: .gitlab-ci/manifest/manifest-honister.xml
     BITBAKE_TARGET: wpewebkit
   script:
@@ -41,7 +41,7 @@ kirkstone-raspberrypi3-mesa-weston-wpe-2.34:
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-kirkstone.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky raspberrypi_honister mesa-wpe-2_34
+    SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky core.python2.raspberrypi.webkit mesa-wpe-2_34
 
 honister-raspberrypi3-mesa-weston-gtk:
   extends:
@@ -49,7 +49,7 @@ honister-raspberrypi3-mesa-weston-gtk:
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-honister.xml
-    SOURCE: raspberrypi3-mesa-webkitgtk raspberrypi3-mesa poky raspberrypi ""
+    SOURCE: raspberrypi3-mesa-webkitgtk raspberrypi3-mesa poky core.python2.raspberrypi.webkit ""
     BITBAKE_TARGET: webkitgtk
 
 honister-raspberrypi3-mesa-weston-wpe-musl:
@@ -58,7 +58,7 @@ honister-raspberrypi3-mesa-weston-wpe-musl:
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-honister.xml
-    SOURCE: raspberrypi3-mesa-wpe-musl raspberrypi3-mesa poky raspberrypi_honister mesa-wpe-2_34
+    SOURCE: raspberrypi3-mesa-wpe-musl raspberrypi3-mesa poky core.python2.raspberrypi.webkit mesa-wpe-2_34
   script:
     - TCLIBC=musl bitbake $BITBAKE_TARGET
     - rm -rf tmp
@@ -69,35 +69,35 @@ honister-raspberrypi3-mesa-weston-wpe-qt:
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-honister.xml
-    SOURCE: raspberrypi3-mesa-wpe-qt raspberrypi3-mesa poky qt5_honister mesa-wpe-qt
+    SOURCE: raspberrypi3-mesa-wpe-qt raspberrypi3-mesa poky core.python2.raspberrypi.qt5.webkit mesa-wpe-qt
 
 honister-raspberrypi3-mesa-weston-wpe-2.32:
   extends:
     - .raspberrypi3-mesa-weston-wpe
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-honister.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky raspberrypi_honister mesa-wpe-2_32
+    SOURCE: raspberrypi3-mesa-wpe-2.32 raspberrypi3-mesa poky core.python2.raspberrypi.webkit mesa-wpe-2_32
 
 honister-raspberrypi3-mesa-weston-wpe-2.34:
   extends:
     - .raspberrypi3-mesa-weston-wpe
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-honister.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky raspberrypi_honister mesa-wpe-2_34
+    SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky core.python2.raspberrypi.webkit mesa-wpe-2_34
 
 hardknott-raspberrypi3-mesa-weston-wpe-2.34:
   extends:
     - .raspberrypi3-mesa-weston-wpe
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-hardknott.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky raspberrypi_honister mesa-wpe-2_34
+    SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky core.python2.raspberrypi.webkit mesa-wpe-2_34
 
 gatesgarth-raspberrypi3-mesa-weston-wpe-2.34:
   extends:
     - .raspberrypi3-mesa-weston-wpe
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-gatesgarth.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky raspberrypi_honister mesa-wpe-2.34
+    SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky core.python2.raspberrypi.webkit mesa-wpe-2.34
 
 dunfell-raspberrypi3-mesa-weston-wpe-2.34:
   extends:
@@ -105,5 +105,5 @@ dunfell-raspberrypi3-mesa-weston-wpe-2.34:
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-dunfell.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky raspberrypi_dunfell mesa-wpe-2.34
+    SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky core.python2.raspberrypi.gstreamer.webkit mesa-wpe-2.34
 

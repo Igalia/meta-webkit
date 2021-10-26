@@ -10,10 +10,4 @@ BBLAYERS = " \
   \
   ${BSPDIR}/sources/meta-openembedded/meta-oe \
   ${BSPDIR}/sources/meta-openembedded/meta-python \
-  \
-  ${BSPDIR}/sources/meta-python2 \
-  \
-  ${BSPDIR}/sources/meta-raspberrypi \
-  \
-  ${BSPDIR}/sources/meta-webkit \
 "
