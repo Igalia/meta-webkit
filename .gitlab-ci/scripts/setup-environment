@@ -54,7 +54,6 @@ export BASH_SOURCE="${OESCRIPT}"
 source "${OESCRIPT}" "${BSPDIR}/builds/${TARGET}"
 
 # cp include conf files
-cp -a ${TEMPLATECONF}/include ${BUILDDIR}/conf/
 cp -a ${TEMPLATECONF}/machine ${BUILDDIR}/conf/
 cp -a ${TEMPLATECONF}/presets ${BUILDDIR}/conf/
 
@@ -64,9 +63,14 @@ for i in "${LAYERS[@]}"; do
   cat ${TEMPLATECONF}/bblayers/bblayers.conf.${i} >> ${BUILDDIR}/conf/bblayers.conf
 done
 
+echo "" > ${BUILDDIR}/conf/presets.conf
+IFS='.' read -ra P <<< "$PRESETS"
+for i in "${P[@]}"; do
+  echo "require presets/${i}.conf" >>  ${BUILDDIR}/conf/presets.conf
+done
+
 sed -i "s|##MACHINE##|${MACHINE}|g"  "${BUILDDIR}/conf/local.conf"
 sed -i "s|##DISTRO##|${DISTRO}|g"    "${BUILDDIR}/conf/local.conf"
-sed -i "s|##PRESETS##|${PRESETS}|g"  "${BUILDDIR}/conf/local.conf"
 
 if test -d "conf"; then
     if test -d "../../${OLDCONFSDIR}"; then

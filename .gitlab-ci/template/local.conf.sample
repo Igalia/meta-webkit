@@ -3,6 +3,5 @@ MACHINE ?= '##MACHINE##'
 
 IMAGE_INSTALL:append = " wpewebkit cog"
 
-include presets/##PRESETS##.conf
-include include/local-common.conf
+require presets.conf
 include ../../local-host.conf
