@@ -12,8 +12,11 @@ DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn \
            libwebp harfbuzz glib-2.0 gettext-native glib-2.0-native \
            sqlite3 libgcrypt"
 
-SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
-           "
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+SRC_URI = " \
+    https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
+    file://0001-WPE-GTK-Multiple-build-issues-with-ENABLE_VIDEO-OFF.patch \
+"
 SRC_URI[tarball.sha256sum] = "443c1316705de024741748e85fe32324d299d9ee68e6feb340b89e4a04073dee"
 
 RRECOMMENDS_${PN} = "${PN}-bin \

@@ -5,6 +5,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 SRC_URI = "\
     https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
+    file://0001-WPE-GTK-Multiple-build-issues-with-ENABLE_VIDEO-OFF.patch \
 "
 
 SRC_URI[tarball.sha256sum] = "cb336986341be9c3a9b1ca2c18de0d29d90ae4e77b9967a6f6879597e7a969f7"
