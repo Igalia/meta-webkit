@@ -57,7 +57,12 @@ source "${OESCRIPT}" "${BSPDIR}/builds/${TARGET}"
 cp -a ${TEMPLATECONF}/include ${BUILDDIR}/conf/
 cp -a ${TEMPLATECONF}/machine ${BUILDDIR}/conf/
 cp -a ${TEMPLATECONF}/presets ${BUILDDIR}/conf/
-cp -a ${TEMPLATECONF}/bblayers/bblayers.conf.${BBLAYERS} ${BUILDDIR}/conf/bblayers.conf
+
+echo "" > ${BUILDDIR}/conf/bblayers.conf
+IFS='.' read -ra LAYERS <<< "$BBLAYERS"
+for i in "${LAYERS[@]}"; do
+  cat ${TEMPLATECONF}/bblayers/bblayers.conf.${i} >> ${BUILDDIR}/conf/bblayers.conf
+done
 
 sed -i "s|##MACHINE##|${MACHINE}|g"  "${BUILDDIR}/conf/local.conf"
 sed -i "s|##DISTRO##|${DISTRO}|g"    "${BUILDDIR}/conf/local.conf"

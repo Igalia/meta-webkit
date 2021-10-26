@@ -1,0 +1,3 @@
+BBLAYERS += " \
+  ${BSPDIR}/sources/meta-raspberrypi \
+"
