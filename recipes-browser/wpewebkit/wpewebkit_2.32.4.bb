@@ -11,3 +11,6 @@ SRC_URI[tarball.sha256sum] = "381f1422cbc319db1aa42dda48de39590ed90ac3bec6b81ec8
 DEPENDS += " libwpe"
 RCONFLICTS:${PN} = "libwpe (< 1.6) wpebackend-fdo (< 1.8)"
 
+PACKAGECONFIG[indexeddb] = "-DENABLE_INDEXED_DATABASE=ON,-DENABLE_INDEXED_DATABASE=OFF,"
+
+PACKAGECONFIG:append = " indexeddb"
