@@ -27,7 +27,7 @@ BBCLASSEXTEND += "devupstream:target"
 python devupstream_virtclass_handler:prepend () {
     uri = bb.fetch2.URI(d.getVar("SRC_URI").split()[0])
     if uri.scheme == "git":
-        d.setVar("S", "${WORKDIR}/git")
+        d.setVar("S:class-devupstream", "${WORKDIR}/git")
 
     # Trucating the last version number (usually patch).
     pv = ".".join(d.getVar("PV").split(".")[:-1])
@@ -36,7 +36,10 @@ python devupstream_virtclass_handler:prepend () {
     proto_marker = "+" + uri.scheme
     # Modify the PV if the recipe hasn't already overridden it
     if proto_marker not in pv:
-        # PV is composed with MAJOR.MINOR, protocol and the hash
-        d.setVar("PV", pv + proto_marker + "${SRCPV}")
+        if not d.getVar("PV:class-devupstream"):
+            # PV is composed with MAJOR.MINOR, protocol and the hash
+            d.setVar("PV:class-devupstream", pv + proto_marker + "${SRCPV}")
+        else:
+            d.setVar("PV:class-devupstream", d.getVar("PV:class-devupstream") + proto_marker + "${SRCPV}")
 }
 
