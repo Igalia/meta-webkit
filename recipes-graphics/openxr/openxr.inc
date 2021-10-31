@@ -2,8 +2,12 @@ SUMMARY = "OpenXR Software Development Kit (SDK) Project"
 HOMEPAGE = "https://github.com/KhronosGroup/OpenXR-SDK"
 BUGTRACKER = "https://github.com/KhronosGroup/OpenXR-SDK/issues"
 
-SRC_URI = "https://github.com/KhronosGroup/OpenXR-SDK/archive/refs/tags/release-${PV}.tar.gz"
-SRC_URI[sha256sum] = "79c2893eaa868bf1ef5df035a423802342b15b14341d45d75447af49b10d1461"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+
+SRC_URI = "https://github.com/KhronosGroup/OpenXR-SDK/archive/refs/tags/release-${PV}.tar.gz \
+           file://0001-Fix-GCC-11-builds.patch \
+          "
+SRC_URI[sha256sum] = "b32703d30b4f40f5cb1a16e7242e3587ad5b3b47893c90dce884b162c5ca0e02"
 
 S = "${WORKDIR}/OpenXR-SDK-release-${PV}"
 
