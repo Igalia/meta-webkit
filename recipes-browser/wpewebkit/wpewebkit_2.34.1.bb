@@ -13,7 +13,10 @@ SRC_URI[tarball.sha256sum] = "cb336986341be9c3a9b1ca2c18de0d29d90ae4e77b9967a6f6
 DEPENDS += " libwpe"
 RCONFLICTS:${PN} = "libwpe (< 1.8) wpebackend-fdo (< 1.10)"
 
-SRC_URI:class-devupstream = "git://git.webkit.org/WebKit.git;branch=master"
+SRC_URI_class-devupstream = "\
+    git://git.webkit.org/WebKit.git;branch=master \
+    file://0002-libyuv-gcc-issue.patch \
+"
 # WPE 2.34.X branch was forked from the main branch in this commit
 SRCREV:class-devupstream = "30c41fe654d9556a5681663166c1461132326ff7"
 
