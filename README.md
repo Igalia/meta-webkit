@@ -14,20 +14,21 @@ This layer depends on:
     branch: main
     revision: HEAD
 
-    URI: git://git.yoctoproject.org/meta-security
-    branch: main
-    revision: HEAD
-
 This layer optionally depends on:
 
     URI: http://code.qt.io/yocto/meta-qt5.git
     branch: 5.12
     revision: HEAD
 
-The meta-security dependency is necessary to enable web process sandbox for WPE.
-
 If meta-qt5 is present, this layer will provide an opt-in Qt5 API as an
 alternative to other Qt5 web-engines such as QtWebKit and QtWebEngine.
+
+This layer also optionally depends on meta-security to enable web process
+sandboxing for WebKit (`bubblewrap`):
+
+    URI: git://git.yoctoproject.org/meta-security
+    branch: main
+    revision: HEAD
 
 **Warning**: The default branch has been renamed to `main` because
 [#219](https://github.com/Igalia/meta-webkit/issues/219). The old default
