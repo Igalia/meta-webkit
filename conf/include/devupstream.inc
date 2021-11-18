@@ -28,7 +28,7 @@ python devupstream_virtclass_handler:prepend () {
     uri = bb.fetch2.URI(d.getVar("SRC_URI").split()[0])
     if uri.scheme == "git":
         d.setVar("S:class-devupstream", "${WORKDIR}/git")
-    if not d.getVar("S:class-devupstream"):
+    if not d.getVar("S:class-devupstream") and d.getVar("SRC_URI:class-devupstream"):
         uri_dev = bb.fetch2.URI(d.getVar("SRC_URI:class-devupstream").split()[0])
         if uri_dev.scheme == "git":
             d.setVar("S:class-devupstream", "${WORKDIR}/git")
