@@ -5,10 +5,9 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI = "\
     https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
-    file://0001-WPE-GTK-Multiple-build-issues-with-ENABLE_VIDEO-OFF.patch \
 "
 
-SRC_URI[tarball.sha256sum] = "cb336986341be9c3a9b1ca2c18de0d29d90ae4e77b9967a6f6879597e7a969f7"
+SRC_URI[tarball.sha256sum] = "b1a3733c2d486c4da27f9636ccc39947da7d84258cd7a24a6fb0b842c9595c0b"
 
 DEPENDS += " libwpe"
 RCONFLICTS:${PN} = "libwpe (< 1.8) wpebackend-fdo (< 1.10)"
