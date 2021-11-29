@@ -33,7 +33,10 @@ inherit cmake pkgconfig
 # Cog can work with any wpebackend.
 # But for using wpebackend-fdo this has to be enabled at build time.
 PREFERRED_PROVIDER_virtual/wpebackend ?= "wpebackend-fdo"
-PACKAGECONFIG ?= " ${@bb.utils.contains('PREFERRED_PROVIDER_virtual/wpebackend', 'wpebackend-fdo', 'fdo drm', '', d)} "
+PACKAGECONFIG ?= " \
+    ${@bb.utils.contains('PREFERRED_PROVIDER_virtual/wpebackend', 'wpebackend-fdo', 'drm', '', d)} \
+    ${COG_PACKAGECONFIG} \
+"
 
 # libcogplatform*.so are plugins that should go on the main package (not on -dev)
 # https://github.com/Igalia/cog/commit/758ed08555e8152a2becd2178d1f3a4ce6e67af9
@@ -53,14 +56,6 @@ INSANE_SKIP:${PN} = "dev-so"
 # set only if the dbus PACKAGECONFIG is enabled.
 COG_DBUS_OWN_USER ?= ""
 
-# Use WebKitGTK+ instead of WPEWebKit
-# TODO: (deprecated) Last cog version using this flag is 0.8.X
-PACKAGECONFIG[webkitgtk] = "-DCOG_USE_WEBKITGTK=ON,-DCOG_USE_WEBKITGTK=OFF"
-# Expose remote control interface on system bus.
 PACKAGECONFIG[dbus] = "-DCOG_DBUS_SYSTEM_BUS=ON -DCOG_DBUS_OWN_USER=${COG_DBUS_OWN_USER},-DCOG_DBUS_SYSTEM_BUS=OFF"
-# Use wpebackend-fdo.
-# TODO: (deprecated) Last cog version using this flag is 0.10.X
-PACKAGECONFIG[fdo] = "-DCOG_PLATFORM_FDO=ON,-DCOG_PLATFORM_FDO=OFF,wpebackend-fdo"
 PACKAGECONFIG[drm] = "-DCOG_PLATFORM_DRM=ON,-DCOG_PLATFORM_DRM=OFF,wpebackend-fdo libdrm virtual/libgbm libinput"
 PACKAGECONFIG[weston-direct-display] = "-DCOG_WESTON_DIRECT_DISPLAY=ON,-DCOG_WESTON_DIRECT_DISPLAY=OFF,weston"
-
