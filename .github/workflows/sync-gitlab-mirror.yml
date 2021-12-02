@@ -1,0 +1,12 @@
+name: Sync Gitlab Mirror
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  sync-gitlab-mirror:
+    runs-on: ubuntu-latest
+    name: Sync Gitlab Mirror
+    steps:
+      - name: POST mirror pull request to Gitlab
+        run: |
+          curl -X POST \
+            -H "PRIVATE-TOKEN: ${{ secrets.GITLAB_TOKEN }}" \
+            "https://gitlab.com/api/v4/projects/browsers%2Fmeta-webkit/mirror/pull"
