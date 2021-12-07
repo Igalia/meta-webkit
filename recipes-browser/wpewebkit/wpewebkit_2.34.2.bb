@@ -12,7 +12,7 @@ SRC_URI[tarball.sha256sum] = "b1a3733c2d486c4da27f9636ccc39947da7d84258cd7a24a6f
 DEPENDS += " libwpe"
 RCONFLICTS:${PN} = "libwpe (< 1.8) wpebackend-fdo (< 1.10)"
 
-SRC_URI_class-devupstream = "\
+SRC_URI:class-devupstream = "\
     git://git.webkit.org/WebKit.git;branch=master \
     file://0002-libyuv-gcc-issue.patch \
 "
