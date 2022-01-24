@@ -18,13 +18,6 @@ S = "${WORKDIR}/git"
 PACKAGECONFIG ?= ""
 PACKAGECONFIG[sample-player] = "-Dsample-player=enabled,-Dsample-player=disabled,libsoup-2.4"
 
-BBCLASSEXTEND = "devupstream:target"
-LIC_FILES_CHKSUM-devupstream = "file://COPYING;md5=5d34cbc44b66f4a9ddc9afa73e13eda5"
-SRC_URI:class-devupstream = "git://github.com/Sparkle-CDM/sparkle-cdm.git;protocol=https;branch=main"
-SRCREV:class-devupstream = "31e063770f43acc343df1bfd920a5baa76722af0"
-PV:class-devupstream = "2021.0+git${SRCPV}"
-S:class-devupstream = "${WORKDIR}/git"
-
 PROVIDES += "virtual/open-cdm"
 RPROVIDES:${PN} += "virtual/open-cdm"
 
