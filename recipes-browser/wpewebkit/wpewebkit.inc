@@ -109,6 +109,10 @@ PACKAGECONFIG:remove:riscv32 = "jit gold"
 PACKAGECONFIG:remove:riscv64 = "jit gold"
 PACKAGECONFIG:remove:mipsarchn64 = "jit"
 PACKAGECONFIG:remove:mipsarchn32 = "jit"
+
+# Javascript JIT is not supported on x86
+PACKAGECONFIG:remove:x86 = "jit"
+
 # mips/gold does not yet implement
 # error: .gnu.hash is incompatible with the MIPS ABI
 PACKAGECONFIG:remove:mipsarcho32 = "gold"
