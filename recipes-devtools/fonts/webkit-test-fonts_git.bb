@@ -1,4 +1,4 @@
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE.dejavu;md5=b48ab4e9977f6f7d9eb9481bb69a219d"
 
 PR = "r0"

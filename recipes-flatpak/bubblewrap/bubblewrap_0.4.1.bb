@@ -1,6 +1,6 @@
 DESCRIPTION = "Helper binary for running applications sandboxed"
 HOMEPAGE = "https://github.com/projectatomic/bubblewrap"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=5f30f0716dfdd0d91eb439ebec522ec2"
 
 DEPENDS = "libcap"

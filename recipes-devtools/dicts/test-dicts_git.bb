@@ -1,4 +1,4 @@
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE.en_US;md5=370dfc0dcc9918290a76eeb1e761f377"
 
 PR = "r0"
