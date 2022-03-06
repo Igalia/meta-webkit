@@ -1,5 +1,5 @@
 HOMEPAGE = "https://github.com/flatpak/xdg-dbus-proxy"
-LICENSE = "LGPLv2.1+"
+LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
 SRC_URI = "https://github.com/flatpak/${BPN}/releases/download/${PV}/${BP}.tar.xz \

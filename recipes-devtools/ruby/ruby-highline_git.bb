@@ -10,7 +10,7 @@ rules and without needing to convert the typed Strings into what your \
 program really needs. Just tell HighLine what you're after, and let it \
 do all the work."
 
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=884766faee6a0d2931af978757e1a5fc"
 
 PR = "r0"
