@@ -41,7 +41,7 @@ kirkstone-raspberrypi3-mesa-weston-wpe-2.34:
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-kirkstone.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v2.wpe-2_34
+    SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_34
 
 honister-raspberrypi3-mesa-weston-gtk:
   extends:
