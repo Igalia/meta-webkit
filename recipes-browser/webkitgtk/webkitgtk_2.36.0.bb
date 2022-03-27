@@ -16,7 +16,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI = " \
     https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
 "
-SRC_URI[tarball.sha256sum] = "6bc8fd034aad0432a2459ce4fc7ee25ad65a4924c618bf8d93b52b0c1a84c1f6"
+SRC_URI[tarball.sha256sum] = "b877cca1f105235f5dd57c7ac2b2c2be3c6b691ff444f93925c7254cf156c64d"
 
 RRECOMMENDS:${PN} = "${PN}-bin \
                      ca-certificates \
@@ -37,9 +37,8 @@ S = "${WORKDIR}/webkitgtk-${PV}"
 PACKAGECONFIG ??= " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)} \
                     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland wperenderer', '', d)} \
                     ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'opengl gles2 webgl', '', d)} \
-                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '' ,d)} \
+                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
                     enchant \
-                    gold \
                     jit \
                     libsecret \
                     openjpeg \
@@ -60,6 +59,7 @@ PACKAGECONFIG[libsecret] = "-DUSE_LIBSECRET=ON,-DUSE_LIBSECRET=OFF,libsecret"
 PACKAGECONFIG[opengl] = "-DENABLE_OPENGL=ON,-DENABLE_OPENGL=OFF,virtual/libgl"
 PACKAGECONFIG[openjpeg] = "-DUSE_OPENJPEG=ON,-DUSE_OPENJPEG=OFF,openjpeg"
 PACKAGECONFIG[systemd] = "-DUSE_SYSTEMD=ON,-DUSE_SYSTEMD=OFF,systemd"
+PACKAGECONFIG[journald] = "-DENABLE_JOURNALD_LOG=ON,-DENABLE_JOURNALD_LOG=OFF,"
 PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON,-DENABLE_VIDEO=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad"
 PACKAGECONFIG[wayland] = "-DENABLE_WAYLAND_TARGET=ON,-DENABLE_WAYLAND_TARGET=OFF,wayland wayland-native"
 PACKAGECONFIG[webcrypto] = "-DENABLE_WEB_CRYPTO=ON,-DENABLE_WEB_CRYPTO=OFF,libgcrypt libtasn1"
@@ -68,8 +68,6 @@ PACKAGECONFIG[woff2] = "-DUSE_WOFF2=ON,-DUSE_WOFF2=OFF,woff2"
 PACKAGECONFIG[wperenderer] = "-DUSE_WPE_RENDERER=ON,-DUSE_WPE_RENDERER=OFF,libwpe wpebackend-fdo"
 PACKAGECONFIG[x11] = "-DENABLE_X11_TARGET=ON,-DENABLE_X11_TARGET=OFF,virtual/libx11 libxt"
 PACKAGECONFIG[jit] = "-DENABLE_JIT=ON -DENABLE_C_LOOP=OFF,-DENABLE_JIT=OFF -DENABLE_C_LOOP=ON,"
-# Removed in 2.36
-PACKAGECONFIG[gold] = "-DUSE_LD_GOLD=ON,-DUSE_LD_GOLD=OFF,"
 
 EXTRA_OECMAKE = " \
                  -DPORT=GTK \
@@ -80,22 +78,17 @@ EXTRA_OECMAKE = " \
                  -G Ninja \
                 "
 
-# Javascript JIT is not supported on ppc/arm < v6/RISCV/mips64 and disable gold on mips/riscv
+# Javascript JIT is not supported on ppc/arm < v6/RISCV/mips64
 PACKAGECONFIG:remove:powerpc = "jit"
 PACKAGECONFIG:remove:powerpc64 = "jit"
 PACKAGECONFIG:remove:powerpc64le = "jit"
 PACKAGECONFIG:remove:armv4 = "jit"
 PACKAGECONFIG:remove:armv5 = "jit"
 PACKAGECONFIG:remove:armv6 = "jit"
-PACKAGECONFIG:remove:riscv32 = "jit gold"
-PACKAGECONFIG:remove:riscv64 = "jit gold"
-PACKAGECONFIG:remove:mipsarchn64 = "jit gold"
-PACKAGECONFIG:remove:mipsarchn32 = "jit gold"
-PACKAGECONFIG:remove:mipsarcho32 = "gold"
-
-# binutils 2.25.1 has a bug on aarch64:
-# https://sourceware.org/bugzilla/show_bug.cgi?id=18430
-PACKAGECONFIG:remove:aarch64 = "gold"
+PACKAGECONFIG:remove:riscv32 = "jit"
+PACKAGECONFIG:remove:riscv64 = "jit"
+PACKAGECONFIG:remove:mipsarchn64 = "jit"
+PACKAGECONFIG:remove:mipsarchn32 = "jit"
 
 # http://errors.yoctoproject.org/Errors/Details/20370/
 ARM_INSTRUCTION_SET:armv4 = "arm"
