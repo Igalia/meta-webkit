@@ -38,6 +38,11 @@ PACKAGECONFIG ?= " \
     ${COG_PACKAGECONFIG} \
 "
 
+PACKAGECONFIG:class-devupstream ?= " \
+    ${@bb.utils.contains('PREFERRED_PROVIDER_virtual/wpebackend', 'wpebackend-fdo', 'drm', '', d)} \
+    ${COG_PACKAGECONFIG} \
+"
+
 # libcogplatform*.so are plugins that should go on the main package (not on -dev)
 # https://github.com/Igalia/cog/commit/758ed08555e8152a2becd2178d1f3a4ce6e67af9
 # Also libWPEBackend-default.so should go into the main package.
