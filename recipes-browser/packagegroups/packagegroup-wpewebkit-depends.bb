@@ -193,6 +193,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-alternative = " \
     libtasn1 \
     woff2 \
     libavif \
+    libjxl \
     libvpx \
     libevent \
     libopus \
