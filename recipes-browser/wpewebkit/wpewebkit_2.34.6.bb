@@ -1,5 +1,4 @@
 require wpewebkit.inc
-require conf/include/devupstream.inc
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
@@ -12,13 +11,6 @@ SRC_URI[tarball.sha256sum] = "301e895c8ed08ce7dccef3192b972f2ccfc2020463244c6406
 DEPENDS += " libwpe"
 RCONFLICTS:${PN} = "libwpe (< 1.8) wpebackend-fdo (< 1.10)"
 
-SRC_URI:class-devupstream = "\
-    git://git.webkit.org/WebKit.git;branch=master \
-    file://0002-libyuv-gcc-issue.patch \
-"
-# WPE 2.34.X branch was forked from the main branch in this commit
-SRCREV:class-devupstream = "30c41fe654d9556a5681663166c1461132326ff7"
-
 # Needed for since >2.34.
 PACKAGECONFIG[dfg-jit] = "-DENABLE_DFG_JIT=ON,-DENABLE_DFG_JIT=OFF,"
 PACKAGECONFIG[jit] = "-DENABLE_JIT=ON,-DENABLE_JIT=OFF,"
@@ -26,8 +18,10 @@ PACKAGECONFIG[lcms] = "-DUSE_LCMS=ON,-DUSE_LCMS=OFF,"
 
 # Removed in 2.36
 PACKAGECONFIG[gold] = "-DUSE_LD_GOLD=ON,-DUSE_LD_GOLD=OFF,"
+# Replaced by ENABLE_JOURNALD_LOG in the future 2.36.X
+PACKAGECONFIG[systemd] = "-DUSE_SYSTEMD=ON,-DUSE_SYSTEMD=OFF,systemd"
 
-PACKAGECONFIG:append = " gold dfg-jit"
+PACKAGECONFIG:append = " gold dfg-jit ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '' ,d)}"
 
 # Disable gold on mips/riscv. Mips/gold does not yet implement: error: .gnu.hash is incompatible with the MIPS ABI
 PACKAGECONFIG:remove:riscv32 = "gold"
