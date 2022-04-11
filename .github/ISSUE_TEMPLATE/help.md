@@ -1,6 +1,6 @@
 ---
 name: Help
-about: Create a report to help us improve
+about: Create a report asking for help
 title: ''
 labels: help-wanted
 assignees: ''
