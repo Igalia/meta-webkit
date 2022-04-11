@@ -6,7 +6,7 @@ SRC_URI = "\
     https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
 "
 
-SRC_URI[tarball.sha256sum] = "301e895c8ed08ce7dccef3192b972f2ccfc2020463244c64069a636f2b05265f"
+SRC_URI[tarball.sha256sum] = "092659bf43e5bc6f2a5a7b8e612a39da5da56a04f41eacc716638f53a27c3412"
 
 DEPENDS += " libwpe"
 RCONFLICTS:${PN} = "libwpe (< 1.8) wpebackend-fdo (< 1.10)"
