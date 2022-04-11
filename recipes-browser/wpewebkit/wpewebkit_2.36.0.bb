@@ -3,9 +3,9 @@ require conf/include/devupstream.inc
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-SRC_URI = "\
-    https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
-"
+SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
+           file://0001-WPE-Build-ANGLE-with-the-EGL_NO_PLATFORM_SPECIFIC_TY.patch \
+           "
 
 SRC_URI[tarball.sha256sum] = "096aa9f87d9bfbfc80f558388a86721cdcc508b42ddef10bd270aec9aee96d5a"
 
