@@ -1,7 +1,7 @@
 SUMMARY = "Sparkle-CDM"
 HOMEPAGE = "https://github.com/Sparkle-CDM/sparkle-cdm"
 BUGTRACKER = "https://github.com/Sparkle-CDM/sparkle-cdm/issues"
-LICENSE = "BSD"
+LICENSE = "MIT-open-group"
 LIC_FILES_CHKSUM = "file://COPYING;md5=5d34cbc44b66f4a9ddc9afa73e13eda5"
 
 DEPENDS = "glib-2.0 gstreamer1.0"

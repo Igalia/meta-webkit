@@ -3,7 +3,7 @@ SUMMARY = "WPE cross-compilation image with wpebackend-fdo. \
            The SDK for ARMv7 will default to use the traditional ISA. \
            To use Thumb2 you have to pass the -mthumb compiler flag."
 
-LICENSE = "BSD"
+LICENSE = "BSD-2-Clause"
 
 inherit core-image features_check
 

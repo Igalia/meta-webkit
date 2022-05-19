@@ -2,7 +2,7 @@ SUMMARY = "Backend for WPE with specific support for embedded devices used on th
 HOMEPAGE = "https://github.com/WebPlatformForEmbedded/WPEBackend-rdk"
 BUGTRACKER = "https://github.com/WebPlatformForEmbedded/WPEBackend-rdk/issues"
 
-LICENSE = "BSD"
+LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://src/wayland/display.h;;beginline=5;endline=24;md5=b1c8cb6b0857048a21b33611f01c575a"
 
 SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=git;branch=master"

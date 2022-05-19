@@ -4,7 +4,7 @@ BUGTRACKER = "https://github.com/Igalia/WPEBackend-fdo/issues"
 
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz"
 
-LICENSE = "BSD"
+LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1f62cef2e3645e3e74eb05fd389d7a66"
 DEPENDS = "glib-2.0 libxkbcommon wayland libepoxy libwpe"
 DEPENDS:append:class-target = " wayland-native"
