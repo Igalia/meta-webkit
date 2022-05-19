@@ -2,7 +2,7 @@ SUMMARY = "General-purpose library specifically developed for the WPE-flavored p
 HOMEPAGE = "https://github.com/WebPlatformForEmbedded/WPEBackend"
 BUGTRACKER = "https://github.com/WebPlatformForEmbedded/WPEBackend/issues"
 
-LICENSE = "BSD"
+LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6ae4db0d4b812334e1539cd5aa6e2f46"
 DEPENDS = "virtual/egl libxkbcommon"
 

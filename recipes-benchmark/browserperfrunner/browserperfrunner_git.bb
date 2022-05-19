@@ -6,7 +6,7 @@ SRC_URI = "git://github.com/Igalia/browserperfrunner.git;protocol=https;branch=m
 
 S = "${WORKDIR}/git"
 
-LICENSE = "BSD"
+LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://browserperfdash-benchmark;md5=0447dc08401181d17386fac95e7524f7"
 
 

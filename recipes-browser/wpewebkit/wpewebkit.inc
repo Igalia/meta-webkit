@@ -3,7 +3,7 @@ SUMMARY = "WPE WebKit port pairs the WebKit engine with OpenGL-ES (OpenGL for Em
            It is designed with hardware acceleration in mind, relying on EGL, and OpenGL ES."
 HOMEPAGE = "https://trac.webkit.org/wiki/WPE"
 BUGTRACKER = "https://bugs.webkit.org/"
-LICENSE = "BSD & LGPL-2.0-or-later"
+LICENSE = "BSD-2-Clause & LGPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf8b8a7c36b6eec80 "
 
 DEPENDS = " \
