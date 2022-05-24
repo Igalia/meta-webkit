@@ -11,7 +11,7 @@ UPSTREAM_CHECK_URI = "https://github.com/google/woff2/releases"
 DEPENDS = "brotli"
 
 S = "${WORKDIR}/git"
-SRC_URI = "git://github.com/google/woff2.git;branch=master"
+SRC_URI = "git://github.com/google/woff2.git;branch=master;protocol=https"
 SRCREV = "1bccf208bca986e53a647dfe4811322adb06ecf8"
 
 inherit cmake lib_package
