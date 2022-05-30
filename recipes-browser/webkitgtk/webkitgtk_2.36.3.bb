@@ -15,9 +15,8 @@ DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn \
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI = " \
     https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
-    file://webkitgtk-0001-GTK-WPE-Build-ANGLE-with-the-EGL_NO_PLATFORM_SPECIFI.patch \
 "
-SRC_URI[tarball.sha256sum] = "fe93bddb4a02c0e36f926efb6e81d28afd288b8824f6c5cf6a75cf40228e008e"
+SRC_URI[tarball.sha256sum] = "732fcf8c4ec644b8ed28b46ebbd7c1ebab9d9e0afea9bdf5e5d12786afc478d1"
 
 RRECOMMENDS:${PN} = "${PN}-bin \
                      ca-certificates \

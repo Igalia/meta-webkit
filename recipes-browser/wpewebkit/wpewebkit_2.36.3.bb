@@ -4,10 +4,9 @@ require conf/include/devupstream.inc
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
-           file://0001-WPE-Build-ANGLE-with-the-EGL_NO_PLATFORM_SPECIFIC_TY.patch \
            "
 
-SRC_URI[tarball.sha256sum] = "959519562701e2005f2767a62e85977d6c3e65858709b376c89d8e33502febb9"
+SRC_URI[tarball.sha256sum] = "66275debca7497daff3a7826734cd56262a807adb76c5dccdf257c89968c2fc8"
 
 DEPENDS += " libwpe"
 RCONFLICTS:${PN} = "libwpe (< 1.10) wpebackend-fdo (< 1.10)"
