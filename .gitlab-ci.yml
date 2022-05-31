@@ -1,4 +1,4 @@
-.raspberrypi3-mesa-weston-wpe:
+.meta-webkit-env:
   before_script:
     - |
       echo "Environment:"
@@ -37,7 +37,7 @@
 
 kirkstone-raspberrypi3-mesa-weston-wpe-2.36:
   extends:
-    - .raspberrypi3-mesa-weston-wpe
+    - .meta-webkit-env
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-kirkstone.xml
@@ -45,7 +45,7 @@ kirkstone-raspberrypi3-mesa-weston-wpe-2.36:
 
 honister-raspberrypi3-mesa-weston-gtk:
   extends:
-    - .raspberrypi3-mesa-weston-wpe
+    - .meta-webkit-env
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-honister.xml
@@ -54,7 +54,7 @@ honister-raspberrypi3-mesa-weston-gtk:
 
 honister-raspberrypi3-mesa-weston-wpe-musl:
   extends:
-    - .raspberrypi3-mesa-weston-wpe
+    - .meta-webkit-env
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-honister.xml
@@ -65,7 +65,7 @@ honister-raspberrypi3-mesa-weston-wpe-musl:
 
 honister-raspberrypi3-mesa-weston-wpe-qt:
   extends:
-    - .raspberrypi3-mesa-weston-wpe
+    - .meta-webkit-env
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-honister.xml
@@ -73,35 +73,42 @@ honister-raspberrypi3-mesa-weston-wpe-qt:
 
 honister-raspberrypi3-mesa-weston-wpe-2.34:
   extends:
-    - .raspberrypi3-mesa-weston-wpe
+    - .meta-webkit-env
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-honister.xml
     SOURCE: raspberrypi3-mesa-wpe-2.34 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v2.wpe-2_34
 
 honister-raspberrypi3-mesa-weston-wpe-2.36:
   extends:
-    - .raspberrypi3-mesa-weston-wpe
+    - .meta-webkit-env
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-honister.xml
     SOURCE: raspberrypi3-mesa-wpe-2.36 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v2.wpe-2_36
 
+honister-raspberrypi4-64-weston-wpe-2.36:
+  extends:
+    - .meta-webkit-env
+  variables:
+    MANIFEST: .gitlab-ci/manifest/manifest-honister.xml
+    SOURCE: raspberrypi4-64-wpe-2.36 raspberrypi4-64 poky layers.python2.raspberrypi.webkit conf_v2.wpe-2_36
+
 hardknott-raspberrypi3-mesa-weston-wpe-2.36:
   extends:
-    - .raspberrypi3-mesa-weston-wpe
+    - .meta-webkit-env
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-hardknott.xml
     SOURCE: raspberrypi3-mesa-wpe-2.36 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v1.wpe-2_36
 
 gatesgarth-raspberrypi3-mesa-weston-wpe-2.36:
   extends:
-    - .raspberrypi3-mesa-weston-wpe
+    - .meta-webkit-env
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-gatesgarth.xml
     SOURCE: raspberrypi3-mesa-wpe-2.36 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v1.wpe-2_36
 
 dunfell-raspberrypi3-mesa-weston-wpe-2.36:
   extends:
-    - .raspberrypi3-mesa-weston-wpe
+    - .meta-webkit-env
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-dunfell.xml
