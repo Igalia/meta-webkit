@@ -1,0 +1,41 @@
+From 14869ec780666b494a8a4e49298d69a15faa1b09 Mon Sep 17 00:00:00 2001
+From: Pablo Saavedra <psaavedra@igalia.com>
+Date: Fri, 10 Jun 2022 11:27:08 +0200
+Subject: [PATCH] Fix missing xkbcommon.h include
+
+Issue: https://github.com/Igalia/cog/issues/449
+---
+ platform/drm/cog-platform-drm.c         | 1 +
+ platform/wayland/cog-im-context-wl-v1.c | 2 ++
+ 2 files changed, 3 insertions(+)
+
+Upstream-Status: Submitted [https://github.com/Igalia/cog/pull/450]
+
+diff --git a/platform/drm/cog-platform-drm.c b/platform/drm/cog-platform-drm.c
+index 8c51fe2..6da3c55 100644
+--- a/platform/drm/cog-platform-drm.c
++++ b/platform/drm/cog-platform-drm.c
+@@ -16,6 +16,7 @@
+ #include "kms.h"
+ #include "cursor-drm.h"
+ 
++#include <xkbcommon/xkbcommon.h>
+ #include <EGL/egl.h>
+ #include <EGL/eglext.h>
+ 
+diff --git a/platform/wayland/cog-im-context-wl-v1.c b/platform/wayland/cog-im-context-wl-v1.c
+index 96e31ed..e7ce8f6 100644
+--- a/platform/wayland/cog-im-context-wl-v1.c
++++ b/platform/wayland/cog-im-context-wl-v1.c
+@@ -7,6 +7,8 @@
+ 
+ #include "cog-im-context-wl-v1.h"
+ 
++#include <xkbcommon/xkbcommon.h>
++
+ static struct {
+     struct zwp_text_input_v1 *text_input;
+     struct wl_seat *seat;
+-- 
+2.34.1
+
