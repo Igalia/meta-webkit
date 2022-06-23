@@ -1,0 +1,97 @@
+[PATCH] [WPE] Dispatch display refreshes earlier when skipping frames
+ https://bugs.webkit.org/show_bug.cgi?id=233312 <rdar://problem/85748122>
+
+Reviewed by NOBODY (OOPS!).
+
+When missing display refreshes due to long rendering times,
+immediately schedule rendering updates instead of waiting for the next
+refresh.
+
+No new tests, covered by existing tests.
+
+* Shared/CoordinatedGraphics/threadedcompositor/ThreadedCompositor.cpp:
+(WebKit::ThreadedCompositor::renderLayerTree):
+* Shared/CoordinatedGraphics/threadedcompositor/ThreadedDisplayRefreshMonitor.cpp:
+(WebKit::m_lastRefreshTime):
+(WebKit::ThreadedDisplayRefreshMonitor::missedRefreshTime const):
+(WebKit::ThreadedDisplayRefreshMonitor::displayRefreshCallback):
+* Shared/CoordinatedGraphics/threadedcompositor/ThreadedDisplayRefreshMonitor.h:
+
+Signed-off-by: Pablo Saavedra <psaavedra@igalia.com>
+Upstreams-status: Submitted [https://bugs.webkit.org/show_bug.cgi?id=233312]
+
+diff --git a/Source/WebKit/Shared/CoordinatedGraphics/threadedcompositor/ThreadedCompositor.cpp b/Source/WebKit/Shared/CoordinatedGraphics/threadedcompositor/ThreadedCompositor.cpp
+index 5147773f..322aa60e 100644
+--- a/Source/WebKit/Shared/CoordinatedGraphics/threadedcompositor/ThreadedCompositor.cpp
++++ b/Source/WebKit/Shared/CoordinatedGraphics/threadedcompositor/ThreadedCompositor.cpp
+@@ -243,6 +243,10 @@ void ThreadedCompositor::renderLayerTree()
+ 
+     if (m_scene->isActive())
+         m_client.didRenderFrame();
++
++    // Immediately schedule an update if the previous frame went over budget
++    if (m_displayRefreshMonitor->missedRefreshTime() > 0_s && m_displayRefreshMonitor->requiresDisplayRefreshCallback())
++        m_compositingRunLoop->scheduleUpdate();
+ }
+ 
+ void ThreadedCompositor::sceneUpdateFinished()
+diff --git a/Source/WebKit/Shared/CoordinatedGraphics/threadedcompositor/ThreadedDisplayRefreshMonitor.cpp b/Source/WebKit/Shared/CoordinatedGraphics/threadedcompositor/ThreadedDisplayRefreshMonitor.cpp
+index 38b6c317..8d56c094 100644
+--- a/Source/WebKit/Shared/CoordinatedGraphics/threadedcompositor/ThreadedDisplayRefreshMonitor.cpp
++++ b/Source/WebKit/Shared/CoordinatedGraphics/threadedcompositor/ThreadedDisplayRefreshMonitor.cpp
+@@ -39,12 +39,14 @@ namespace WebKit {
+ 
+ // FIXME: Use the correct frame rate.
+ constexpr WebCore::FramesPerSecond DefaultFramesPerSecond = 60;
++constexpr Seconds FrameTime = 1_s / DefaultFramesPerSecond;
+ 
+ ThreadedDisplayRefreshMonitor::ThreadedDisplayRefreshMonitor(WebCore::PlatformDisplayID displayID, Client& client)
+     : WebCore::DisplayRefreshMonitor(displayID)
+     , m_displayRefreshTimer(RunLoop::main(), this, &ThreadedDisplayRefreshMonitor::displayRefreshCallback)
+     , m_client(&client)
+     , m_currentUpdate({ 0, DefaultFramesPerSecond })
++    , m_lastRefreshTime(MonotonicTime::now())
+ {
+ #if USE(GLIB_EVENT_LOOP)
+     m_displayRefreshTimer.setPriority(RunLoopSourcePriority::DisplayRefreshMonitorTimer);
+@@ -101,6 +103,11 @@ void ThreadedDisplayRefreshMonitor::invalidate()
+     m_client = nullptr;
+ }
+ 
++Seconds ThreadedDisplayRefreshMonitor::missedRefreshTime() const
++{
++    return floor((MonotonicTime::now() - m_lastRefreshTime) / FrameTime) * FrameTime;
++}
++
+ // FIXME: Refactor to share more code with DisplayRefreshMonitor::displayLinkFired().
+ void ThreadedDisplayRefreshMonitor::displayRefreshCallback()
+ {
+@@ -131,6 +138,8 @@ void ThreadedDisplayRefreshMonitor::displayRefreshCallback()
+     // the notification handling.
+     if (m_client)
+         m_client->handleDisplayRefreshMonitorUpdate(hasBeenRescheduled);
++
++    m_lastRefreshTime = MonotonicTime::now();
+ }
+ 
+ } // namespace WebKit
+diff --git a/Source/WebKit/Shared/CoordinatedGraphics/threadedcompositor/ThreadedDisplayRefreshMonitor.h b/Source/WebKit/Shared/CoordinatedGraphics/threadedcompositor/ThreadedDisplayRefreshMonitor.h
+index db293fff..76fc5764 100644
+--- a/Source/WebKit/Shared/CoordinatedGraphics/threadedcompositor/ThreadedDisplayRefreshMonitor.h
++++ b/Source/WebKit/Shared/CoordinatedGraphics/threadedcompositor/ThreadedDisplayRefreshMonitor.h
+@@ -53,6 +53,7 @@ public:
+     bool requiresDisplayRefreshCallback();
+     void dispatchDisplayRefreshCallback();
+     void invalidate();
++    Seconds missedRefreshTime() const;
+ 
+ private:
+     ThreadedDisplayRefreshMonitor(WebCore::PlatformDisplayID, Client&);
+@@ -64,6 +65,7 @@ private:
+     RunLoop::Timer<ThreadedDisplayRefreshMonitor> m_displayRefreshTimer;
+     Client* m_client;
+     WebCore::DisplayUpdate m_currentUpdate;
++    MonotonicTime m_lastRefreshTime;
+ };
+ 
+ } // namespace WebKit

@@ -4,6 +4,7 @@ require conf/include/devupstream.inc
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
+           file://0001-WPE-Dispatch-display-refreshes-earlier-when-skipping.patch \
            "
 
 SRC_URI[tarball.sha256sum] = "66275debca7497daff3a7826734cd56262a807adb76c5dccdf257c89968c2fc8"
