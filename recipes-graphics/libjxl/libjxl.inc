@@ -37,7 +37,7 @@ EXTRA_OECMAKE = " -DBUILD_TESTING=OFF \
     -DJPEGXL_FORCE_SYSTEM_GTEST=ON \
     -DJPEGXL_FORCE_SYSTEM_HWY=ON"
 
-inherit cmake
+inherit cmake pkgconfig
 
 CXXFLAGS:append:arm = " -mfp16-format=ieee"
 
