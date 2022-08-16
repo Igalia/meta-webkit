@@ -16,7 +16,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI = " \
     https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
 "
-SRC_URI[tarball.sha256sum] = "b6bebe1f85a479d968c19e44a4704622ef8cef61636ad1b2406b77d16ae2e2a8"
+SRC_URI[tarball.sha256sum] = "1193bc821946336776f0dfa5e0dca5651f1e57157eda12da4721d2441f24a61a"
 
 RRECOMMENDS:${PN} = "${PN}-bin \
                      ca-certificates \
