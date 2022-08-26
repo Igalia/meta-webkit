@@ -1,0 +1,818 @@
+From febf4f92c94745d040f3d1d7ac9d548c716c4015 Mon Sep 17 00:00:00 2001
+From: Yusuke Suzuki <ysuzuki@apple.com>
+Date: Thu, 4 Aug 2022 14:50:04 -0700
+Subject: [PATCH] Merge 253133@main - [JSC] Make JSMap and JSSet construction
+ more simple and efficient https://bugs.webkit.org/show_bug.cgi?id=243557
+ rdar://98068082
+
+Reviewed by Mark Lam and Saam Barati.
+
+This patch makes the initial buffer of JSMap / JSSet nullptr so that we can make allocation of them
+simpler and efficient for non-using case. It cleans up many code in module loader etc. And it paves
+the way to allocating them from DFG and FTL efficiently. It also cleans up SerializedScriptValue
+implementation.
+
+* JSTests/stress/map-clear-get.js: Added.
+(shouldBe):
+(test):
+* JSTests/stress/set-clear-has.js: Added.
+(shouldBe):
+(set clear):
+(set shouldBe):
+(set new):
+* Source/JavaScriptCore/dfg/DFGSpeculativeJIT64.cpp:
+(JSC::DFG::SpeculativeJIT::compile):
+* Source/JavaScriptCore/ftl/FTLLowerDFGToB3.cpp:
+(JSC::FTL::DFG::LowerDFGToB3::compileCompareStrictEq):
+* Source/JavaScriptCore/runtime/AbstractModuleRecord.cpp:
+(JSC::AbstractModuleRecord::finishCreation):
+* Source/JavaScriptCore/runtime/HashMapImpl.h:
+(JSC::HashMapBuffer::tryCreate):
+(JSC::HashMapImpl::HashMapImpl):
+(JSC::HashMapBuffer::create): Deleted.
+(JSC::HashMapImpl::shouldRehashAfterAdd const): Deleted.
+* Source/JavaScriptCore/runtime/HashMapImplInlines.h:
+(JSC::shouldShrink):
+(JSC::shouldRehash):
+(JSC::nextCapacity):
+(JSC::HashMapImpl<HashMapBucketType>::finishCreation):
+(JSC::HashMapImpl<HashMapBucketType>::add):
+(JSC::HashMapImpl<HashMapBucketType>::addNormalized):
+(JSC::HashMapImpl<HashMapBucketType>::remove):
+(JSC::HashMapImpl<HashMapBucketType>::clear):
+(JSC::HashMapImpl<HashMapBucketType>::setUpHeadAndTail):
+(JSC::HashMapImpl<HashMapBucketType>::addNormalizedNonExistingForCloning):
+(JSC::HashMapImpl<HashMapBucketType>::addNormalizedNonExistingForCloningInternal):
+(JSC::HashMapImpl<HashMapBucketType>::addNormalizedInternal):
+(JSC::HashMapImpl<HashMapBucketType>::findBucketAlreadyHashedAndNormalized):
+(JSC::HashMapImpl<HashMapBucketType>::rehash):
+(JSC::HashMapImpl<HashMapBucketType>::makeAndSetNewBuffer):
+(JSC::HashMapImpl<HashMapBucketType>::assertBufferIsEmpty):
+(JSC::shouldRehashAfterAdd): Deleted.
+(JSC::HashMapImpl<HashMapBucketType>::assertBufferIsEmpty const): Deleted.
+* Source/JavaScriptCore/runtime/JSMap.h:
+* Source/JavaScriptCore/runtime/JSModuleLoader.cpp:
+(JSC::JSModuleLoader::finishCreation):
+* Source/JavaScriptCore/runtime/JSSet.h:
+* Source/JavaScriptCore/runtime/MapConstructor.cpp:
+(JSC::JSC_DEFINE_HOST_FUNCTION):
+* Source/JavaScriptCore/runtime/MapPrototype.cpp:
+(JSC::JSC_DEFINE_HOST_FUNCTION):
+* Source/JavaScriptCore/runtime/SetConstructor.cpp:
+(JSC::JSC_DEFINE_HOST_FUNCTION):
+* Source/JavaScriptCore/runtime/SetPrototype.cpp:
+(JSC::JSC_DEFINE_HOST_FUNCTION):
+* Source/JavaScriptCore/runtime/WeakMapImplInlines.h:
+(JSC::WeakMapImpl<WeakMapBucket>::shouldRehashAfterAdd const):
+* Source/WebCore/bindings/js/JSDOMMapLike.cpp:
+(WebCore::getBackingMap):
+* Source/WebCore/bindings/js/JSDOMSetLike.cpp:
+(WebCore::getBackingSet):
+* Source/WebCore/bindings/js/SerializedScriptValue.cpp:
+(WebCore::CloneDeserializer::deserialize):
+
+Canonical link: https://commits.webkit.org/253133@main
+
+(cherry picked from commit 1ed1e4a336e15a59b94a21b0300658e2f7dc9fef)
+---
+ JSTests/stress/map-clear-get.js               |  17 ++
+ JSTests/stress/set-clear-has.js               |  17 ++
+ .../dfg/DFGSpeculativeJIT64.cpp               |  10 +-
+ Source/JavaScriptCore/ftl/FTLLowerDFGToB3.cpp |   8 +-
+ .../runtime/AbstractModuleRecord.cpp          |   6 +-
+ Source/JavaScriptCore/runtime/HashMapImpl.h   |  44 ++----
+ .../runtime/HashMapImplInlines.h              | 148 +++++++++++-------
+ Source/JavaScriptCore/runtime/JSMap.h         |   4 +-
+ .../JavaScriptCore/runtime/JSModuleLoader.cpp |   8 +-
+ Source/JavaScriptCore/runtime/JSSet.h         |  16 +-
+ .../JavaScriptCore/runtime/MapConstructor.cpp |   5 +-
+ .../JavaScriptCore/runtime/MapPrototype.cpp   |   2 +-
+ .../JavaScriptCore/runtime/SetConstructor.cpp |   7 +-
+ .../JavaScriptCore/runtime/SetPrototype.cpp   |   2 +-
+ .../runtime/WeakMapImplInlines.h              |   2 +-
+ Source/WebCore/bindings/js/JSDOMMapLike.cpp   |   7 +-
+ Source/WebCore/bindings/js/JSDOMSetLike.cpp   |   7 +-
+ .../bindings/js/SerializedScriptValue.cpp     |   8 +-
+ 18 files changed, 171 insertions(+), 147 deletions(-)
+ create mode 100644 JSTests/stress/map-clear-get.js
+ create mode 100644 JSTests/stress/set-clear-has.js
+
+diff --git a/Source/JavaScriptCore/dfg/DFGSpeculativeJIT64.cpp b/Source/JavaScriptCore/dfg/DFGSpeculativeJIT64.cpp
+index 54dcc0c1..643357c4 100644
+--- a/Source/JavaScriptCore/dfg/DFGSpeculativeJIT64.cpp
++++ b/Source/JavaScriptCore/dfg/DFGSpeculativeJIT64.cpp
+@@ -4898,8 +4898,11 @@ void SpeculativeJIT::compile(Node* node)
+         if (node->child2().useKind() != UntypedUse)
+             speculate(node, node->child2());
+ 
+-        m_jit.load32(MacroAssembler::Address(mapGPR, HashMapImpl<HashMapBucket<HashMapBucketDataKey>>::offsetOfCapacity()), maskGPR);
++        CCallHelpers::JumpList notPresentInTable;
++
+         m_jit.loadPtr(MacroAssembler::Address(mapGPR, HashMapImpl<HashMapBucket<HashMapBucketDataKey>>::offsetOfBuffer()), bufferGPR);
++        notPresentInTable.append(m_jit.branchTestPtr(CCallHelpers::Zero, bufferGPR));
++        m_jit.load32(MacroAssembler::Address(mapGPR, HashMapImpl<HashMapBucket<HashMapBucketDataKey>>::offsetOfCapacity()), maskGPR);
+         m_jit.sub32(TrustedImm32(1), maskGPR);
+         m_jit.move(hashGPR, indexGPR);
+ 
+@@ -4911,8 +4914,9 @@ void SpeculativeJIT::compile(Node* node)
+         m_jit.and32(maskGPR, indexGPR);
+         m_jit.loadPtr(MacroAssembler::BaseIndex(bufferGPR, indexGPR, MacroAssembler::TimesEight), bucketGPR);
+         m_jit.move(bucketGPR, resultGPR);
+-        auto notPresentInTable = m_jit.branchPtr(MacroAssembler::Equal, 
+-            bucketGPR, TrustedImmPtr(bitwise_cast<size_t>(HashMapImpl<HashMapBucket<HashMapBucketDataKey>>::emptyValue())));
++
++        notPresentInTable.append(m_jit.branchPtr(MacroAssembler::Equal,
++            bucketGPR, TrustedImmPtr(bitwise_cast<size_t>(HashMapImpl<HashMapBucket<HashMapBucketDataKey>>::emptyValue()))));
+         loopAround.append(m_jit.branchPtr(MacroAssembler::Equal, 
+             bucketGPR, TrustedImmPtr(bitwise_cast<size_t>(HashMapImpl<HashMapBucket<HashMapBucketDataKey>>::deletedValue()))));
+ 
+diff --git a/Source/JavaScriptCore/ftl/FTLLowerDFGToB3.cpp b/Source/JavaScriptCore/ftl/FTLLowerDFGToB3.cpp
+index ac9d0c43..026b36ae 100644
+--- a/Source/JavaScriptCore/ftl/FTLLowerDFGToB3.cpp
++++ b/Source/JavaScriptCore/ftl/FTLLowerDFGToB3.cpp
+@@ -12110,6 +12110,7 @@ private:
+     void compileGetMapBucket()
+     {
+         JSGlobalObject* globalObject = m_graph.globalObjectFor(m_origin.semantic);
++        LBasicBlock indexSetUp = m_out.newBlock();
+         LBasicBlock loopStart = m_out.newBlock();
+         LBasicBlock loopAround = m_out.newBlock();
+         LBasicBlock slowPath = m_out.newBlock();
+@@ -12118,8 +12119,6 @@ private:
+         LBasicBlock notDeletedValue = m_out.newBlock();
+         LBasicBlock continuation = m_out.newBlock();
+ 
+-        LBasicBlock lastNext = m_out.insertNewBlocksBefore(loopStart);
+-
+         LValue map;
+         if (m_node->child1().useKind() == MapObjectUse)
+             map = lowMapObject(m_node->child1());
+@@ -12135,8 +12134,11 @@ private:
+         LValue hash = lowInt32(m_node->child3());
+ 
+         LValue buffer = m_out.loadPtr(map, m_heaps.HashMapImpl_buffer);
+-        LValue mask = m_out.sub(m_out.load32(map, m_heaps.HashMapImpl_capacity), m_out.int32One);
+ 
++        m_out.branch(m_out.isNull(buffer), unsure(notPresentInTable), unsure(indexSetUp));
++
++        LBasicBlock lastNext = m_out.appendTo(indexSetUp, loopStart);
++        LValue mask = m_out.sub(m_out.load32(map, m_heaps.HashMapImpl_capacity), m_out.int32One);
+         ValueFromBlock indexStart = m_out.anchor(hash);
+         m_out.jump(loopStart);
+ 
+diff --git a/Source/JavaScriptCore/runtime/AbstractModuleRecord.cpp b/Source/JavaScriptCore/runtime/AbstractModuleRecord.cpp
+index 89c3ecbb..3f5b243e 100644
+--- a/Source/JavaScriptCore/runtime/AbstractModuleRecord.cpp
++++ b/Source/JavaScriptCore/runtime/AbstractModuleRecord.cpp
+@@ -51,9 +51,6 @@ AbstractModuleRecord::AbstractModuleRecord(VM& vm, Structure* structure, const I
+ 
+ void AbstractModuleRecord::finishCreation(JSGlobalObject* globalObject, VM& vm)
+ {
+-    DeferTerminationForAWhile deferScope(vm);
+-    auto scope = DECLARE_CATCH_SCOPE(vm);
+-
+     Base::finishCreation(vm);
+     ASSERT(inherits(vm, info()));
+ 
+@@ -62,8 +59,7 @@ void AbstractModuleRecord::finishCreation(JSGlobalObject* globalObject, VM& vm)
+     for (unsigned index = 0; index < values.size(); ++index)
+         Base::internalField(index).set(vm, this, values[index]);
+ 
+-    JSMap* map = JSMap::create(globalObject, vm, globalObject->mapStructure());
+-    scope.releaseAssertNoException();
++    JSMap* map = JSMap::create(vm, globalObject->mapStructure());
+     m_dependenciesMap.set(vm, this, map);
+     putDirect(vm, Identifier::fromString(vm, "dependenciesMap"_s), m_dependenciesMap.get());
+ }
+diff --git a/Source/JavaScriptCore/runtime/HashMapImpl.h b/Source/JavaScriptCore/runtime/HashMapImpl.h
+index c7dcf43d..48cde365 100644
+--- a/Source/JavaScriptCore/runtime/HashMapImpl.h
++++ b/Source/JavaScriptCore/runtime/HashMapImpl.h
+@@ -209,7 +209,7 @@ public:
+         return bitwise_cast<BucketType**>(this);
+     }
+ 
+-    static HashMapBuffer* create(JSGlobalObject* globalObject, VM& vm, JSCell*, uint32_t capacity)
++    static HashMapBuffer* tryCreate(JSGlobalObject* globalObject, VM& vm, uint32_t capacity)
+     {
+         auto scope = DECLARE_THROW_SCOPE(vm);
+         size_t allocationSize = HashMapBuffer::allocationSize(capacity);
+@@ -239,7 +239,7 @@ ALWAYS_INLINE uint32_t wangsInt64Hash(uint64_t key);
+ ALWAYS_INLINE uint32_t jsMapHash(JSBigInt*);
+ ALWAYS_INLINE uint32_t jsMapHash(JSGlobalObject*, VM&, JSValue);
+ ALWAYS_INLINE uint32_t shouldShrink(uint32_t capacity, uint32_t keyCount);
+-ALWAYS_INLINE uint32_t shouldRehashAfterAdd(uint32_t capacity, uint32_t keyCount, uint32_t deleteCount);
++ALWAYS_INLINE uint32_t shouldRehash(uint32_t capacity, uint32_t keyCount, uint32_t deleteCount);
+ ALWAYS_INLINE uint32_t nextCapacity(uint32_t capacity, uint32_t keyCount);
+ 
+ template <typename HashMapBucketType>
+@@ -256,28 +256,15 @@ public:
+ 
+     HashMapImpl(VM& vm, Structure* structure)
+         : Base(vm, structure)
+-        , m_keyCount(0)
+-        , m_deleteCount(0)
+-        , m_capacity(4)
+     {
+     }
+ 
+-    HashMapImpl(VM& vm, Structure* structure, uint32_t sizeHint)
+-        : Base(vm, structure)
+-        , m_keyCount(0)
+-        , m_deleteCount(0)
+-    {
+-        uint32_t capacity = (Checked<uint32_t>(sizeHint) * 2) + 1;
+-        capacity = std::max<uint32_t>(WTF::roundUpToPowerOfTwo(capacity), 4U);
+-        m_capacity = capacity;
+-    }
+-
+     ALWAYS_INLINE HashMapBucketType** buffer() const
+     {
+         return m_buffer->buffer();
+     }
+ 
+-    void finishCreation(JSGlobalObject*, VM&);
++    void finishCreation(VM&);
+     void finishCreation(JSGlobalObject*, VM&, HashMapImpl* base);
+ 
+     static HashMapBucketType* emptyValue()
+@@ -320,7 +307,7 @@ public:
+         return m_keyCount;
+     }
+ 
+-    ALWAYS_INLINE void clear(JSGlobalObject*);
++    ALWAYS_INLINE void clear(VM&);
+ 
+     ALWAYS_INLINE size_t bufferSizeInBytes() const
+     {
+@@ -355,42 +342,39 @@ public:
+     }
+ 
+ private:
+-    ALWAYS_INLINE uint32_t shouldRehashAfterAdd() const
+-    {
+-        return JSC::shouldRehashAfterAdd(m_capacity, m_keyCount, m_deleteCount);
+-    }
+-
+     ALWAYS_INLINE uint32_t shouldShrink() const
+     {
+         return JSC::shouldShrink(m_capacity, m_keyCount);
+     }
+ 
+-    ALWAYS_INLINE void setUpHeadAndTail(JSGlobalObject*, VM&);
++    ALWAYS_INLINE void setUpHeadAndTail(VM&);
+ 
+     ALWAYS_INLINE void addNormalizedNonExistingForCloning(JSGlobalObject*, JSValue key, JSValue = JSValue());
++    ALWAYS_INLINE HashMapBucketType* addNormalizedNonExistingForCloningInternal(JSGlobalObject*, JSValue key, JSValue, uint32_t hash);
+ 
+     template<typename CanUseBucket>
+     ALWAYS_INLINE void addNormalizedInternal(JSGlobalObject*, JSValue key, JSValue, const CanUseBucket&);
+ 
+     template<typename CanUseBucket>
+-    ALWAYS_INLINE HashMapBucketType* addNormalizedInternal(VM&, JSValue key, JSValue, uint32_t hash, const CanUseBucket&);
++    ALWAYS_INLINE HashMapBucketType* addNormalizedInternal(JSGlobalObject*, JSValue key, JSValue, uint32_t hash, const CanUseBucket&);
+ 
+     ALWAYS_INLINE HashMapBucketType** findBucketAlreadyHashedAndNormalized(JSGlobalObject*, JSValue key, uint32_t hash);
+ 
+-    void rehash(JSGlobalObject*);
++    enum class RehashMode { BeforeAddition, AfterRemoval };
++    void rehash(JSGlobalObject*, RehashMode);
+ 
+     ALWAYS_INLINE void checkConsistency() const;
+ 
+-    void makeAndSetNewBuffer(JSGlobalObject*, VM&);
++    void makeAndSetNewBuffer(JSGlobalObject*, uint32_t newCapacity, VM&);
+ 
+-    ALWAYS_INLINE void assertBufferIsEmpty() const;
++    ALWAYS_INLINE static void assertBufferIsEmpty(HashMapBucketType**, uint32_t capacity);
+ 
+     WriteBarrier<HashMapBucketType> m_head;
+     WriteBarrier<HashMapBucketType> m_tail;
+     AuxiliaryBarrier<HashMapBufferType*> m_buffer;
+-    uint32_t m_keyCount;
+-    uint32_t m_deleteCount;
+-    uint32_t m_capacity;
++    uint32_t m_keyCount { 0 };
++    uint32_t m_deleteCount { 0 };
++    uint32_t m_capacity { 0 };
+ };
+ 
+ } // namespace JSC
+diff --git a/Source/JavaScriptCore/runtime/HashMapImplInlines.h b/Source/JavaScriptCore/runtime/HashMapImplInlines.h
+index 8f532347..b922b147 100644
+--- a/Source/JavaScriptCore/runtime/HashMapImplInlines.h
++++ b/Source/JavaScriptCore/runtime/HashMapImplInlines.h
+@@ -137,20 +137,25 @@ ALWAYS_INLINE std::optional<uint32_t> concurrentJSMapHash(JSValue key)
+     return wangsInt64Hash(rawValue);
+ }
+ 
++static constexpr uint32_t hashMapInitialCapacity = 4;
++
+ ALWAYS_INLINE uint32_t shouldShrink(uint32_t capacity, uint32_t keyCount)
+ {
+-    return 8 * keyCount <= capacity && capacity > 4;
++    return 8 * keyCount <= capacity && capacity > hashMapInitialCapacity;
+ }
+ 
+-ALWAYS_INLINE uint32_t shouldRehashAfterAdd(uint32_t capacity, uint32_t keyCount, uint32_t deleteCount)
++ALWAYS_INLINE uint32_t shouldRehash(uint32_t capacity, uint32_t keyCount, uint32_t deleteCount)
+ {
+     return 2 * (keyCount + deleteCount) >= capacity;
+ }
+ 
+ ALWAYS_INLINE uint32_t nextCapacity(uint32_t capacity, uint32_t keyCount)
+ {
++    if (!capacity)
++        return hashMapInitialCapacity;
++
+     if (shouldShrink(capacity, keyCount)) {
+-        ASSERT((capacity / 2) >= 4);
++        ASSERT((capacity / 2) >= hashMapInitialCapacity);
+         return capacity / 2;
+     }
+ 
+@@ -173,17 +178,11 @@ ALWAYS_INLINE uint32_t nextCapacity(uint32_t capacity, uint32_t keyCount)
+ }
+ 
+ template <typename HashMapBucketType>
+-void HashMapImpl<HashMapBucketType>::finishCreation(JSGlobalObject* globalObject, VM& vm)
++void HashMapImpl<HashMapBucketType>::finishCreation(VM& vm)
+ {
+     ASSERT_WITH_MESSAGE(HashMapBucket<HashMapBucketDataKey>::offsetOfKey() == HashMapBucket<HashMapBucketDataKeyValue>::offsetOfKey(), "We assume this to be true in the DFG and FTL JIT.");
+-
+-    auto scope = DECLARE_THROW_SCOPE(vm);
+     Base::finishCreation(vm);
+-
+-    makeAndSetNewBuffer(globalObject, vm);
+-    RETURN_IF_EXCEPTION(scope, void());
+-
+-    setUpHeadAndTail(globalObject, vm);
++    setUpHeadAndTail(vm);
+ }
+ 
+ template <typename HashMapBucketType>
+@@ -195,12 +194,11 @@ void HashMapImpl<HashMapBucketType>::finishCreation(JSGlobalObject* globalObject
+     // This size should be the same to the case when you clone the map by calling add() repeatedly.
+     uint32_t capacity = (Checked<uint32_t>(base->m_keyCount) * 2) + 1;
+     RELEASE_ASSERT(capacity <= (1U << 31));
+-    capacity = std::max<uint32_t>(WTF::roundUpToPowerOfTwo(capacity), 4U);
+-    m_capacity = capacity;
+-    makeAndSetNewBuffer(globalObject, vm);
++    capacity = std::max<uint32_t>(WTF::roundUpToPowerOfTwo(capacity), hashMapInitialCapacity);
++    makeAndSetNewBuffer(globalObject, capacity, vm);
+     RETURN_IF_EXCEPTION(scope, void());
+ 
+-    setUpHeadAndTail(globalObject, vm);
++    setUpHeadAndTail(vm);
+ 
+     HashMapBucketType* bucket = base->m_head.get()->next();
+     while (bucket) {
+@@ -249,17 +247,10 @@ ALWAYS_INLINE bool HashMapImpl<HashMapBucketType>::has(JSGlobalObject* globalObj
+ template <typename HashMapBucketType>
+ ALWAYS_INLINE void HashMapImpl<HashMapBucketType>::add(JSGlobalObject* globalObject, JSValue key, JSValue value)
+ {
+-    VM& vm = getVM(globalObject);
+-    auto scope = DECLARE_THROW_SCOPE(vm);
+-
+     key = normalizeMapKey(key);
+     addNormalizedInternal(globalObject, key, value, [&] (HashMapBucketType* bucket) {
+         return !isDeleted(bucket) && areKeysEqual(globalObject, key, bucket->key());
+     });
+-    RETURN_IF_EXCEPTION(scope, void());
+-    scope.release();
+-    if (shouldRehashAfterAdd())
+-        rehash(globalObject);
+ }
+ 
+ template <typename HashMapBucketType>
+@@ -269,12 +260,9 @@ ALWAYS_INLINE HashMapBucketType* HashMapImpl<HashMapBucketType>::addNormalized(J
+     ASSERT_WITH_MESSAGE(normalizeMapKey(key) == key, "We expect normalized values flowing into this function.");
+     DEFER_TERMINATION_AND_ASSERT_WITH_MESSAGE(vm, jsMapHash(globalObject, getVM(globalObject), key) == hash, "We expect hash value is what we expect.");
+ 
+-    auto* bucket = addNormalizedInternal(vm, key, value, hash, [&] (HashMapBucketType* bucket) {
++    return addNormalizedInternal(globalObject, key, value, hash, [&] (HashMapBucketType* bucket) {
+         return !isDeleted(bucket) && areKeysEqual(globalObject, key, bucket->key());
+     });
+-    if (shouldRehashAfterAdd())
+-        rehash(globalObject);
+-    return bucket;
+ }
+ 
+ template <typename HashMapBucketType>
+@@ -297,15 +285,14 @@ ALWAYS_INLINE bool HashMapImpl<HashMapBucketType>::remove(JSGlobalObject* global
+     --m_keyCount;
+ 
+     if (shouldShrink())
+-        rehash(globalObject);
++        rehash(globalObject, RehashMode::AfterRemoval);
+ 
+     return true;
+ }
+ 
+ template <typename HashMapBucketType>
+-ALWAYS_INLINE void HashMapImpl<HashMapBucketType>::clear(JSGlobalObject* globalObject)
++ALWAYS_INLINE void HashMapImpl<HashMapBucketType>::clear(VM& vm)
+ {
+-    VM& vm = getVM(globalObject);
+     m_keyCount = 0;
+     m_deleteCount = 0;
+     HashMapBucketType* head = m_head.get();
+@@ -320,13 +307,13 @@ ALWAYS_INLINE void HashMapImpl<HashMapBucketType>::clear(JSGlobalObject* globalO
+     }
+     m_head->setNext(vm, m_tail.get());
+     m_tail->setPrev(vm, m_head.get());
+-    m_capacity = 4;
+-    makeAndSetNewBuffer(globalObject, vm);
++    m_buffer.clear();
++    m_capacity = 0;
+     checkConsistency();
+ }
+ 
+ template <typename HashMapBucketType>
+-ALWAYS_INLINE void HashMapImpl<HashMapBucketType>::setUpHeadAndTail(JSGlobalObject*, VM& vm)
++ALWAYS_INLINE void HashMapImpl<HashMapBucketType>::setUpHeadAndTail(VM& vm)
+ {
+     m_head.set(vm, this, HashMapBucketType::create(vm));
+     m_tail.set(vm, this, HashMapBucketType::create(vm));
+@@ -340,7 +327,20 @@ ALWAYS_INLINE void HashMapImpl<HashMapBucketType>::setUpHeadAndTail(JSGlobalObje
+ template <typename HashMapBucketType>
+ ALWAYS_INLINE void HashMapImpl<HashMapBucketType>::addNormalizedNonExistingForCloning(JSGlobalObject* globalObject, JSValue key, JSValue value)
+ {
+-    addNormalizedInternal(globalObject, key, value, [&] (HashMapBucketType*) {
++    VM& vm = getVM(globalObject);
++    auto scope = DECLARE_THROW_SCOPE(vm);
++
++    uint32_t hash = jsMapHash(globalObject, vm, key);
++    RETURN_IF_EXCEPTION(scope, void());
++    scope.release();
++
++    addNormalizedNonExistingForCloningInternal(globalObject, key, value, hash);
++}
++
++template <typename HashMapBucketType>
++ALWAYS_INLINE HashMapBucketType* HashMapImpl<HashMapBucketType>::addNormalizedNonExistingForCloningInternal(JSGlobalObject* globalObject, JSValue key, JSValue value, uint32_t hash)
++{
++    return addNormalizedInternal(globalObject, key, value, hash, [&](HashMapBucketType*) {
+         return false;
+     });
+ }
+@@ -355,26 +355,49 @@ ALWAYS_INLINE void HashMapImpl<HashMapBucketType>::addNormalizedInternal(JSGloba
+     uint32_t hash = jsMapHash(globalObject, vm, key);
+     RETURN_IF_EXCEPTION(scope, void());
+     scope.release();
+-    addNormalizedInternal(vm, key, value, hash, canUseBucket);
++    addNormalizedInternal(globalObject, key, value, hash, canUseBucket);
+ }
+ 
+ template <typename HashMapBucketType>
+ template<typename CanUseBucket>
+-ALWAYS_INLINE HashMapBucketType* HashMapImpl<HashMapBucketType>::addNormalizedInternal(VM& vm, JSValue key, JSValue value, uint32_t hash, const CanUseBucket& canUseBucket)
++ALWAYS_INLINE HashMapBucketType* HashMapImpl<HashMapBucketType>::addNormalizedInternal(JSGlobalObject* globalObject, JSValue key, JSValue value, uint32_t hash, const CanUseBucket& canUseBucket)
+ {
++    VM& vm = getVM(globalObject);
++    auto scope = DECLARE_THROW_SCOPE(vm);
+     ASSERT_WITH_MESSAGE(normalizeMapKey(key) == key, "We expect normalized values flowing into this function.");
+ 
++    if (!m_capacity) {
++        makeAndSetNewBuffer(globalObject, hashMapInitialCapacity, vm);
++        RETURN_IF_EXCEPTION(scope, { });
++    }
++
+     const uint32_t mask = m_capacity - 1;
+     uint32_t index = hash & mask;
+     HashMapBucketType** buffer = this->buffer();
+-    HashMapBucketType* bucket = buffer[index];
+-    while (!isEmpty(bucket)) {
+-        if (canUseBucket(bucket)) {
+-            bucket->setValue(vm, value);
+-            return bucket;
++    {
++        HashMapBucketType* bucket = buffer[index];
++        while (!isEmpty(bucket)) {
++            if (canUseBucket(bucket)) {
++                bucket->setValue(vm, value);
++                return bucket;
++            }
++            index = (index + 1) & mask;
++            bucket = buffer[index];
+         }
+-        index = (index + 1) & mask;
+-        bucket = buffer[index];
++    }
++
++    if (JSC::shouldRehash(m_capacity, m_keyCount + 1, m_deleteCount)) {
++        rehash(globalObject, RehashMode::BeforeAddition);
++        RETURN_IF_EXCEPTION(scope, { });
++        // We ensure that (1) this map does not have deleted keys because of rehashing and (2) this map does not have the same key as |key| input.
++        // Thus, we can just search for empty bucket.
++        ASSERT(m_capacity);
++        ASSERT(isPowerOfTwo(m_capacity));
++        const uint32_t mask = m_capacity - 1;
++        index = hash & mask;
++        buffer = this->buffer();
++        while (!isEmpty(buffer[index]))
++            index = (index + 1) & mask;
+     }
+ 
+     HashMapBucketType* newEntry = m_tail.get();
+@@ -395,6 +418,9 @@ ALWAYS_INLINE HashMapBucketType* HashMapImpl<HashMapBucketType>::addNormalizedIn
+ template <typename HashMapBucketType>
+ ALWAYS_INLINE HashMapBucketType** HashMapImpl<HashMapBucketType>::findBucketAlreadyHashedAndNormalized(JSGlobalObject* globalObject, JSValue key, uint32_t hash)
+ {
++    if (!m_capacity)
++        return nullptr;
++
+     const uint32_t mask = m_capacity - 1;
+     uint32_t index = hash & mask;
+     HashMapBucketType** buffer = this->buffer();
+@@ -410,20 +436,25 @@ ALWAYS_INLINE HashMapBucketType** HashMapImpl<HashMapBucketType>::findBucketAlre
+ }
+ 
+ template <typename HashMapBucketType>
+-void HashMapImpl<HashMapBucketType>::rehash(JSGlobalObject* globalObject)
++void HashMapImpl<HashMapBucketType>::rehash(JSGlobalObject* globalObject, RehashMode mode)
+ {
+     VM& vm = getVM(globalObject);
+     auto scope = DECLARE_THROW_SCOPE(vm);
+ 
+     uint32_t oldCapacity = m_capacity;
+-    m_capacity = nextCapacity(m_capacity, m_keyCount);
++    uint32_t newCapacity = nextCapacity(m_capacity, m_keyCount + (mode == RehashMode::BeforeAddition ? 1 : 0));
++    ASSERT(newCapacity);
+ 
+-    if (m_capacity != oldCapacity) {
+-        makeAndSetNewBuffer(globalObject, vm);
++    if (newCapacity != oldCapacity) {
++        makeAndSetNewBuffer(globalObject, newCapacity, vm);
+         RETURN_IF_EXCEPTION(scope, void());
+     } else {
+-        m_buffer->reset(m_capacity);
+-        assertBufferIsEmpty();
++        ASSERT(newCapacity);
++        ASSERT(oldCapacity);
++        ASSERT(m_capacity == newCapacity);
++        ASSERT(m_buffer);
++        m_buffer->reset(newCapacity);
++        assertBufferIsEmpty(buffer(), newCapacity);
+     }
+ 
+     HashMapBucketType* iter = m_head->next();
+@@ -466,25 +497,28 @@ ALWAYS_INLINE void HashMapImpl<HashMapBucketType>::checkConsistency() const
+ }
+ 
+ template <typename HashMapBucketType>
+-void HashMapImpl<HashMapBucketType>::makeAndSetNewBuffer(JSGlobalObject* globalObject, VM& vm)
++void HashMapImpl<HashMapBucketType>::makeAndSetNewBuffer(JSGlobalObject* globalObject, uint32_t newCapacity, VM& vm)
+ {
+-    ASSERT(!(m_capacity & (m_capacity - 1)));
++    ASSERT(!(newCapacity & (newCapacity - 1)));
+ 
+-    HashMapBufferType* buffer = HashMapBufferType::create(globalObject, vm, this, m_capacity);
++    HashMapBufferType* buffer = HashMapBufferType::tryCreate(globalObject, vm, newCapacity);
+     if (UNLIKELY(!buffer))
+         return;
+ 
+     m_buffer.set(vm, this, buffer);
+-    assertBufferIsEmpty();
++    m_capacity = newCapacity;
++    assertBufferIsEmpty(this->buffer(), newCapacity);
+ }
+ 
+ template <typename HashMapBucketType>
+-ALWAYS_INLINE void HashMapImpl<HashMapBucketType>::assertBufferIsEmpty() const
++ALWAYS_INLINE void HashMapImpl<HashMapBucketType>::assertBufferIsEmpty(HashMapBucketType** buffer, uint32_t capacity)
+ {
+-    if (ASSERT_ENABLED) {
+-        for (unsigned i = 0; i < m_capacity; i++)
+-            ASSERT(isEmpty(buffer()[i]));
+-    }
++    UNUSED_PARAM(buffer);
++    UNUSED_PARAM(capacity);
++#if ASSERT_ENABLED
++    for (unsigned i = 0; i < capacity; i++)
++        ASSERT(isEmpty(buffer[i]));
++#endif
+ }
+ 
+ } // namespace JSC
+diff --git a/Source/JavaScriptCore/runtime/JSMap.h b/Source/JavaScriptCore/runtime/JSMap.h
+index f2ca2016..4a819fe0 100644
+--- a/Source/JavaScriptCore/runtime/JSMap.h
++++ b/Source/JavaScriptCore/runtime/JSMap.h
+@@ -47,10 +47,10 @@ public:
+         return Structure::create(vm, globalObject, prototype, TypeInfo(JSMapType, StructureFlags), info());
+     }
+ 
+-    static JSMap* create(JSGlobalObject* globalObject, VM& vm, Structure* structure)
++    static JSMap* create(VM& vm, Structure* structure)
+     {
+         JSMap* instance = new (NotNull, allocateCell<JSMap>(vm.heap)) JSMap(vm, structure);
+-        instance->finishCreation(globalObject, vm);
++        instance->finishCreation(vm);
+         return instance;
+     }
+ 
+diff --git a/Source/JavaScriptCore/runtime/JSModuleLoader.cpp b/Source/JavaScriptCore/runtime/JSModuleLoader.cpp
+index b8b92128..5e997607 100644
+--- a/Source/JavaScriptCore/runtime/JSModuleLoader.cpp
++++ b/Source/JavaScriptCore/runtime/JSModuleLoader.cpp
+@@ -99,13 +99,9 @@ JSModuleLoader::JSModuleLoader(VM& vm, Structure* structure)
+ 
+ void JSModuleLoader::finishCreation(JSGlobalObject* globalObject, VM& vm)
+ {
+-    DeferTerminationForAWhile deferScope(vm);
+-    auto scope = DECLARE_CATCH_SCOPE(vm);
+-
+     Base::finishCreation(vm);
+-    ASSERT(inherits(vm, info()));
+-    JSMap* map = JSMap::create(globalObject, vm, globalObject->mapStructure());
+-    scope.releaseAssertNoException();
++    ASSERT(inherits(info()));
++    JSMap* map = JSMap::create(vm, globalObject->mapStructure());
+     putDirect(vm, Identifier::fromString(vm, "registry"), map);
+ }
+ 
+diff --git a/Source/JavaScriptCore/runtime/JSSet.h b/Source/JavaScriptCore/runtime/JSSet.h
+index de793304..2c66382f 100644
+--- a/Source/JavaScriptCore/runtime/JSSet.h
++++ b/Source/JavaScriptCore/runtime/JSSet.h
+@@ -47,15 +47,10 @@ public:
+         return Structure::create(vm, globalObject, prototype, TypeInfo(JSSetType, StructureFlags), info());
+     }
+ 
+-    static JSSet* create(JSGlobalObject* globalObject, VM& vm, Structure* structure)
++    static JSSet* create(VM& vm, Structure* structure)
+     {
+-        return create(globalObject, vm, structure, 0);
+-    }
+-
+-    static JSSet* create(JSGlobalObject* globalObject, VM& vm, Structure* structure, uint32_t size)
+-    {
+-        JSSet* instance = new (NotNull, allocateCell<JSSet>(vm.heap)) JSSet(vm, structure, size);
+-        instance->finishCreation(globalObject, vm);
++        JSSet* instance = new (NotNull, allocateCell<JSSet>(vm.heap)) JSSet(vm, structure);
++        instance->finishCreation(vm);
+         return instance;
+     }
+ 
+@@ -68,11 +63,6 @@ private:
+         : Base(vm, structure)
+     {
+     }
+-
+-    JSSet(VM& vm, Structure* structure, uint32_t sizeHint)
+-        : Base(vm, structure, sizeHint)
+-    {
+-    }
+ };
+ 
+ static_assert(std::is_final<JSSet>::value, "Required for JSType based casting");
+diff --git a/Source/JavaScriptCore/runtime/MapConstructor.cpp b/Source/JavaScriptCore/runtime/MapConstructor.cpp
+index e5a28986..7de3d784 100644
+--- a/Source/JavaScriptCore/runtime/MapConstructor.cpp
++++ b/Source/JavaScriptCore/runtime/MapConstructor.cpp
+@@ -68,7 +68,7 @@ JSC_DEFINE_HOST_FUNCTION(constructMap, (JSGlobalObject* globalObject, CallFrame*
+ 
+     JSValue iterable = callFrame->argument(0);
+     if (iterable.isUndefinedOrNull())
+-        RELEASE_AND_RETURN(scope, JSValue::encode(JSMap::create(globalObject, vm, mapStructure)));
++        return JSValue::encode(JSMap::create(vm, mapStructure));
+ 
+     bool canPerformFastSet = JSMap::isSetFastAndNonObservable(mapStructure);
+     if (auto* iterableMap = jsDynamicCast<JSMap*>(vm, iterable)) {
+@@ -76,8 +76,7 @@ JSC_DEFINE_HOST_FUNCTION(constructMap, (JSGlobalObject* globalObject, CallFrame*
+             RELEASE_AND_RETURN(scope, JSValue::encode(iterableMap->clone(globalObject, vm, mapStructure)));
+     }
+ 
+-    JSMap* map = JSMap::create(globalObject, vm, mapStructure);
+-    RETURN_IF_EXCEPTION(scope, encodedJSValue());
++    JSMap* map = JSMap::create(vm, mapStructure);
+ 
+     JSValue adderFunction;
+     CallData adderFunctionCallData;
+diff --git a/Source/JavaScriptCore/runtime/MapPrototype.cpp b/Source/JavaScriptCore/runtime/MapPrototype.cpp
+index 93ebe003..378714cc 100644
+--- a/Source/JavaScriptCore/runtime/MapPrototype.cpp
++++ b/Source/JavaScriptCore/runtime/MapPrototype.cpp
+@@ -102,7 +102,7 @@ JSC_DEFINE_HOST_FUNCTION(mapProtoFuncClear, (JSGlobalObject* globalObject, CallF
+     JSMap* map = getMap(globalObject, callFrame->thisValue());
+     if (!map)
+         return JSValue::encode(jsUndefined());
+-    map->clear(globalObject);
++    map->clear(globalObject->vm());
+     return JSValue::encode(jsUndefined());
+ }
+ 
+diff --git a/Source/JavaScriptCore/runtime/SetConstructor.cpp b/Source/JavaScriptCore/runtime/SetConstructor.cpp
+index d54433bf..a18fbb29 100644
+--- a/Source/JavaScriptCore/runtime/SetConstructor.cpp
++++ b/Source/JavaScriptCore/runtime/SetConstructor.cpp
+@@ -67,8 +67,8 @@ JSC_DEFINE_HOST_FUNCTION(constructSet, (JSGlobalObject* globalObject, CallFrame*
+     RETURN_IF_EXCEPTION(scope, { });
+ 
+     JSValue iterable = callFrame->argument(0);
+-    if (iterable.isUndefinedOrNull()) 
+-        RELEASE_AND_RETURN(scope, JSValue::encode(JSSet::create(globalObject, vm, setStructure)));
++    if (iterable.isUndefinedOrNull())
++        return JSValue::encode(JSSet::create(vm, setStructure));
+ 
+     bool canPerformFastAdd = JSSet::isAddFastAndNonObservable(setStructure);
+     if (auto* iterableSet = jsDynamicCast<JSSet*>(vm, iterable)) {
+@@ -76,8 +76,7 @@ JSC_DEFINE_HOST_FUNCTION(constructSet, (JSGlobalObject* globalObject, CallFrame*
+             RELEASE_AND_RETURN(scope, JSValue::encode(iterableSet->clone(globalObject, vm, setStructure)));
+     }
+ 
+-    JSSet* set = JSSet::create(globalObject, vm, setStructure);
+-    RETURN_IF_EXCEPTION(scope, encodedJSValue());
++    JSSet* set = JSSet::create(vm, setStructure);
+ 
+     JSValue adderFunction;
+     CallData adderFunctionCallData;
+diff --git a/Source/JavaScriptCore/runtime/SetPrototype.cpp b/Source/JavaScriptCore/runtime/SetPrototype.cpp
+index a6efc2fb..b867eba4 100644
+--- a/Source/JavaScriptCore/runtime/SetPrototype.cpp
++++ b/Source/JavaScriptCore/runtime/SetPrototype.cpp
+@@ -108,7 +108,7 @@ JSC_DEFINE_HOST_FUNCTION(setProtoFuncClear, (JSGlobalObject* globalObject, CallF
+     JSSet* set = getSet(globalObject, callFrame->thisValue());
+     if (!set)
+         return JSValue::encode(jsUndefined());
+-    set->clear(globalObject);
++    set->clear(globalObject->vm());
+     return JSValue::encode(jsUndefined());
+ }
+ 
+diff --git a/Source/JavaScriptCore/runtime/WeakMapImplInlines.h b/Source/JavaScriptCore/runtime/WeakMapImplInlines.h
+index 78ae63d9..498d25f9 100644
+--- a/Source/JavaScriptCore/runtime/WeakMapImplInlines.h
++++ b/Source/JavaScriptCore/runtime/WeakMapImplInlines.h
+@@ -129,7 +129,7 @@ void WeakMapImpl<WeakMapBucket>::rehash(RehashMode mode)
+ template<typename WeakMapBucket>
+ ALWAYS_INLINE uint32_t WeakMapImpl<WeakMapBucket>::shouldRehashAfterAdd() const
+ {
+-    return JSC::shouldRehashAfterAdd(m_capacity, m_keyCount, m_deleteCount);
++    return JSC::shouldRehash(m_capacity, m_keyCount, m_deleteCount);
+ }
+ 
+ } // namespace JSC
+diff --git a/Source/WebCore/bindings/js/JSDOMMapLike.cpp b/Source/WebCore/bindings/js/JSDOMMapLike.cpp
+index e132c39f..c7f389d8 100644
+--- a/Source/WebCore/bindings/js/JSDOMMapLike.cpp
++++ b/Source/WebCore/bindings/js/JSDOMMapLike.cpp
+@@ -40,12 +40,7 @@ std::pair<bool, std::reference_wrapper<JSC::JSObject>> getBackingMap(JSC::JSGlob
+     if (!backingMap.isUndefined())
+         return { false, *JSC::asObject(backingMap) };
+ 
+-    JSC::DeferTerminationForAWhile deferScope(vm);
+-    auto scope = DECLARE_CATCH_SCOPE(vm);
+-
+-    backingMap = JSC::JSMap::create(&lexicalGlobalObject, vm, lexicalGlobalObject.mapStructure());
+-    scope.releaseAssertNoException();
+-
++    backingMap = JSC::JSMap::create(vm, lexicalGlobalObject.mapStructure());
+     mapLike.putDirect(vm, static_cast<JSVMClientData*>(vm.clientData)->builtinNames().backingMapPrivateName(), backingMap, static_cast<unsigned>(JSC::PropertyAttribute::DontEnum));
+     return { true, *JSC::asObject(backingMap) };
+ }
+diff --git a/Source/WebCore/bindings/js/JSDOMSetLike.cpp b/Source/WebCore/bindings/js/JSDOMSetLike.cpp
+index f5e9f323..3f01dc6b 100644
+--- a/Source/WebCore/bindings/js/JSDOMSetLike.cpp
++++ b/Source/WebCore/bindings/js/JSDOMSetLike.cpp
+@@ -45,12 +45,7 @@ std::pair<bool, std::reference_wrapper<JSC::JSObject>> getBackingSet(JSC::JSGlob
+     auto backingSet = setLike.get(&lexicalGlobalObject, static_cast<JSVMClientData*>(vm.clientData)->builtinNames().backingSetPrivateName());
+     if (backingSet.isUndefined()) {
+         auto& vm = lexicalGlobalObject.vm();
+-        JSC::DeferTermination deferScope(vm);
+-        auto scope = DECLARE_CATCH_SCOPE(vm);
+-
+-        backingSet = JSC::JSSet::create(&lexicalGlobalObject, vm, lexicalGlobalObject.setStructure());
+-        scope.releaseAssertNoException();
+-
++        backingSet = JSC::JSSet::create(vm, lexicalGlobalObject.setStructure());
+         setLike.putDirect(vm, static_cast<JSVMClientData*>(vm.clientData)->builtinNames().backingSetPrivateName(), backingSet, static_cast<unsigned>(JSC::PropertyAttribute::DontEnum));
+         return { true, *JSC::asObject(backingSet) };
+     }
+diff --git a/Source/WebCore/bindings/js/SerializedScriptValue.cpp b/Source/WebCore/bindings/js/SerializedScriptValue.cpp
+index 504785c9..a4831bdc 100644
+--- a/Source/WebCore/bindings/js/SerializedScriptValue.cpp
++++ b/Source/WebCore/bindings/js/SerializedScriptValue.cpp
+@@ -3808,9 +3808,7 @@ DeserializationResult CloneDeserializer::deserialize()
+         mapObjectStartState: {
+             if (outputObjectStack.size() > maximumFilterRecursion)
+                 return std::make_pair(JSValue(), SerializationReturnCode::StackOverflowError);
+-            JSMap* map = JSMap::create(m_lexicalGlobalObject, m_lexicalGlobalObject->vm(), m_globalObject->mapStructure());
+-            if (UNLIKELY(scope.exception()))
+-                goto error;
++            JSMap* map = JSMap::create(m_lexicalGlobalObject->vm(), m_globalObject->mapStructure());
+             m_gcBuffer.appendWithCrashOnOverflow(map);
+             outputObjectStack.append(map);
+             mapStack.append(map);
+@@ -3839,9 +3837,7 @@ DeserializationResult CloneDeserializer::deserialize()
+         setObjectStartState: {
+             if (outputObjectStack.size() > maximumFilterRecursion)
+                 return std::make_pair(JSValue(), SerializationReturnCode::StackOverflowError);
+-            JSSet* set = JSSet::create(m_lexicalGlobalObject, m_lexicalGlobalObject->vm(), m_globalObject->setStructure());
+-            if (UNLIKELY(scope.exception()))
+-                goto error;
++            JSSet* set = JSSet::create(m_lexicalGlobalObject->vm(), m_globalObject->setStructure());
+             m_gcBuffer.appendWithCrashOnOverflow(set);
+             outputObjectStack.append(set);
+             setStack.append(set);
