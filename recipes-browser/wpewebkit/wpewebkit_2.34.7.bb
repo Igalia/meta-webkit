@@ -4,6 +4,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI = "\
     https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
+    file://0001-Merge-253133-main-JSC-Make-JSMap-and-JSSet-construct.patch \
 "
 
 SRC_URI[tarball.sha256sum] = "092659bf43e5bc6f2a5a7b8e612a39da5da56a04f41eacc716638f53a27c3412"
