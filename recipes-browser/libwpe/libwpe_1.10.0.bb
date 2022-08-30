@@ -1,4 +1,0 @@
-require libwpe.inc
-
-SRC_URI[sha256sum] = "2415e270d45e3595ed4052bc105f733744dc2d3677e12ff4a831e5029841084d"
-
