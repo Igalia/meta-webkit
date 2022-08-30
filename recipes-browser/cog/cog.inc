@@ -50,11 +50,8 @@ PACKAGECONFIG:class-devupstream ?= " \
 # Also libWPEBackend-default.so should go into the main package.
 FILES_SOLIBSDEV = "${libdir}/libcogcore*.so"
 
-# cog < 0.10.0 installed D-Bus policy configuration into sysconfdir
-# cog >= 0.10.0 installs it into datadir, see https://github.com/Igalia/cog/pull/296
 FILES:${PN} += " \
     ${libdir}/libcogplatform*.so \
-    ${sysconfdir}/dbus-1/system.d/com.igalia.Cog.conf \
     ${datadir}/dbus-1/system.d/com.igalia.Cog.conf \
 "
 INSANE_SKIP:${PN} = "dev-so"
@@ -63,6 +60,14 @@ INSANE_SKIP:${PN} = "dev-so"
 # set only if the dbus PACKAGECONFIG is enabled.
 COG_DBUS_OWN_USER ?= ""
 
+COG_PACKAGECONFIG := " \
+    ${@bb.utils.contains('PREFERRED_PROVIDER_virtual/wpebackend', 'wpebackend-fdo', \
+                         bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wl', '', d), \
+                         '', d)}"
+
 PACKAGECONFIG[dbus] = "-DCOG_DBUS_SYSTEM_BUS=ON -DCOG_DBUS_OWN_USER=${COG_DBUS_OWN_USER},-DCOG_DBUS_SYSTEM_BUS=OFF"
 PACKAGECONFIG[drm] = "-DCOG_PLATFORM_DRM=ON,-DCOG_PLATFORM_DRM=OFF,wpebackend-fdo libdrm virtual/libgbm libinput"
+PACKAGECONFIG[headless] = "-DCOG_PLATFORM_HEADLESS=ON,-DCOG_PLATFORM_HEADLESS=OFF,wpebackend-fdo"
 PACKAGECONFIG[weston-direct-display] = "-DCOG_WESTON_DIRECT_DISPLAY=ON,-DCOG_WESTON_DIRECT_DISPLAY=OFF,weston"
+PACKAGECONFIG[wl] = "-DCOG_PLATFORM_WL=ON,-DCOG_PLATFORM_WL=OFF,wpebackend-fdo"
+
