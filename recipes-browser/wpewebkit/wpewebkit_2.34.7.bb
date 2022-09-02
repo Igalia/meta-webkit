@@ -29,7 +29,3 @@ PACKAGECONFIG:remove:riscv32 = "gold"
 PACKAGECONFIG:remove:riscv64 = "gold"
 PACKAGECONFIG:remove:mipsarcho32 = "gold"
 
-# libsoup-3 will be available not before Poky kirkstone.
-# http://git.yoctoproject.org/cgit/cgit.cgi/poky/commit/meta/recipes-support/libsoup/libsoup_3.0.1.bb?id=de296e2b2be876ca5cf2af309b710111e2b2581e
-EXTRA_OECMAKE += "-DUSE_SOUP2=ON"
-
