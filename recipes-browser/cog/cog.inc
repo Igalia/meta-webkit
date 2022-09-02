@@ -17,7 +17,8 @@ SRC_URI = "https://wpewebkit.org/releases/${P}.tar.xz"
 DEPENDS = " \
             ${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', 'webkitgtk', 'wpewebkit', d)} \
             ${@bb.utils.contains('PACKAGECONFIG', 'fdo', 'wayland', '', d)} \
-            libsoup-2.4 glib-2.0 wayland-native wayland-protocols \
+            ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', 'libsoup-2.4', 'libsoup', d)} \
+            glib-2.0 wayland-native wayland-protocols \
             "
 
 DEPENDS:append:class-target = " \
