@@ -10,7 +10,9 @@ DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn \
            gtk+3 gstreamer1.0 gstreamer1.0-plugins-base flex-native icu \
            gperf-native perl-native ruby-native ccache-native ninja-native \
            libwebp harfbuzz glib-2.0 gettext-native glib-2.0-native \
-           sqlite3 libgcrypt"
+           sqlite3 libgcrypt \
+           ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', 'libsoup-2.4', 'libsoup', d)} \
+"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI = " \
@@ -58,6 +60,7 @@ PACKAGECONFIG[libnotify] = "-DUSE_LIBNOTIFY=ON,-DUSE_LIBNOTIFY=OFF,libnotify"
 PACKAGECONFIG[libsecret] = "-DUSE_LIBSECRET=ON,-DUSE_LIBSECRET=OFF,libsecret"
 PACKAGECONFIG[opengl] = "-DENABLE_OPENGL=ON,-DENABLE_OPENGL=OFF,virtual/libgl"
 PACKAGECONFIG[openjpeg] = "-DUSE_OPENJPEG=ON,-DUSE_OPENJPEG=OFF,openjpeg"
+PACKAGECONFIG[soup2] = "-DUSE_SOUP2=ON,-DUSE_SOUP2=OFF,libsoup-2.4"
 PACKAGECONFIG[systemd] = "-DUSE_SYSTEMD=ON,-DUSE_SYSTEMD=OFF,systemd"
 PACKAGECONFIG[journald] = "-DENABLE_JOURNALD_LOG=ON,-DENABLE_JOURNALD_LOG=OFF,"
 PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON,-DENABLE_VIDEO=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad"
@@ -74,9 +77,12 @@ EXTRA_OECMAKE = " \
                  -DENABLE_INTROSPECTION=OFF \
                  -DENABLE_GTKDOC=OFF \
                  -DENABLE_MINIBROWSER=ON \
-                 -DUSE_SOUP2=ON \
                  -G Ninja \
                 "
+
+# libsoup-3 is not available before Poky kirkstone.
+# http://git.yoctoproject.org/cgit/cgit.cgi/poky/commit/meta/recipes-support/libsoup/libsoup_3.0.1.bb?id=de296e2b2be876ca5cf2af309b710111e2b2581e
+PACKAGECONFIG:append = " ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', 'soup2', '', d)}"
 
 # Javascript JIT is not supported on ppc/arm < v6/RISCV/mips64
 PACKAGECONFIG:remove:powerpc = "jit"
