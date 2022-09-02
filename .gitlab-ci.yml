@@ -30,7 +30,7 @@
     # setup-environment targetname machine distro bblayers presets
     # SOURCE: raspberrypi3-mesa-wpe-2.36 raspberrypi3-mesa poky layers.python2.raspberrypi.qt5.webkit conf_v3.wpe-2_36
     # MANIFEST: .gitlab-ci/manifest/manifest-kirkstone.xml
-    BITBAKE_TARGET: wpewebkit
+    BITBAKE_TARGET: cog
   script:
     - bitbake $BITBAKE_TARGET
     - rm -rf tmp
