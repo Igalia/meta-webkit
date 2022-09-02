@@ -23,7 +23,3 @@ SRCREV:class-devupstream = "b3f12a91b11b34b71aa4ec64c1806616b45bd877"
 PACKAGECONFIG[journald] = "-DENABLE_JOURNALD_LOG=ON,-DENABLE_JOURNALD_LOG=OFF,"
 PACKAGECONFIG:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)}"
 
-# libsoup-3 will be available not before Poky kirkstone.
-# http://git.yoctoproject.org/cgit/cgit.cgi/poky/commit/meta/recipes-support/libsoup/libsoup_3.0.1.bb?id=de296e2b2be876ca5cf2af309b710111e2b2581e
-EXTRA_OECMAKE += "-DUSE_SOUP2=ON"
-
