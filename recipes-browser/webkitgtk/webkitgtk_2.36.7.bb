@@ -112,12 +112,12 @@ ARM_INSTRUCTION_SET:armv7ve = "thumb"
 
 # Install MiniBrowser in PATH
 do_install:append() {
-    if test -f ${D}${libexecdir}/webkit2gtk-4.0/MiniBrowser; then
+    if test -f ${D}${libexecdir}/webkit2gtk-4.1/MiniBrowser; then
         mkdir -p ${D}${bindir}
-        mv ${D}${libexecdir}/webkit2gtk-4.0/MiniBrowser ${D}${bindir}
+        mv ${D}${libexecdir}/webkit2gtk-4.1/MiniBrowser ${D}${bindir}
     fi
 }
 
-FILES:${PN} += "${libdir}/webkit2gtk-4.0/injected-bundle/libwebkit2gtkinjectedbundle.so"
-FILES:${PN}-dbg += "${libdir}/webkit2gtk-4.0/injected-bundle/.debug/libwebkit2gtkinjectedbundle.so"
-FILES:${PN}-dbg += "${libdir}/webkitgtk/webkit2gtk-4.0/.debug/*"
+FILES:${PN} += "${libdir}/webkit2gtk-4.1/injected-bundle/libwebkit2gtkinjectedbundle.so"
+FILES:${PN}-dbg += "${libdir}/webkit2gtk-4.1/injected-bundle/.debug/libwebkit2gtkinjectedbundle.so"
+FILES:${PN}-dbg += "${libdir}/webkitgtk/webkit2gtk-4.1/.debug/*"
