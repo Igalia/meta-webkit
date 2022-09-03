@@ -110,14 +110,18 @@ ARM_INSTRUCTION_SET:armv7r = "thumb"
 ARM_INSTRUCTION_SET:armv7m = "thumb"
 ARM_INSTRUCTION_SET:armv7ve = "thumb"
 
+# Execdir is webkit2gtk-4.0 or webkit2gtk-4.1 depends on if USE_SOUP
+# is or not enabled.
+WEBKITGTK_API_VERSION := "${@bb.utils.contains('PACKAGECONFIG', 'soup2', '4.0', '4.1', d)}"
+
 # Install MiniBrowser in PATH
 do_install:append() {
-    if test -f ${D}${libexecdir}/webkit2gtk-4.0/MiniBrowser; then
+    if test -f "${D}${libexecdir}/webkit2gtk-${WEBKITGTK_API_VERSION}" ; then
         mkdir -p ${D}${bindir}
-        mv ${D}${libexecdir}/webkit2gtk-4.0/MiniBrowser ${D}${bindir}
+        mv ${D}${libexecdir}/webkit2gtk-${WEBKITGTK_API_VERSION}/MiniBrowser ${D}${bindir}
     fi
 }
 
-FILES:${PN} += "${libdir}/webkit2gtk-4.0/injected-bundle/libwebkit2gtkinjectedbundle.so"
-FILES:${PN}-dbg += "${libdir}/webkit2gtk-4.0/injected-bundle/.debug/libwebkit2gtkinjectedbundle.so"
-FILES:${PN}-dbg += "${libdir}/webkitgtk/webkit2gtk-4.0/.debug/*"
+FILES:${PN} += "${libdir}/webkit2gtk-${WEBKITGTK_API_VERSION}/injected-bundle/libwebkit2gtkinjectedbundle.so"
+FILES:${PN}-dbg += "${libdir}/webkit2gtk-${WEBKITGTK_API_VERSION}/injected-bundle/.debug/libwebkit2gtkinjectedbundle.so"
+FILES:${PN}-dbg += "${libdir}/webkitgtk/webkit2gtk-${WEBKITGTK_API_VERSION}/.debug/*"
