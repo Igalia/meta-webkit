@@ -1,11 +1,10 @@
 require cog.inc
 require conf/include/devupstream.inc
 
-SRC_URI:append = " file://0001-cmake-Fix-CMake-v3.16-cannot-create-ALIAS-target-Wpe.patch"
-SRC_URI[sha256sum] = "e23936f1ce350ea5ea6fa0709b63d34776b05709388aed9c6cf3fdc41299de9f"
+SRC_URI[sha256sum] = "fb91104e25e1dde27189c91c70acc356e387f47acebaa8997e01ce5879c3a600"
 
 SRC_URI:class-devupstream = "git://github.com/Igalia/cog.git;protocol=https;branch=cog-0.14"
-SRCREV:class-devupstream = "343563b0866bc1802acbbdbb5f163bf9eba5c0ff"
+SRCREV:class-devupstream = "dcedb3fb7541e78a808026949c9b83192d5f8a4d"
 
 RDEPENDS:${PN} += "wpewebkit (>= 2.36)"
 
