@@ -13,7 +13,7 @@ DEPENDS += " libwpe"
 RCONFLICTS:${PN} = "libwpe (< 1.10) wpebackend-fdo (< 1.10)"
 
 SRC_URI:class-devupstream = "\
-    git://git.webkit.org/WebKit.git;branch=master \
+    git://github.com/WebKit/WebKit.git;protocol=https;branch=main \
     file://0002-libyuv-gcc-issue.patch \
 "
 # WPE 2.36.X branch was forked from the main branch in this commit
