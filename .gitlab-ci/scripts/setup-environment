@@ -7,7 +7,7 @@ DISTRO="${3}"
 BBLAYERS="${4}"
 PRESETS="${5}"
 
-TEMPLATEDIR="${BSPDIR}/sources/meta-webkit/.gitlab-ci"
+TEMPLATEDIR="${BSPDIR}/sources/meta-webkit/conf/templates"
 TEMPLATECONF="${TEMPLATEDIR}/template"
 
 CONFBACKNAME="conf_$(date +%Y%m%d-%H%M%S)"
