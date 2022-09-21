@@ -12,4 +12,4 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1c45a60ed9e3db41ec069e422044577e"
 DEPENDS = "virtual/egl wayland"
 
-inherit cmake
+inherit cmake pkgconfig
