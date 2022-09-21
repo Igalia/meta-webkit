@@ -6,7 +6,7 @@ SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0001-Fix-include-path-gstreamer-on-cross-toolchain.patch \
            "
 
-SRC_URI[tarball.sha256sum] = "f3747d72ffc562ad0cfb6218fdf6d897c78c4bdbf5618e0fa26906fba52b95c9"
+SRC_URI[tarball.sha256sum] = "8d42a349c910b2d0961b8d34fecef29cec3d21e3af5977346c90026692dc75eb"
 
 DEPENDS += " libwpe"
 RCONFLICTS:${PN} = "libwpe (< 1.10) wpebackend-fdo (< 1.10)"
