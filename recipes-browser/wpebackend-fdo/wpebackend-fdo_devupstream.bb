@@ -4,5 +4,5 @@ require conf/include/devupstream.inc
 DEFAULT_PREFERENCE = "-1"
 
 SRC_URI = "git://github.com/Igalia/WPEBackend-fdo.git;protocol=https;branch=master"
-SRCREV = "c99b7b9316eaf80971799404dd7ad5c87f70a42f"
+SRCREV = "cc6ea928a4d34e6e2199d7a4670d8b8b8261a3bb"
 S = "${WORKDIR}/git"
