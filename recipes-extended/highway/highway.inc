@@ -4,7 +4,7 @@ BUGTRACKER = "https://github.com/google/highway/issues"
 
 S = "${WORKDIR}/git"
 
-SRC_URI = "git://github.com/google/highway.git;protocol=https"
+SRC_URI = "git://github.com/google/highway.git;protocol=https;branch=master"
 SRCREV = "e69083a12a05caf037cabecdf1b248b7579705a5"
 
 LICENSE = "Apache-2.0"
