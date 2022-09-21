@@ -6,7 +6,7 @@ SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz"
 
 LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://COPYING;md5=371a616eb4903c6cb79e9893a5f615cc"
-DEPENDS = "virtual/egl libxkbcommon"
+DEPENDS = "virtual/egl"
 
 PROVIDES += "virtual/libwpe"
 RPROVIDES:${PN} += "virtual/libwpe"
@@ -14,7 +14,7 @@ RPROVIDES:${PN} += "virtual/libwpe"
 # Workaround build issue with RPi userland EGL libraries.
 CFLAGS:append:rpi = " ${@bb.utils.contains('MACHINE_FEATURES', 'vc4graphics', '', '-D_GNU_SOURCE', d)}"
 
-inherit cmake features_check pkgconfig
+inherit meson features_check pkgconfig
 
 REQUIRED_DISTRO_FEATURES = "opengl"
 
