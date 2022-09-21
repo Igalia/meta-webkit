@@ -17,3 +17,13 @@ SRC_URI:class-devupstream = "\
 # WPE 2.38.X branch was forked from the main branch in this commit
 SRCREV:class-devupstream = "ab63faf432abcb7cfc469fbb1a0d2a89c94cfa20"
 
+# documentation: Needed from 2.38
+PACKAGECONFIG[documentation] = "-DENABLE_DOCUMENTATION=ON,-DENABLE_DOCUMENTATION=OFF, gi-docgen-native gi-docgen"
+
+# instrospection: Needed from 2.38
+PACKAGECONFIG[instrospection] = "-DENABLE_INTROSPECTION=ON,-DENABLE_INTROSPECTION=OFF, gobject-introspection-native"
+
+# TODO: documentation and instrospection are disabled by default because the are
+# causing cross-compiling build errors
+# PACKAGECONFIG:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'api-documentation', 'documentation', '' ,d)} instrospection"
+
