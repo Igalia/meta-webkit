@@ -6,6 +6,10 @@ on:
         description: 'Pull Request Id'
         required: true
         default: '0'
+      target-branch:
+        description: 'Target branch'
+        required: true
+        default: 'main'
 
 jobs:
   check-external-pr:
@@ -36,6 +40,7 @@ jobs:
        git remote add gitlab ${{ env.MIRROR }}
        git fetch ${{ env.REPO }} pull/${{ github.event.inputs.pr-id }}/head:pull/${{ github.event.inputs.pr-id }}
        git checkout pull/${{ github.event.inputs.pr-id }}
+       git rebase ${{ github.event.inputs.target-branch }}
        git push --force gitlab pull/${{ github.event.inputs.pr-id }}
        curl -X POST \
          -H "PRIVATE-TOKEN: ${{ secrets.GITLAB_TOKEN }}" \
