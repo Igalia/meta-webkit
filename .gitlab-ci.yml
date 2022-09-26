@@ -21,6 +21,7 @@
     - git remote add tmp $CI_REPOSITORY_URL
     - git fetch tmp
     - git checkout $CI_COMMIT_SHA
+    - git rebase tmp/main
     - popd
     - source sources/meta-webkit/.gitlab-ci/scripts/setup-environment $SOURCE
     - rm -rf tmp

@@ -40,7 +40,6 @@ jobs:
        git remote add gitlab ${{ env.MIRROR }}
        git fetch ${{ env.REPO }} pull/${{ github.event.inputs.pr-id }}/head:pull/${{ github.event.inputs.pr-id }}
        git checkout pull/${{ github.event.inputs.pr-id }}
-       git rebase ${{ github.event.inputs.target-branch }}
        git push --force gitlab pull/${{ github.event.inputs.pr-id }}
        curl -X POST \
          -H "PRIVATE-TOKEN: ${{ secrets.GITLAB_TOKEN }}" \
