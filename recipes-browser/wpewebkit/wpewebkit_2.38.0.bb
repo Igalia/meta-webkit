@@ -3,7 +3,9 @@ require conf/include/devupstream.inc
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball"
+SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
+           file://0001-FELightningNEON.cpp-fails-to-build-NEON-fast-path-se.patch \
+          "
 
 SRC_URI[tarball.sha256sum] = "e653e12eca63e6371c06d4cd9efcd5492db67f7d9ef324fd5d8668b1151e72b2"
 
