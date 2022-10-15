@@ -1,10 +1,7 @@
 require cog.inc
-require conf/include/devupstream.inc
+require cog-cmake.inc
 
 SRC_URI[sha256sum] = "fb91104e25e1dde27189c91c70acc356e387f47acebaa8997e01ce5879c3a600"
-
-SRC_URI:class-devupstream = "git://github.com/Igalia/cog.git;protocol=https;branch=cog-0.14"
-SRCREV:class-devupstream = "dcedb3fb7541e78a808026949c9b83192d5f8a4d"
 
 # Required since https://github.com/Igalia/cog/commit/48dfac2ba637e223eeea1b289526d0f51e39ab88
 DEPENDS:append = " libxkbcommon"
