@@ -34,3 +34,6 @@ PACKAGECONFIG:append:class-devupstream = " webgl2"
 
 # Layer-Based SVG Engine
 PACKAGECONFIG[lbse] = "-DENABLE_LAYER_BASED_SVG_ENGINE=ON,-DENABLE_LAYER_BASED_SVG_ENGINE=OFF, "
+
+# unifdef-native: Needed since >2.38.
+DEPENDS:append:class-devupstream = " unifdef-native"
