@@ -8,7 +8,7 @@ SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0001-JSC-ARMv7-Fix-clang-compiler-errors-Constexpr-if-wit.patch \
           "
 
-SRC_URI[tarball.sha256sum] = "e653e12eca63e6371c06d4cd9efcd5492db67f7d9ef324fd5d8668b1151e72b2"
+SRC_URI[tarball.sha256sum] = "5ce5ac6d5cb6c13469f52d2ece34b302524ff59caf05ecf0f7c62e12c48df422"
 
 DEPENDS += " libwpe"
 RCONFLICTS:${PN} = "libwpe (< 1.12)"
