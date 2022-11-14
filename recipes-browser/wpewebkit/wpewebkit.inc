@@ -59,7 +59,6 @@ export WK_USE_CCACHE="NO"
 PACKAGECONFIG ??= "jit dfg-jit mediasource video webaudio webcrypto woff2 gst_gl \
                    remote-inspector openjpeg unified-builds service-worker \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
-                   webgl2 \
                   "
 
 # libsoup-3 is not available before Poky kirkstone.
