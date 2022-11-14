@@ -25,6 +25,9 @@ PACKAGECONFIG[documentation] = "-DENABLE_DOCUMENTATION=ON,-DENABLE_DOCUMENTATION
 # introspection: Needed from 2.38
 PACKAGECONFIG[introspection] = "-DENABLE_INTROSPECTION=ON,-DENABLE_INTROSPECTION=OFF, gobject-introspection-native"
 
+# webgl2: Activated by default from >2.38
+PACKAGECONFIG:append:class-devupstream = " webgl2"
+
 # TODO: documentation and introspection are disabled by default because the are
 # causing cross-compiling build errors
 # PACKAGECONFIG:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'api-documentation', 'documentation', '' ,d)} introspection"
