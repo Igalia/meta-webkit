@@ -21,11 +21,9 @@ do_compile() {
 
 do_install() {
    cd ${S}
-   export DESTDIR=${D}
-   JHBUILD_PREFIX=""
-   make install
+   make DESTDIR="${D}/usr/share" install
 }
 
 FILES:${PN} = " \
-/webkitgtk-test-dicts/* \
+/usr/share/webkitgtk-test-dicts/* \
 "
