@@ -10,7 +10,7 @@ SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=g
 PROVIDES += "virtual/wpebackend"
 RPROVIDES:${PN} += "virtual/wpebackend"
 
-DEPENDS = "libwpe glib-2.0 libinput"
+DEPENDS = "libwpe virtual/egl glib-2.0 libxkbcommon xkeyboard-config libinput libudev"
 
 inherit cmake pkgconfig
 
@@ -18,17 +18,17 @@ inherit cmake pkgconfig
 PACKAGECONFIG ?= "wayland"
 
 # device specific backends
-PACKAGECONFIG[intelce] = "-DUSE_BACKEND_INTEL_CE=ON -DUSE_KEY_INPUT_HANDLING_LINUX_INPUT=ON,,intelce-display"
-PACKAGECONFIG[nexus] = "-DUSE_BACKEND_BCM_NEXUS=ON -DUSE_KEY_INPUT_HANDLING_LINUX_INPUT=ON,,broadcom-refsw"
-PACKAGECONFIG[rpi] = "-DUSE_BACKEND_BCM_RPI=ON -DUSE_KEY_INPUT_HANDLING_LINUX_INPUT=ON,,userland"
-PACKAGECONFIG[stm] = "-DUSE_BACKEND_STM=ON -DUSE_KEY_INPUT_HANDLING_LINUX_INPUT=OFF,,libxkbcommon xkeyboard-config"
-PACKAGECONFIG[imx6] =  "-DUSE_BACKEND_VIV_IMX6_EGL=ON -DUSE_KEY_INPUT_HANDLING_LINUX_INPUT=ON,,imx-gpu-viv"
+PACKAGECONFIG[intelce] = "-DUSE_BACKEND_INTEL_CE=ON,,intelce-display"
+PACKAGECONFIG[nexus] = "-DUSE_BACKEND_BCM_NEXUS=ON,,broadcom-refsw"
+PACKAGECONFIG[rpi] = "-DUSE_BACKEND_BCM_RPI=ON,,userland"
+PACKAGECONFIG[stm] = "-DUSE_BACKEND_STM=ON,,"
+PACKAGECONFIG[imx6] = "-DUSE_BACKEND_VIV_IMX6_EGL=ON,,imx-gpu-viv"
 
 # Wayland selectors
-PACKAGECONFIG[wayland] = "-DUSE_BACKEND_WAYLAND_EGL=ON -DUSE_KEY_INPUT_HANDLING_LINUX_INPUT=OFF,,wayland libxkbcommon xkeyboard-config"
-PACKAGECONFIG[realtek] = "-DUSE_BACKEND_REALTEK=ON -DUSE_KEY_INPUT_HANDLING_LINUX_INPUT=OFF,,wayland libxkbcommon xkeyboard-config"
-PACKAGECONFIG[westeros] = "-DUSE_BACKEND_WESTEROS=ON -DUSE_BACKEND_BCM_RPI=OFF -DUSE_KEY_INPUT_HANDLING_LINUX_INPUT=OFF -DUSE_WESTEROS_SINK=ON,,wayland westeros libxkbcommon xkeyboard-config"
-PACKAGECONFIG[bcm-weston] = "-DUSE_BACKEND_BCM_NEXUS_WAYLAND=ON,-DUSE_BACKEND_BCM_NEXUS_WAYLAND=OFF,,"
+PACKAGECONFIG[wayland] = "-DUSE_BACKEND_WAYLAND_EGL=ON,,wayland"
+PACKAGECONFIG[realtek] = "-DUSE_BACKEND_REALTEK=ON,,wayland"
+PACKAGECONFIG[westeros] = "-DUSE_BACKEND_WESTEROS=ON,,wayland westeros"
+PACKAGECONFIG[bcm-weston] = "-DUSE_BACKEND_BCM_NEXUS_WAYLAND=ON,,,"
 PACKAGECONFIG[westeros-mesa] = "-DUSE_BACKEND_WESTEROS_MESA=ON,,"
 
 do_install() {
