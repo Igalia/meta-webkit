@@ -17,5 +17,5 @@
 
   <project remote="github" revision="dunfell" name="OSSystems/meta-gstreamer1.0.git" path="sources/meta-gstreamer1.0"/>
 
-  <project remote="igalia" revision="main" name="meta-webkit.git" path="sources/meta-webkit"/>
+  <project remote="igalia" revision="kirkstone" name="meta-webkit.git" path="sources/meta-webkit"/>
 </manifest>
