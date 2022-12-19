@@ -30,68 +30,76 @@
   variables:
     # setup-environment targetname machine distro bblayers presets
     # SOURCE: raspberrypi3-mesa-wpe-2.38 raspberrypi3-mesa poky layers.python2.raspberrypi.qt5.webkit conf_v3.wpe-2_38
-    # MANIFEST: .gitlab-ci/manifest/manifest-kirkstone.xml
+    # MANIFEST: .gitlab-ci/manifest/manifest-langdale.xml
     BITBAKE_TARGET: cog
   script:
     - bitbake $BITBAKE_TARGET
     - rm -rf tmp
 
-langdale-raspberrypi3-mesa-weston-wpe-2.38:
+mickledore-raspberrypi3-mesa-weston-wpe-2.38:
+  extends:
+    - .meta-webkit-env
+  allow_failure: true
+  variables:
+    MANIFEST: .gitlab-ci/manifest/manifest-mickledore.xml
+    SOURCE: raspberrypi3-mesa-wpe-2.38 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_38
+
+langdale-raspberrypi3-mesa-weston-gtk:
   extends:
     - .meta-webkit-env
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-langdale.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.38 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_38
-
-kirkstone-raspberrypi3-mesa-weston-gtk:
-  extends:
-    - .meta-webkit-env
-  allow_failure: true
-  variables:
-    MANIFEST: .gitlab-ci/manifest/manifest-kirkstone.xml
     SOURCE: raspberrypi3-mesa-webkitgtk raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3
     BITBAKE_TARGET: webkitgtk
 
-kirkstone-raspberrypi3-mesa-weston-wpe-musl:
+langdale-raspberrypi3-mesa-weston-wpe-musl:
   extends:
     - .meta-webkit-env
   allow_failure: true
   variables:
-    MANIFEST: .gitlab-ci/manifest/manifest-kirkstone.xml
+    MANIFEST: .gitlab-ci/manifest/manifest-langdale.xml
     SOURCE: raspberrypi3-mesa-wpe-musl raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_38
   script:
     - TCLIBC=musl bitbake $BITBAKE_TARGET
     - rm -rf tmp
 
-kirkstone-raspberrypi3-mesa-weston-wpe-qt:
+langdale-raspberrypi3-mesa-weston-wpe-qt:
+  extends:
+    - .meta-webkit-env
+  allow_failure: true
+  variables:
+    MANIFEST: .gitlab-ci/manifest/manifest-langdale.xml
+    SOURCE: raspberrypi3-mesa-wpe-qt raspberrypi3-mesa poky layers.python2.raspberrypi.qt5.webkit conf_v3.wpe-2_38.qt
+
+langdale-raspberrypi3-mesa-weston-wpe-2.36:
+  extends:
+    - .meta-webkit-env
+  variables:
+    MANIFEST: .gitlab-ci/manifest/manifest-langdale.xml
+    SOURCE: raspberrypi3-mesa-wpe-2.36 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_36
+
+langdale-raspberrypi3-mesa-weston-wpe-2.38:
+  extends:
+    - .meta-webkit-env
+  variables:
+    MANIFEST: .gitlab-ci/manifest/manifest-langdale.xml
+    SOURCE: raspberrypi3-mesa-wpe-2.38 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_38
+
+langdale-raspberrypi4-64-weston-wpe-2.38:
+  extends:
+    - .meta-webkit-env
+  variables:
+    MANIFEST: .gitlab-ci/manifest/manifest-langdale.xml
+    SOURCE: raspberrypi4-64-wpe-2.38 raspberrypi4-64 poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_38
+
+kirkstone-raspberrypi3-mesa-weston-wpe-2.38:
   extends:
     - .meta-webkit-env
   allow_failure: true
   variables:
     MANIFEST: .gitlab-ci/manifest/manifest-kirkstone.xml
-    SOURCE: raspberrypi3-mesa-wpe-qt raspberrypi3-mesa poky layers.python2.raspberrypi.qt5.webkit conf_v3.wpe-2_38.qt
-
-kirkstone-raspberrypi3-mesa-weston-wpe-2.36:
-  extends:
-    - .meta-webkit-env
-  variables:
-    MANIFEST: .gitlab-ci/manifest/manifest-kirkstone.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.36 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_36
-
-kirkstone-raspberrypi3-mesa-weston-wpe-2.38:
-  extends:
-    - .meta-webkit-env
-  variables:
-    MANIFEST: .gitlab-ci/manifest/manifest-kirkstone.xml
-    SOURCE: raspberrypi3-mesa-wpe-2.38 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_38
-
-kirkstone-raspberrypi4-64-weston-wpe-2.38:
-  extends:
-    - .meta-webkit-env
-  variables:
-    MANIFEST: .gitlab-ci/manifest/manifest-kirkstone.xml
-    SOURCE: raspberrypi4-64-wpe-2.38 raspberrypi4-64 poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_38
+    SOURCE: raspberrypi3-mesa-wpe-2.38 raspberrypi3-mesa poky layers.python2.raspberrypi.gstreamer.webkit conf_v1.wpe-2_38
 
 dunfell-raspberrypi3-mesa-weston-wpe-2.38:
   extends:
