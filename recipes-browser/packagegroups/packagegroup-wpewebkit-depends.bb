@@ -62,9 +62,13 @@ RDEPENDS:packagegroup-wpewebkit-depends-python = "\
     gmp \
     ncurses \
     openssl \
+    python-is-python3 \
     readline \
     zip \
 "
+
+STRACE = "strace"
+STRACE:riscv32 = ""
 
 RDEPENDS:packagegroup-wpewebkit-depends-misc = "\
     gettext \
@@ -76,8 +80,6 @@ RDEPENDS:packagegroup-wpewebkit-depends-misc = "\
     usbutils \
     rpm \
     "
-STRACE = "strace"
-STRACE:riscv32 = ""
 
 RDEPENDS:packagegroup-wpewebkit-depends-core = "\
     at \
@@ -132,7 +134,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-core = "\
     sqlite3 \
     zlib \
     libpng \
-    libsoup-2.4 \
+   ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', 'libsoup-2.4', 'libsoup', d)} \
     libwebp \
     libxml2 \
     libxslt \
@@ -142,7 +144,15 @@ RDEPENDS:packagegroup-wpewebkit-depends-core = "\
     xdg-dbus-proxy \
     ${@bb.utils.contains('BBFILE_COLLECTIONS', 'security', 'libseccomp', '', d)} \
     libicudata \
+    libwpe \
+    ${PREFERRED_PROVIDER_virtual/wpebackend} \
+    libgpg-error \
+    libgcrypt \
+    libepoxy \
+    wayland-protocols \
+    openjpeg \
 "
+
 RDEPENDS:packagegroup-wpewebkit-depends-core:append:libc-glibc = "\
     glibc \
     glibc-utils \
@@ -229,6 +239,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-video = " \
     gstreamer1.0-plugins-bad-mpegtsdemux \
     gstreamer1.0-plugins-bad-smoothstreaming \
     gstreamer1.0-plugins-bad-videoparsersbad \
+    gstreamer1.0-libav \
 "
 
 RDEPENDS:packagegroup-wpewebkit-depends-extra = " \
@@ -258,25 +269,20 @@ RDEPENDS:packagegroup-wpewebkit-depends-tests = " \
     pulseaudio-misc \
     perl \
     perl-module-file-spec \
-    perl-module-cgi \
+    libcgi-perl \
+    libarchive-zip-perl \
     test-dicts \
     webkit-test-fonts \
     ruby \
     ruby-highline \
     ruby-json \
-    brotli \
-    libsoup-2.4 \
-    cairo \
-    fontconfig \
-    freetype \
-    harfbuzz \
-    icu \
-    woff2 \
-    libwpe \
-    wpebackend-fdo \
-    libgpg-error \
-    libgcrypt \
-    libepoxy \
-    wayland-protocols \
-    openjpeg \
+    python3-dev \
+    python3-pip \
+    python3-psutil \
+    python3-pygobject \
+    python3-twisted \
+    libc6-dev \
+    gcc \
+    g++ \
+    gcc-dev \
 "
