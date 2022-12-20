@@ -1,0 +1,85 @@
+name: Build tests
+on: [pull_request]
+jobs:
+  kirkstone-raspberrypi3-mesa-weston-wpe-2-38:
+    runs-on: self-hosted
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/bitbake-build
+        with:
+          repo_manifest: '.github/manifest/manifest-kirkstone.xml'
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-38 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_38'
+
+  kirkstone-raspberrypi3-mesa-weston-wpe-qt:
+    runs-on: self-hosted
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/bitbake-build
+        with:
+          repo_manifest: '.github/manifest/manifest-kirkstone.xml'
+          bitbake_source: 'raspberrypi3-mesa-wpe-qt raspberrypi3-mesa poky layers.python2.raspberrypi.qt5.webkit conf_v3.wpe-2_38.qt'
+
+  kirkstone-raspberrypi3-mesa-weston-wpe-musl:
+    runs-on: self-hosted
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/bitbake-build
+        with:
+          repo_manifest: '.github/manifest/manifest-kirkstone.xml'
+          bitbake_source: 'raspberrypi3-mesa-wpe-musl raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_38'
+          bitbake_prefix: 'TCLIBC=musl'
+
+  kirkstone-raspberrypi3-mesa-weston-wpe-2-36:
+    runs-on: self-hosted
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/bitbake-build
+        with:
+          repo_manifest: '.github/manifest/manifest-kirkstone.xml'
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-36 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_36'
+
+  kirkstone-raspberrypi4-64-weston-wpe-2-38:
+    runs-on: self-hosted
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/bitbake-build
+        with:
+          repo_manifest: '.github/manifest/manifest-kirkstone.xml'
+          bitbake_source: 'raspberrypi4-64-wpe-2-38 raspberrypi4-64 poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_38'
+
+  kirkstone-raspberrypi3-mesa-weston-gtk:
+    runs-on: self-hosted
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/bitbake-build
+        with:
+          repo_manifest: '.github/manifest/manifest-kirkstone.xml'
+          bitbake_source: 'raspberrypi3-mesa-webkitgtk raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3'
+          bitbake_target: 'webkitgtk'
+
+  dunfell-raspberrypi3-mesa-weston-wpe-2-38:
+    runs-on: self-hosted
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/bitbake-build
+        with:
+          repo_manifest: '.github/manifest/manifest-dunfell.xml'
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-38 raspberrypi3-mesa poky layers.python2.raspberrypi.gstreamer.webkit conf_v1.wpe-2_38'
+
+  langdale-raspberrypi3-mesa-weston-wpe-2-38:
+    runs-on: self-hosted
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/bitbake-build
+        with:
+          repo_manifest: '.github/manifest/manifest-langdale.xml'
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-38 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_38'
+

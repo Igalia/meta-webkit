@@ -1,0 +1,56 @@
+inputs:
+  bitbake_prefix:
+    default: ''
+  bitbake_target:
+    default: 'cog'
+  # MANIFEST: .gitlab-ci/manifest/manifest-kirkstone.xml
+  repo_url:
+    default: https://github.com/${{ github.repository }}.git
+  repo_ref:
+    default: ${{ github.ref }}
+  repo_manifest:
+    default: 'manifest.xml'
+  # SOURCE: raspberrypi3-mesa-wpe-2.38 raspberrypi3-mesa poky layers.python2.raspberrypi.qt5.webkit conf_v3.wpe-2_38
+  bitbake_source:
+    default: 'source'
+runs:
+  using: 'composite'
+  steps:
+    - name: Print environment
+      shell: bash
+      run:  |
+        echo "Environment:"
+        echo "======================================================================"
+        echo "CI_REPOSITORY_URL=${{ inputs.repo_url }}"
+        echo "CI_COMMIT_SHA=${{ inputs.repo_ref }}"
+        echo "BITBAKE_PREFIX=${{ inputs.bitbake_prefix }}"
+        echo "BITBAKE_TARGET=${{ inputs.bitbake_target }}"
+        echo "MANIFEST=${{ inputs.repo_manifest }}"
+        echo "SOURCE=${{ inputs.bitbake_source }}"
+        echo "======================================================================"
+    - name: Set bitbake environment
+      shell: bash
+      run:  |
+        mkdir -p ~/yocto-webkit
+        cd ~/yocto-webkit
+        ulimit -n 4096
+        rm -rf sources .repo
+        repo init -u https://github.com/${{ github.repository }}.git -m ${{ inputs.repo_manifest }} -b ${{ inputs.repo_ref }}
+        repo sync --force-sync
+        pushd sources/meta-webkit
+        git remote remove tmp || true
+        git remote add tmp ${{ inputs.repo_url }}
+        git fetch tmp main
+        git fetch tmp ${{ inputs.repo_ref }}:${{ inputs.repo_ref }}
+        git checkout ${{ inputs.repo_ref }}
+        git rebase tmp/main
+        popd
+        source sources/meta-webkit/.github/scripts/setup-environment ${{ inputs.bitbake_source }}
+        rm -rf tmp
+        ${{ inputs.bitbake_prefix }} bitbake ${{ inputs.bitbake_target }}
+    - name: Set bitbake environment
+      if: always()
+      shell: bash
+      run:  |
+       rm -rf ~/yocto-webkit/builds/*/tmp
+
