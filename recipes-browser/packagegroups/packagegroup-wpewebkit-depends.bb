@@ -62,7 +62,6 @@ RDEPENDS:packagegroup-wpewebkit-depends-python = "\
     gmp \
     ncurses \
     openssl \
-    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'meta-python2', 'python python-modules python-misc', '', d)} \
     readline \
     zip \
 "
@@ -254,7 +253,6 @@ RDEPENDS:packagegroup-wpewebkit-depends-tests = " \
     curl \
     gdb \
     php \
-    ${@bb.utils.contains('BBFILE_COLLECTIONS', 'meta-python2', 'python python-subprocess32 python-pygobject python-psutil', '', d)} \
     psmisc \
     pulseaudio \
     pulseaudio-misc \

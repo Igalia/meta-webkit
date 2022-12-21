@@ -9,7 +9,7 @@ jobs:
       - uses: ./.github/actions/bitbake-build
         with:
           repo_manifest: '.github/manifest/manifest-kirkstone.xml'
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-38 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_38'
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-38 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v3.wpe-2_38'
 
   kirkstone-raspberrypi3-mesa-weston-wpe-qt:
     runs-on: self-hosted
@@ -19,7 +19,7 @@ jobs:
       - uses: ./.github/actions/bitbake-build
         with:
           repo_manifest: '.github/manifest/manifest-kirkstone.xml'
-          bitbake_source: 'raspberrypi3-mesa-wpe-qt raspberrypi3-mesa poky layers.python2.raspberrypi.qt5.webkit conf_v3.wpe-2_38.qt'
+          bitbake_source: 'raspberrypi3-mesa-wpe-qt raspberrypi3-mesa poky layers.raspberrypi.qt5.webkit conf_v3.wpe-2_38.qt'
 
   kirkstone-raspberrypi3-mesa-weston-wpe-musl:
     runs-on: self-hosted
@@ -29,7 +29,7 @@ jobs:
       - uses: ./.github/actions/bitbake-build
         with:
           repo_manifest: '.github/manifest/manifest-kirkstone.xml'
-          bitbake_source: 'raspberrypi3-mesa-wpe-musl raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_38'
+          bitbake_source: 'raspberrypi3-mesa-wpe-musl raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v3.wpe-2_38'
           bitbake_prefix: 'TCLIBC=musl'
 
   kirkstone-raspberrypi3-mesa-weston-wpe-2-36:
@@ -40,7 +40,7 @@ jobs:
       - uses: ./.github/actions/bitbake-build
         with:
           repo_manifest: '.github/manifest/manifest-kirkstone.xml'
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-36 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_36'
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-36 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v3.wpe-2_36'
 
   kirkstone-raspberrypi4-64-weston-wpe-2-38:
     runs-on: self-hosted
@@ -50,7 +50,7 @@ jobs:
       - uses: ./.github/actions/bitbake-build
         with:
           repo_manifest: '.github/manifest/manifest-kirkstone.xml'
-          bitbake_source: 'raspberrypi4-64-wpe-2-38 raspberrypi4-64 poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_38'
+          bitbake_source: 'raspberrypi4-64-wpe-2-38 raspberrypi4-64 poky layers.raspberrypi.webkit conf_v3.wpe-2_38'
 
   kirkstone-raspberrypi3-mesa-weston-gtk:
     runs-on: self-hosted
@@ -60,7 +60,7 @@ jobs:
       - uses: ./.github/actions/bitbake-build
         with:
           repo_manifest: '.github/manifest/manifest-kirkstone.xml'
-          bitbake_source: 'raspberrypi3-mesa-webkitgtk raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3'
+          bitbake_source: 'raspberrypi3-mesa-webkitgtk raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v3'
           bitbake_target: 'webkitgtk'
 
   dunfell-raspberrypi3-mesa-weston-wpe-2-38:
@@ -71,7 +71,7 @@ jobs:
       - uses: ./.github/actions/bitbake-build
         with:
           repo_manifest: '.github/manifest/manifest-dunfell.xml'
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-38 raspberrypi3-mesa poky layers.python2.raspberrypi.gstreamer.webkit conf_v1.wpe-2_38'
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-38 raspberrypi3-mesa poky layers.raspberrypi.gstreamer.webkit conf_v1.wpe-2_38'
 
   langdale-raspberrypi3-mesa-weston-wpe-2-38:
     runs-on: self-hosted
