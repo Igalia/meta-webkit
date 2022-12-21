@@ -81,5 +81,5 @@ jobs:
       - uses: ./.github/actions/bitbake-build
         with:
           repo_manifest: '.github/manifest/manifest-langdale.xml'
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-38 raspberrypi3-mesa poky layers.python2.raspberrypi.webkit conf_v3.wpe-2_38'
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-38 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v3.wpe-2_38'
 
