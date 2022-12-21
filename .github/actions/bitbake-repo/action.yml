@@ -1,0 +1,37 @@
+inputs:
+  repo_url:
+    default: https://github.com/${{ github.repository }}.git
+  repo_ref:
+    default: ${{ github.ref }}
+  repo_release:
+    default: 'kirkstone'
+runs:
+  using: 'composite'
+  steps:
+    - name: Print environment
+      shell: bash
+      run:  |
+        echo "Environment:"
+        echo "======================================================================"
+        echo "CI_REPOSITORY_URL=${{ inputs.repo_url }}"
+        echo "CI_COMMIT_SHA=${{ inputs.repo_ref }}"
+        echo "CI_RELEASE=${{ inputs.repo_release }}"
+        echo "======================================================================"
+    - name: Set bitbake environment
+      shell: bash
+      run:  |
+        mkdir -p ~/yocto-webkit-${{ inputs.repo_release }}/builds
+        cp /local-host.conf ~/yocto-webkit-${{ inputs.repo_release }}/builds/
+        cd ~/yocto-webkit-${{ inputs.repo_release }}
+        rm -rf sources .repo
+        repo init -u ${{ inputs.repo_url }} -m .github/manifest/manifest-${{ inputs.repo_release }}.xml -b ${{ inputs.repo_ref }}
+        repo sync --force-sync
+        pushd sources/meta-webkit
+        git remote remove tmp || true
+        git remote add tmp ${{ inputs.repo_url }}
+        git fetch tmp main
+        git fetch tmp ${{ inputs.repo_ref }}:${{ inputs.repo_ref }}
+        git checkout ${{ inputs.repo_ref }}
+        git rebase tmp/main
+        popd
+
