@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf
 # PACKAGECONFIG:append:pn-harfbuzz = " icu"
 DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn \
            gtk+3 gstreamer1.0 gstreamer1.0-plugins-base flex-native icu \
-           gperf-native perl-native ruby-native ccache-native ninja-native \
+           gperf-native perl-native ruby-native ninja-native \
            libwebp harfbuzz glib-2.0 gettext-native glib-2.0-native \
            sqlite3 libgcrypt \
            ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', 'libsoup-2.4', 'libsoup', d)} \
@@ -99,6 +99,9 @@ PACKAGECONFIG:remove:mipsarchn32 = "jit"
 ARM_INSTRUCTION_SET:armv4 = "arm"
 ARM_INSTRUCTION_SET:armv5 = "arm"
 ARM_INSTRUCTION_SET:armv6 = "arm"
+
+# Can't be built with ccache
+CCACHE_DISABLE = "1"
 
 # https://bugzilla.yoctoproject.org/show_bug.cgi?id=9474
 # https://bugs.webkit.org/show_bug.cgi?id=159880
