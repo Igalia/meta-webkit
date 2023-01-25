@@ -198,17 +198,19 @@ RDEPENDS:packagegroup-wpewebkit-depends-runtime-add:append:libc-glibc = "\
 "
 
 RDEPENDS:packagegroup-wpewebkit-depends-alternative = " \
+    flite \
     geoclue \
-    libtasn1 \
-    woff2 \
     libavif \
-    libjxl \
-    libvpx \
     libevent \
+    libjxl \
     libopus \
+    libtasn1 \
+    libvpx \
+    openh264 \
     openjpeg \
     openxr \
-    openh264 \
+    sparkle-cdm \
+    woff2 \
 "
 
 RDEPENDS:packagegroup-wpewebkit-depends-video = " \
