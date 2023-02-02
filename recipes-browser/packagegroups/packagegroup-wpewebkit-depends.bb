@@ -198,7 +198,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-runtime-add:append:libc-glibc = "\
 "
 
 RDEPENDS:packagegroup-wpewebkit-depends-alternative = " \
-    flite \
+    ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', '', 'flite', d)} \
     geoclue \
     libavif \
     libevent \
