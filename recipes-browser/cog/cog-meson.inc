@@ -18,6 +18,6 @@ python __anonymous() {
     available_platforms = {'drm': 'drm', 'gtk4': 'gtk4', 'headless': 'headless', 'wl': 'wayland'}
     platforms = [platform for flag, platform in available_platforms.items() if flag in packageconfig]
     if platforms:
-        d.appendVar("EXTRA_OECONF", f" -Dplatforms={','.join(platforms)}")
+        d.appendVar("EXTRA_OEMESON", f" -Dplatforms={','.join(platforms)}")
 }
 
