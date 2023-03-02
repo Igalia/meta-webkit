@@ -79,6 +79,10 @@ EXTRA_OECMAKE = " \
                  -G Ninja \
                 "
 
+# Needed for <= 2.38.5
+# Upstream-Status: Merged [https://github.com/WebKit/WebKit/pull/11288]
+EXTRA_OECMAKE:append = " -DENABLE_TOUCH_SLIDER=ON"
+
 # libsoup-3 is not available before Poky kirkstone.
 # http://git.yoctoproject.org/cgit/cgit.cgi/poky/commit/meta/recipes-support/libsoup/libsoup_3.0.1.bb?id=de296e2b2be876ca5cf2af309b710111e2b2581e
 PACKAGECONFIG:append = " ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', 'soup2', '', d)}"

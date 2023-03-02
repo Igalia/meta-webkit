@@ -35,5 +35,9 @@ PACKAGECONFIG:append:class-devupstream = " webgl2"
 # Layer-Based SVG Engine
 PACKAGECONFIG[lbse] = "-DENABLE_LAYER_BASED_SVG_ENGINE=ON,-DENABLE_LAYER_BASED_SVG_ENGINE=OFF, "
 
+# Needed for <= 2.38.5
+# Upstream-Status: Merged [https://github.com/WebKit/WebKit/pull/11288]
+EXTRA_OECMAKE:append = " -DENABLE_TOUCH_SLIDER=ON"
+
 # unifdef-native: Needed since >2.38.
 DEPENDS:append:class-devupstream = " unifdef-native"
