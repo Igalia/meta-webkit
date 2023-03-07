@@ -10,8 +10,7 @@ DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn \
            gtk+3 gstreamer1.0 gstreamer1.0-plugins-base flex-native icu \
            gperf-native perl-native ruby-native ninja-native \
            libwebp harfbuzz glib-2.0 gettext-native glib-2.0-native \
-           sqlite3 libgcrypt \
-           ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', 'libsoup-2.4', 'libsoup', d)} \
+           sqlite3 libgcrypt libsoup \
 "
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
@@ -78,10 +77,6 @@ EXTRA_OECMAKE = " \
                  -DENABLE_MINIBROWSER=ON \
                  -G Ninja \
                 "
-
-# libsoup-3 is not available before Poky kirkstone.
-# http://git.yoctoproject.org/cgit/cgit.cgi/poky/commit/meta/recipes-support/libsoup/libsoup_3.0.1.bb?id=de296e2b2be876ca5cf2af309b710111e2b2581e
-PACKAGECONFIG:append = " ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', 'soup2', '', d)}"
 
 # Javascript JIT is not supported on ppc/arm < v6/RISCV/mips64
 PACKAGECONFIG:remove:powerpc = "jit"
