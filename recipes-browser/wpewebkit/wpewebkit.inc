@@ -140,6 +140,8 @@ ARM_INSTRUCTION_SET:armv7r = "thumb"
 ARM_INSTRUCTION_SET:armv7m = "thumb"
 ARM_INSTRUCTION_SET:armv7ve = "thumb"
 
+GSTVIDEOCONVERTSCALEPLUGIN = "${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister kirkstone langdale', 'gstreamer1.0-plugins-base-videoconvert gstreamer1.0-plugins-base-videoscale', 'gstreamer1.0-plugins-base-videoconvertscale', d)}"
+
 # Extra runtime depends
 RDEPENDS:${PN} += " \
     libgles2 \
@@ -153,9 +155,8 @@ RDEPENDS:${PN} += " \
                                                     gstreamer1.0-plugins-base-audioconvert \
                                                     gstreamer1.0-plugins-base-audioresample \
                                                     gstreamer1.0-plugins-base-gio \
-                                                    gstreamer1.0-plugins-base-videoconvert \
-                                                    gstreamer1.0-plugins-base-videoscale \
                                                     gstreamer1.0-plugins-base-volume \
+                                                    ${GSTVIDEOCONVERTSCALEPLUGIN} \
                                                     gstreamer1.0-plugins-base-typefindfunctions \
                                                     gstreamer1.0-plugins-good-audiofx \
                                                     gstreamer1.0-plugins-good-audioparsers \
