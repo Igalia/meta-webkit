@@ -115,6 +115,7 @@ PACKAGECONFIG:remove:riscv32 = "jit"
 PACKAGECONFIG:remove:riscv64 = "jit"
 PACKAGECONFIG:remove:mipsarchn64 = "jit"
 PACKAGECONFIG:remove:mipsarchn32 = "jit"
+PACKAGECONFIG:remove:loongarch64 = "jit"
 
 # Javascript JIT is not supported on x86
 PACKAGECONFIG:remove:x86 = "jit"
