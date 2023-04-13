@@ -3,11 +3,11 @@
 #
 #   require conf/include/webkit-bleeding.inc
 
-PREFERRED_VERSION_cog = "0.16+httpsAUTOINC+%"
+PREFERRED_VERSION_cog = "0.17+httpsAUTOINC+%"
 PREFERRED_VERSION_libwpe = "1.14+httpsAUTOINC+%"
 PREFERRED_VERSION_wpebackend-fdo = "devupstream+gitAUTOINC+%"
 PREFERRED_VERSION_wpebackend-rdk = "1.20200213+gitAUTOINC+%"
-PREFERRED_VERSION_wpewebkit = "2.38+httpsAUTOINC+%"
+PREFERRED_VERSION_wpewebkit = "2.40+httpsAUTOINC+%"
 
 SRCREV:class-devupstream:pn-cog = "${AUTOREV}"
 SRCREV:class-devupstream:pn-libwpe = "${AUTOREV}"
