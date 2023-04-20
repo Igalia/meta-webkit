@@ -11,6 +11,8 @@ DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn \
            gperf-native perl-native ruby-native ninja-native \
            libwebp harfbuzz glib-2.0 gettext-native glib-2.0-native \
            sqlite3 libgcrypt \
+           unifdef-native \
+           libavif \
            ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', 'libsoup-2.4', 'libsoup', d)} \
 "
 
