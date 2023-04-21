@@ -1,6 +1,5 @@
 require cog.inc
 require cog-meson.inc
-require conf/include/devupstream.inc
 
 DEFAULT_PREFERENCE = "-1"
 
