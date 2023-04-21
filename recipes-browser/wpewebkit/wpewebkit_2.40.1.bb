@@ -26,7 +26,7 @@ PACKAGECONFIG[documentation] = "-DENABLE_DOCUMENTATION=ON,-DENABLE_DOCUMENTATION
 PACKAGECONFIG[introspection] = "-DENABLE_INTROSPECTION=ON,-DENABLE_INTROSPECTION=OFF, gobject-introspection-native"
 
 # webgl2: Activated by default from >2.38
-PACKAGECONFIG:append:class-devupstream = " webgl2"
+PACKAGECONFIG:append = " webgl2"
 
 # TODO: documentation and introspection are disabled by default because the are
 # causing cross-compiling build errors
