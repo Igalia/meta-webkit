@@ -1,5 +1,4 @@
 require wpewebkit.inc
-require conf/include/devupstream.inc
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
