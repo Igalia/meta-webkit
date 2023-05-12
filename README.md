@@ -23,13 +23,6 @@ This layer optionally depends on:
 If meta-qt5 is present, this layer will provide an opt-in Qt5 API as an
 alternative to other Qt5 web-engines such as QtWebKit and QtWebEngine.
 
-This layer also optionally depends on meta-security to enable web process
-sandboxing for WebKit (`bubblewrap`):
-
-    URI: git://git.yoctoproject.org/meta-security
-    branch: main
-    revision: HEAD
-
 **Warning**: The default branch has been renamed to `main` because
 [#219](https://github.com/Igalia/meta-webkit/issues/219). The old default
 branch (`master`) will still be kept as a mirror of the `main` until February
