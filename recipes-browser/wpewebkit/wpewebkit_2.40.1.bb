@@ -35,5 +35,10 @@ PACKAGECONFIG:append = " webgl2"
 # Layer-Based SVG Engine
 PACKAGECONFIG[lbse] = "-DENABLE_LAYER_BASED_SVG_ENGINE=ON,-DENABLE_LAYER_BASED_SVG_ENGINE=OFF, "
 
+# Build option for WPE API 1.1
+PACKAGECONFIG[wpe-1-1-api] = "-DENABLE_WPE_1_1_API:BOOL=ON,-DENABLE_WPE_1_1_API:BOOL=OFF,"
+# temporarily enable WPE API 1.1 for cog 0.16
+PACKAGECONFIG:append = " wpe-1-1-api"
+
 # unifdef-native: Needed since >2.38.
 DEPENDS:append = " unifdef-native"
