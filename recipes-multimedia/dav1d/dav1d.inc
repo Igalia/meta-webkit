@@ -2,6 +2,8 @@ SUMMARY = "dav1d is the fastest AV1 decoder on all platforms :)"
 HOMEPAGE = "https://code.videolan.org/videolan/dav1d"
 BUGTRACKER = "https://code.videolan.org/videolan/dav1d/-/issues"
 
+DEPENDS = "nasm-native"
+
 SRC_URI = "https://code.videolan.org/videolan/${PN}/-/archive/${PV}/${PN}-${PV}.tar.gz"
 SRC_URI[sha256sum] = "097db6f370b88bf09fec62919c0d3af64e07d58210c665ec461d63f4ec79f6a2"
 
