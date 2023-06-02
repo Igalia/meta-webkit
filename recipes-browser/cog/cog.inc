@@ -14,7 +14,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI = "https://wpewebkit.org/releases/${P}.tar.xz"
 
 # Depend on wpewebkit unless the webkitgtk packageconfig option is selected.
-DEPENDS = " \
+DEPENDS += "\
             ${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', 'webkitgtk', 'wpewebkit', d)} \
             ${@bb.utils.contains('PACKAGECONFIG', 'fdo', 'wayland', '', d)} \
             ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', 'libsoup-2.4', 'libsoup', d)} \
