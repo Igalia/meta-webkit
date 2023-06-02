@@ -21,9 +21,9 @@ do_compile() {
 
 do_install() {
    cd ${S}
-   make DESTDIR="${D}/usr/share" install
+   make DESTDIR="${D}${datadir}" install
 }
 
 FILES:${PN} = " \
-/usr/share/webkitgtk-test-fonts/* \
+${datadir}/webkitgtk-test-fonts/* \
 "
