@@ -1,5 +1,5 @@
 SUMMARY = "The Web Open Font Format file format 2.0 (WOFF2)"
-DESCRIPTIOM = "The Web Open Font Format (WOFF) is a font format for use in web pages. \
+DESCRIPTION = "The Web Open Font Format (WOFF) is a font format for use in web pages. \
 The new WOFF 2.0 Web Font compression format offers a 30% average gain over WOFF 1.0. \
 It is a World Wide Web Consortium (W3C) recommendation."
 HOMEPAGE = "https://github.com/google/woff2"
