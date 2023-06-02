@@ -10,7 +10,7 @@ SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=g
 PROVIDES += "virtual/wpebackend"
 RPROVIDES:${PN} += "virtual/wpebackend"
 
-DEPENDS = "libwpe virtual/egl glib-2.0 libxkbcommon xkeyboard-config libinput libudev"
+DEPENDS:append = " libwpe virtual/egl glib-2.0 libxkbcommon xkeyboard-config libinput libudev"
 
 inherit cmake pkgconfig
 

@@ -6,7 +6,7 @@ SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz"
 
 LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://COPYING;md5=371a616eb4903c6cb79e9893a5f615cc"
-DEPENDS = "virtual/egl"
+DEPENDS:append = " virtual/egl"
 
 PROVIDES += "virtual/libwpe"
 RPROVIDES:${PN} += "virtual/libwpe"
