@@ -123,7 +123,7 @@ WEBKITGTK_API_VERSION := "${@bb.utils.contains('PACKAGECONFIG', 'soup2', '4.0', 
 # Install MiniBrowser in PATH
 do_install:append() {
     if test -f "${D}${libexecdir}/webkit2gtk-${WEBKITGTK_API_VERSION}" ; then
-        mkdir -p ${D}${bindir}
+        install -d ${D}${bindir}
         mv ${D}${libexecdir}/webkit2gtk-${WEBKITGTK_API_VERSION}/MiniBrowser ${D}${bindir}
     fi
 }
