@@ -5,7 +5,7 @@ BUGTRACKER = "https://github.com/google/highway/issues"
 S = "${WORKDIR}/git"
 
 SRC_URI = "git://github.com/google/highway.git;protocol=https;branch=master"
-SRCREV = "e69083a12a05caf037cabecdf1b248b7579705a5"
+SRCREV = "46e365d6770f5d7a4240d8ac9d8e928a520478ea"
 
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=2b42edef8fa55315f34f2370b4715ca9"
