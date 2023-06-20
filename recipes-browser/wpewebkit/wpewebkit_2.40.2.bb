@@ -7,7 +7,7 @@ SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0001-FELightningNEON.cpp-fails-to-build-NEON-fast-path-se.patch \
           "
 
-SRC_URI[tarball.sha256sum] = "c6b25e168b70f2121305ed078d0790e0aa4b0c73fce44e32ed42d4e5dd137ccb"
+SRC_URI[tarball.sha256sum] = "99b7ab42580ac5726a2c95bae90caf4cf5df89765e4a046ca72e97b7fd3bccc7"
 
 DEPENDS += " libwpe"
 RCONFLICTS:${PN} = "libwpe (< 1.12)"
@@ -42,3 +42,7 @@ PACKAGECONFIG:append = " wpe-1-1-api"
 
 # unifdef-native: Needed since >2.38.
 DEPENDS:append = " unifdef-native"
+
+# Since 2.40.X
+PACKAGECONFIG[gbm] = "-DUSE_GBM=ON,-DUSE_GBM=OFF,libdrm"
+PACKAGECONFIG:append = " gbm"
