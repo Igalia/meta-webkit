@@ -7,7 +7,7 @@ SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0001-FELightningNEON.cpp-fails-to-build-NEON-fast-path-se.patch \
           "
 
-SRC_URI[tarball.sha256sum] = "99b7ab42580ac5726a2c95bae90caf4cf5df89765e4a046ca72e97b7fd3bccc7"
+SRC_URI[tarball.sha256sum] = "05b6a9cb1d7d03485e0dc41b2a8e6f99a36aea23d32ba3ecb38d0d6860747ada"
 
 DEPENDS += " libwpe"
 RCONFLICTS:${PN} = "libwpe (< 1.12)"
