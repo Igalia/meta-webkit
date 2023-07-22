@@ -10,12 +10,12 @@ SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=g
 PROVIDES += "virtual/wpebackend"
 RPROVIDES:${PN} += "virtual/wpebackend"
 
-DEPENDS:append = " libwpe virtual/egl glib-2.0 libxkbcommon xkeyboard-config libinput libudev"
+DEPENDS:append = " libwpe virtual/egl glib-2.0 libxkbcommon xkeyboard-config"
 
 inherit cmake pkgconfig
 
 
-PACKAGECONFIG ?= "wayland"
+PACKAGECONFIG ?= "wayland input-libinput input-udev"
 
 # device specific backends
 PACKAGECONFIG[intelce] = "-DUSE_BACKEND_INTEL_CE=ON,,intelce-display"
@@ -30,6 +30,11 @@ PACKAGECONFIG[realtek] = "-DUSE_BACKEND_REALTEK=ON,,wayland"
 PACKAGECONFIG[westeros] = "-DUSE_BACKEND_WESTEROS=ON,,wayland westeros"
 PACKAGECONFIG[bcm-weston] = "-DUSE_BACKEND_BCM_NEXUS_WAYLAND=ON,,,"
 PACKAGECONFIG[westeros-mesa] = "-DUSE_BACKEND_WESTEROS_MESA=ON,,"
+
+# Input backends
+PACKAGECONFIG[input-libinput] = "-DUSE_INPUT_LIBINPUT=ON,-DUSE_INPUT_LIBINPUT=OFF,libinput"
+PACKAGECONFIG[input-udev] = "-DUSE_INPUT_UDEV=ON,-DUSE_INPUT_UDEV=OFF,udev"
+PACKAGECONFIG[input-wayland] = "-DUSE_INPUT_WAYLAND=ON,-DUSE_INPUT_WAYLAND=OFF,wayland"
 
 do_install() {
 	install -d ${D}${libdir}
