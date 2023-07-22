@@ -1,0 +1,56 @@
+From 22366edb5d6bd80b753c6eaeb4da76a4cb1b2d8c Mon Sep 17 00:00:00 2001
+From: Carlos Alberto Lopez Perez <clopez@igalia.com>
+Date: Sat, 22 Jul 2023 15:49:11 +0200
+Subject: [PATCH] HWY_NEON: Enable the crypto extension for GCC without setting
+ the full arch.
+
+This reverts commits 60241b99 and f8a6ea58.
+
+GCC understands (like Clang) appending an architecture extension on its own.
+This can be used to turn on and off particular architectural extensions
+without having to specify a particular architecture version or core.
+
+GCC supports this since at least 6.5. Check:
+https://gcc.gnu.org/onlinedocs/gcc-6.5.0/gcc/AArch64-Function-Attributes.html
+https://gcc.gnu.org/onlinedocs/gcc/AArch64-Function-Attributes.html
+
+This way we can enable the crypto architecture extension for HWY_NEON
+without overriding the default architecture of the compiler potentially
+disabling other architectural extensions.
+
+This fixes a build error that happens with the RPi4 and a Yocto-based toolchain
+that by default builds with `-march=armv8-a+crc` (the RPi4 has no crypto arch
+extension).
+So before this commit we ended building HWY_NEON with `-march=armv8-a+crypto`
+and that failed to build when it tried to inline code from other parts that by
+default is compiled with `-march=armv8-a+crc` (due to the toolchain in this
+example).
+
+The solution is to append the crypto extension, so in this example of the RPi4 we
+end compiling HWY_NEON with `-march=armv8-a+crc+crypto` allowing it to inline code
+from any other part that is built with `-march=armv8-a+crc`.
+See the documentation from GCC for the `Inlining rules` in the links from above.
+
+Issues related: #1570 and #1460.
+
+Upstream-Status: Accepted [https://github.com/google/highway/pull/1589]
+---
+ hwy/ops/set_macros-inl.h | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/hwy/ops/set_macros-inl.h b/hwy/ops/set_macros-inl.h
+index f64a6a5cf..806f95fbf 100644
+--- a/hwy/ops/set_macros-inl.h
++++ b/hwy/ops/set_macros-inl.h
+@@ -360,11 +360,7 @@
+ #if HWY_TARGET == HWY_NEON_WITHOUT_AES
+ // Do not define HWY_TARGET_STR (no pragma).
+ #else
+-#if HWY_COMPILER_GCC_ACTUAL
+-#define HWY_TARGET_STR "arch=armv8-a+crypto"
+-#else  // clang
+ #define HWY_TARGET_STR "+crypto"
+-#endif  // HWY_COMPILER_*
+ #endif  // HWY_TARGET == HWY_NEON_WITHOUT_AES
+ 
+ #endif  // HWY_ARCH_ARM_V7
