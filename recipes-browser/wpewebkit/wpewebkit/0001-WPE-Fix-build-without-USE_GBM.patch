@@ -1,0 +1,36 @@
+From 5aaf70fede8acf290deea468a4e45de77c691341 Mon Sep 17 00:00:00 2001
+From: Olivier Blin <olivier.blin@softathome.com>
+Date: Tue, 29 Aug 2023 08:46:16 -0700
+Subject: [PATCH] Cherry-pick 260527.430@eng/2.40-WPE-Fix-build-without-USE-GBM
+ (5375e5bb05a7). <bug>
+
+    [WPE] Fix build without USE(GBM)
+
+    Reviewed by Michael Catanzaro.
+
+    There was a USE_GBM leftover, while it is now a conditional option.
+
+    Cherry-picks 263069@main ("[GTK][WPE] Unify USE(GBM) and USE(LIBGBM)")
+    and 263491@main ("[WPE] Make libgbm and libdrm conditional dependencies")
+    have been applied in a different order than in main branch.
+
+    Canonical link: https://commits.webkit.org/260527.430@webkitglib/2.40
+
+Canonical link: https://commits.webkit.org/260527.431@webkitglib/2.40
+Upstream-Status: Backport [https://github.com/WebKit/WebKit/commit/b8ffa14eaad872df3a0de481297ee5c760539217]
+---
+ Source/cmake/OptionsWPE.cmake | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/Source/cmake/OptionsWPE.cmake b/Source/cmake/OptionsWPE.cmake
+index 8077c4706a098..f96959a0bc01d 100644
+--- a/Source/cmake/OptionsWPE.cmake
++++ b/Source/cmake/OptionsWPE.cmake
+@@ -359,7 +359,6 @@ SET_AND_EXPOSE_TO_BUILD(HAVE_ACCESSIBILITY ${ENABLE_ACCESSIBILITY})
+ SET_AND_EXPOSE_TO_BUILD(USE_ATSPI ${ENABLE_ACCESSIBILITY})
+ SET_AND_EXPOSE_TO_BUILD(USE_CAIRO TRUE)
+ SET_AND_EXPOSE_TO_BUILD(USE_EGL TRUE)
+-SET_AND_EXPOSE_TO_BUILD(USE_GBM TRUE)
+ SET_AND_EXPOSE_TO_BUILD(USE_GCRYPT TRUE)
+ SET_AND_EXPOSE_TO_BUILD(USE_LIBEPOXY TRUE)
+ SET_AND_EXPOSE_TO_BUILD(USE_LIBWPE TRUE)
