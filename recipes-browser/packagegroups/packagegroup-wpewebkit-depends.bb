@@ -151,6 +151,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-core = "\
     libepoxy \
     wayland-protocols \
     openjpeg \
+    libbacktrace \
 "
 
 RDEPENDS:packagegroup-wpewebkit-depends-core:append:libc-glibc = "\
