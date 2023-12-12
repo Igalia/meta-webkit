@@ -56,7 +56,7 @@ CMAKE_QT5_OECONF = "\
 
 export WK_USE_CCACHE="NO"
 
-PACKAGECONFIG ??= "jit dfg-jit mediasource video webaudio webcrypto woff2 gst_gl \
+PACKAGECONFIG ??= "jit dfg-jit mediasource video webcrypto woff2 gst_gl \
                    remote-inspector openjpeg unified-builds service-worker \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
                    avif \
