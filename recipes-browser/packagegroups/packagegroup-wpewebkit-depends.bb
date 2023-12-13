@@ -151,6 +151,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-core = "\
     libepoxy \
     wayland-protocols \
     openjpeg \
+    libbacktrace \
 "
 
 RDEPENDS:packagegroup-wpewebkit-depends-core:append:libc-glibc = "\
@@ -163,6 +164,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-desktop = "\
     libxxf86vm \
     libdrm \
     libglu \
+    libportal \
     libxi \
     libxkbcommon \
     libxtst \
