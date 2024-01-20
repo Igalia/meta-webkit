@@ -148,7 +148,7 @@ GSTVIDEOCONVERTSCALEPLUGIN = "${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 
 # Extra runtime depends
 RDEPENDS:${PN} += " \
     libgles2 \
-    virtual/wpebackend \
+    virtual-wpebackend \
     ${@bb.utils.contains('PACKAGECONFIG', 'remote-inspector', '${PN}-web-inspector-plugin', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'mediasource', 'gstreamer1.0-plugins-good-isomp4', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'webaudio', 'gstreamer1.0-plugins-good-wavparse', '', d)} \
