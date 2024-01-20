@@ -20,7 +20,6 @@ PACKAGECONFIG[sample-player] = "-Dsample-player=enabled,-Dsample-player=disabled
 PACKAGECONFIG[clearkey-module] = "-Dclearkey-module=enabled,-Dclearkey-module=disabled,json-glib openssl"
 
 PROVIDES += "virtual/open-cdm"
-RPROVIDES:${PN} += "virtual/open-cdm"
 
 PACKAGES =+ "${PN}-sample-player ${PN}-clearkey-module"
 

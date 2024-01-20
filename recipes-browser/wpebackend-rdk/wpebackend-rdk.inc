@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://src/wayland/display.h;;beginline=5;endline=24;md5=b1c
 SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=git;branch=master"
 
 PROVIDES += "virtual/wpebackend"
-RPROVIDES:${PN} += "virtual/wpebackend"
+RPROVIDES:${PN} += "virtual-wpebackend"
 
 DEPENDS:append = " libwpe virtual/egl glib-2.0 libxkbcommon xkeyboard-config"
 

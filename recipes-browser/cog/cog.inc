@@ -25,9 +25,9 @@ DEPENDS:append:class-target = " \
             ${@bb.utils.contains('PACKAGECONFIG', 'fdo', 'wayland-native', '', d)} \
             "
 
-# At run-time cog package should depend on virtual/wpebackend unless webkitgtk+ is enabled.
+# At run-time cog package should depend on virtual-wpebackend unless webkitgtk+ is enabled.
 RDEPENDS:${PN} += "\
-    ${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', '', 'virtual/wpebackend', d)} \
+    ${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', '', 'virtual-wpebackend', d)} \
     xkeyboard-config \
     "
 
