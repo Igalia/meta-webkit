@@ -19,6 +19,7 @@ DEPENDS += "\
             ${@bb.utils.contains('PACKAGECONFIG', 'fdo', 'wayland', '', d)} \
             ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', 'libsoup-2.4', 'libsoup', d)} \
             glib-2.0 wayland-native wayland-protocols \
+            libxkbcommon \
             "
 
 DEPENDS:append:class-target = " \
