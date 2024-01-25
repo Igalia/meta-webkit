@@ -4,6 +4,11 @@ BUGTRACKER = "http://bugs.webkit.org/"
 LICENSE = "BSD & LGPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf8b8a7c36b6eec80 "
 
+# WebKit 2.42 requires GCC>=10 (not provided in dunfell) or Clang>=10
+# (provided by meta-clang in dunfell)
+TOOLCHAIN = "${@bb.utils.contains_any("LAYERSERIES_CORENAMES", 'dunfell', 'clang', 'gcc', d)}"
+LIBCPLUSPLUS = "${@bb.utils.contains_any("LAYERSERIES_CORENAMES", 'dunfell', '--stdlib=libc++', '', d)}"
+
 # you need harfbuzz with icu enabled, you can add this to your config:
 # PACKAGECONFIG:append:pn-harfbuzz = " icu"
 DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn \
@@ -19,7 +24,9 @@ DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn \
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI = " \
     https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
+    file://0001-Activate-HAVE_MISSING_STD_FILESYSTEM_PATH_CONSTRUCTO.patch \
 "
+
 SRC_URI[tarball.sha256sum] = "52288b30bda22373442cecb86f9c9a569ad8d4769a1f97b352290ed92a67ed86"
 
 RRECOMMENDS:${PN} = "${PN}-bin \

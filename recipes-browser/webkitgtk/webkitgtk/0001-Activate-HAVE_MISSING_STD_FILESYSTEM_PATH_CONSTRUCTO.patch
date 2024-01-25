@@ -1,0 +1,28 @@
+From e401743e585bd7bb3ae1956d64c8c913e69f28b8 Mon Sep 17 00:00:00 2001
+From: Pablo Saavedra <psaavedra@igalia.com>
+Date: Thu, 25 Jan 2024 12:06:44 +0100
+Subject: [PATCH] Activate HAVE_MISSING_STD_FILESYSTEM_PATH_CONSTRUCTOR for
+ PLATFORM(WPE)
+
+Related to 'Start using C++20' [1]
+
+[1] https://bugs.webkit.org/show_bug.cgi?id=233963
+
+Upstream-Status: Inappropriate [Compiler to old]
+---
+ Source/WTF/wtf/PlatformHave.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Source/WTF/wtf/PlatformHave.h b/Source/WTF/wtf/PlatformHave.h
+index 602749b0..b7448702 100644
+--- a/Source/WTF/wtf/PlatformHave.h
++++ b/Source/WTF/wtf/PlatformHave.h
+@@ -116,7 +116,7 @@
+ #endif
+ #endif
+ 
+-#if PLATFORM(PLAYSTATION)
++#if PLATFORM(PLAYSTATION) || PLATFORM(GTK) || PLATFORM(WPE)
+ #define HAVE_MISSING_STD_FILESYSTEM_PATH_CONSTRUCTOR 1
+ #endif
+ 
