@@ -11,6 +11,8 @@ DEPENDS = "zlib libsoup-2.4 curl libxml2 cairo libxslt libidn \
            gperf-native perl-native ruby-native ninja-native \
            libwebp harfbuzz glib-2.0 gettext-native glib-2.0-native \
            sqlite3 libgcrypt \
+           unifdef-native \
+           libavif \
            ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', 'libsoup-2.4', 'libsoup', d)} \
 "
 
@@ -18,7 +20,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI = " \
     https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
 "
-SRC_URI[tarball.sha256sum] = "1c614c9589389db1a79ea9ba4293bbe8ac3ab0a2234cac700935fae0724ad48b"
+SRC_URI[tarball.sha256sum] = "52288b30bda22373442cecb86f9c9a569ad8d4769a1f97b352290ed92a67ed86"
 
 RRECOMMENDS:${PN} = "${PN}-bin \
                      ca-certificates \
@@ -41,7 +43,9 @@ PACKAGECONFIG ??= " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)
                     ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'opengl gles2 webgl', '', d)} \
                     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
                     enchant \
+                    gbm \
                     jit \
+                    ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', '', 'jpegxl', d)} \
                     libsecret \
                     openjpeg \
                     video \
@@ -53,8 +57,10 @@ PACKAGECONFIG[reduce-size] = "-DCMAKE_BUILD_TYPE=MinSizeRel,-DCMAKE_BUILD_TYPE=R
 PACKAGECONFIG[bubblewrap] = "-DENABLE_BUBBLEWRAP_SANDBOX=ON -DBWRAP_EXECUTABLE=${bindir}/bwrap -DDBUS_PROXY_EXECUTABLE=${bindir}/xdg-dbus-proxy,-DENABLE_BUBBLEWRAP_SANDBOX=OFF,bubblewrap xdg-dbus-proxy libseccomp"
 PACKAGECONFIG[enchant] = "-DENABLE_SPELLCHECK=ON,-DENABLE_SPELLCHECK=OFF,enchant2"
 PACKAGECONFIG[gamepad] = "-DENABLE_GAMEPAD=ON,-DENABLE_GAMEPAD=OFF,libmanette"
+PACKAGECONFIG[gbm] = "-DUSE_GBM=ON,-DUSE_GBM=OFF,libdrm"
 PACKAGECONFIG[geoclue] = "-DENABLE_GEOLOCATION=ON,-DENABLE_GEOLOCATION=OFF,geoclue"
 PACKAGECONFIG[gles2] = "-DENABLE_GLES2=ON,-DENABLE_GLES2=OFF,virtual/libgles2"
+PACKAGECONFIG[jpegxl] = "-DUSE_JPEGXL=ON,-DUSE_JPEGXL=OFF,libjxl"
 PACKAGECONFIG[libhyphen] = "-DUSE_LIBHYPHEN=ON,-DUSE_LIBHYPHEN=OFF,libhyphen"
 PACKAGECONFIG[libsecret] = "-DUSE_LIBSECRET=ON,-DUSE_LIBSECRET=OFF,libsecret"
 PACKAGECONFIG[opengl] = "-DUSE_OPENGL_OR_ES=ON,-DUSE_OPENGL_OR_ES=OFF,virtual/libgl"
@@ -76,12 +82,9 @@ EXTRA_OECMAKE = " \
                  -DENABLE_INTROSPECTION=OFF \
                  -DENABLE_GTKDOC=OFF \
                  -DENABLE_MINIBROWSER=ON \
+                 ${@bb.utils.contains_any("LAYERSERIES_CORENAMES", 'dunfell gatesgarth', '-DUSE_GSTREAMER_TRANSCODER=OFF', '', d)} \
                  -G Ninja \
                 "
-
-# Needed for <= 2.38.5
-# Upstream-Status: Merged [https://github.com/WebKit/WebKit/pull/11288]
-EXTRA_OECMAKE:append = " -DENABLE_TOUCH_SLIDER=ON"
 
 # libsoup-3 is not available before Poky kirkstone.
 # http://git.yoctoproject.org/cgit/cgit.cgi/poky/commit/meta/recipes-support/libsoup/libsoup_3.0.1.bb?id=de296e2b2be876ca5cf2af309b710111e2b2581e

@@ -11,6 +11,7 @@ DEPENDS:append = " \
     bison-native gperf-native harfbuzz-native libxml2-native ccache-native ninja-native ruby-native cairo \
     fontconfig freetype glib-2.0 harfbuzz icu jpeg pcre sqlite3 zlib libpng \
     libwebp libxml2 libxslt virtual/egl virtual/libgles2 libepoxy libgcrypt \
+    unifdef-native \
 "
 
 inherit cmake pkgconfig perlnative python3native
@@ -59,7 +60,7 @@ export WK_USE_CCACHE="NO"
 PACKAGECONFIG ??= "jit dfg-jit mediasource video webaudio webcrypto woff2 gst_gl \
                    remote-inspector openjpeg unified-builds service-worker \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
-                   avif \
+                   avif gbm webgl2 \
                   "
 
 # libsoup-3 is not available before Poky kirkstone.
@@ -74,13 +75,17 @@ PACKAGECONFIG[bubblewrap] = "-DENABLE_BUBBLEWRAP_SANDBOX=ON -DBWRAP_EXECUTABLE=$
 PACKAGECONFIG[developer-mode] = "-DDEVELOPER_MODE=ON,-DDEVELOPER_MODE=OFF,wayland-native wayland-protocols wpebackend-fdo"
 PACKAGECONFIG[deviceorientation] = "-DENABLE_DEVICE_ORIENTATION=ON,-DENABLE_DEVICE_ORIENTATION=OFF,"
 PACKAGECONFIG[dfg-jit] = "-DENABLE_DFG_JIT=ON,-DENABLE_DFG_JIT=OFF,"
+PACKAGECONFIG[documentation] = "-DENABLE_DOCUMENTATION=ON,-DENABLE_DOCUMENTATION=OFF, gi-docgen-native gi-docgen"
 PACKAGECONFIG[encryptedmedia] = "-DENABLE_ENCRYPTED_MEDIA=ON,-DENABLE_ENCRYPTED_MEDIA=OFF,libgcrypt"
 PACKAGECONFIG[experimental-features] = "-DENABLE_EXPERIMENTAL_FEATURES=ON,-DENABLE_EXPERIMENTAL_FEATURES=OFF,libavif libjxl"
 PACKAGECONFIG[gamepad] = "-DENABLE_GAMEPAD=ON,-DENABLE_GAMEPAD=OFF,"
+PACKAGECONFIG[gbm] = "-DUSE_GBM=ON,-DUSE_GBM=OFF,libdrm"
 PACKAGECONFIG[geolocation] = "-DENABLE_GEOLOCATION=ON,-DENABLE_GEOLOCATION=OFF,geoclue"
 PACKAGECONFIG[gst_gl] = "-DUSE_GSTREAMER_GL=ON,-DUSE_GSTREAMER_GL=OFF,gstreamer1.0-plugins-base"
 PACKAGECONFIG[jit] = "-DENABLE_JIT=ON,-DENABLE_JIT=OFF,"
+PACKAGECONFIG[introspection] = "-DENABLE_INTROSPECTION=ON,-DENABLE_INTROSPECTION=OFF, gobject-introspection-native"
 PACKAGECONFIG[journald] = "-DENABLE_JOURNALD_LOG=ON,-DENABLE_JOURNALD_LOG=OFF,"
+PACKAGECONFIG[lbse] = "-DENABLE_LAYER_BASED_SVG_ENGINE=ON,-DENABLE_LAYER_BASED_SVG_ENGINE=OFF, "
 PACKAGECONFIG[lcms] = "-DUSE_LCMS=ON,-DUSE_LCMS=OFF,"
 PACKAGECONFIG[minibrowser] = "-DENABLE_MINIBROWSER=ON,-DENABLE_MINIBROWSER=OFF,wayland-native wayland-protocols wpebackend-fdo"
 PACKAGECONFIG[mediasource] = "-DENABLE_MEDIA_SOURCE=ON,-DENABLE_MEDIA_SOURCE=OFF,gstreamer1.0 gstreamer1.0-plugins-good"
@@ -100,8 +105,14 @@ PACKAGECONFIG[unified-builds] = "-DENABLE_UNIFIED_BUILDS=ON,-DENABLE_UNIFIED_BUI
 PACKAGECONFIG[thunder] = "-DENABLE_THUNDER=ON,-DENABLE_THUNDER=OFF,virtual/open-cdm"
 PACKAGECONFIG[video-plane-display-dmabuf] = "-DUSE_WPE_VIDEO_PLANE_DISPLAY_DMABUF=ON,-DUSE_WPE_VIDEO_PLANE_DISPLAY_DMABUF=OFF,wpebackend-fdo"
 PACKAGECONFIG[webxr] = "-DENABLE_WEBXR=ON,-DENABLE_WEBXR=OFF,openxr"
+# Build option for WPE API 1.1
+PACKAGECONFIG[wpe-1-1-api] = "-DENABLE_WPE_1_1_API:BOOL=ON,-DENABLE_WPE_1_1_API:BOOL=OFF,"
 
 EXTRA_OECMAKE = " -DPORT=WPE -G Ninja"
+
+# TODO: documentation and introspection are disabled by default because the are
+# causing cross-compiling build errors
+# PACKAGECONFIG:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'api-documentation', 'documentation', '' ,d)} introspection"
 
 # If SSE code compiles, assume it runs successfully (it can't actually run
 # because of cross compiling)
