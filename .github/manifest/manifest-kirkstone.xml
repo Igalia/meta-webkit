@@ -14,7 +14,5 @@
   <project remote="yocto" revision="kirkstone" name="poky" path="sources/poky"/>
   <project remote="yocto" revision="kirkstone" name="meta-raspberrypi" path="sources/meta-raspberrypi"/>
 
-  <project remote="qt" revision="upstream/kirkstone" name="meta-qt5.git" path="sources/meta-qt5"/>
-
   <project remote="igalia" revision="main" name="meta-webkit.git" path="sources/meta-webkit"/>
 </manifest>

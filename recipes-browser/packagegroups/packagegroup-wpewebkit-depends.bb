@@ -33,7 +33,7 @@ RDEPENDS:packagegroup-wpewebkit-depends = "\
 
 RDEPENDS:packagegroup-wpewebkit-depends-sys-extended = "\
     curl \
-    ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell', 'dhcp-client', 'dhcpcd', d)} \
+    dhcpcd \
     hdparm \
     libaio \
     lzo \
@@ -134,7 +134,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-core = "\
     sqlite3 \
     zlib \
     libpng \
-   ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', 'libsoup-2.4', 'libsoup', d)} \
+    libsoup \
     libwebp \
     libxml2 \
     libxslt \
@@ -200,7 +200,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-runtime-add:append:libc-glibc = "\
 "
 
 RDEPENDS:packagegroup-wpewebkit-depends-alternative = " \
-    ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister kirkstone', '', 'flite', d)} \
+    ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'kirkstone', '', 'flite', d)} \
     geoclue \
     libavif \
     libevent \
@@ -229,7 +229,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-video = " \
     gstreamer1.0-plugins-base-audioconvert \
     gstreamer1.0-plugins-base-audioresample \
     gstreamer1.0-plugins-base-gio \
-    ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister kirkstone langdale', 'gstreamer1.0-plugins-base-videoconvert gstreamer1.0-plugins-base-videoscale', 'gstreamer1.0-plugins-base-videoconvertscale', d)} \
+    ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'kirkstone langdale', 'gstreamer1.0-plugins-base-videoconvert gstreamer1.0-plugins-base-videoscale', 'gstreamer1.0-plugins-base-videoconvertscale', d)} \
     gstreamer1.0-plugins-base-volume \
     gstreamer1.0-plugins-base-typefindfunctions \
     gstreamer1.0-plugins-good-audiofx \
@@ -238,7 +238,6 @@ RDEPENDS:packagegroup-wpewebkit-depends-video = " \
     gstreamer1.0-plugins-good-avi \
     gstreamer1.0-plugins-good-deinterlace \
     gstreamer1.0-plugins-good-interleave \
-    ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell', 'gstreamer1.0-plugins-bad-dashdemux', 'gstreamer1.0-plugins-bad-dash', d)} \
     gstreamer1.0-plugins-bad-mpegtsdemux \
     gstreamer1.0-plugins-bad-smoothstreaming \
     gstreamer1.0-plugins-bad-videoparsersbad \
