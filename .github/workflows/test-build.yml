@@ -38,20 +38,20 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-42 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v3.wpe-2_42'
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-40 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v3.wpe-2_42'
           repo_release: 'kirkstone'
     needs: kirkstone-repo
 
-  langdale-repo:
+  nanbield-repo:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-repo
         with:
-          repo_release: 'langdale'
+          repo_release: 'nanbield'
 
-  langdale-raspberrypi3-mesa-weston-wpe-2-42:
+  nanbield-raspberrypi3-mesa-weston-wpe-2-42:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
@@ -59,10 +59,10 @@ jobs:
       - uses: ./.github/actions/bitbake-build
         with:
           bitbake_source: 'raspberrypi3-mesa-wpe-2-42 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_42'
-          repo_release: 'langdale'
-    needs: langdale-repo
+          repo_release: 'nanbield'
+    needs: nanbield-repo
 
-  langdale-raspberrypi3-mesa-weston-wpe-qt:
+  nanbield-raspberrypi3-mesa-weston-wpe-qt:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
@@ -70,10 +70,10 @@ jobs:
       - uses: ./.github/actions/bitbake-build
         with:
           bitbake_source: 'raspberrypi3-mesa-wpe-qt raspberrypi3-mesa poky layers.raspberrypi.qt5.webkit conf_v4.wpe-2_42.qt'
-          repo_release: 'langdale'
-    needs: langdale-repo
+          repo_release: 'nanbield'
+    needs: nanbield-repo
 
-  langdale-raspberrypi3-mesa-weston-wpe-musl:
+  nanbield-raspberrypi3-mesa-weston-wpe-musl:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
@@ -82,32 +82,21 @@ jobs:
         with:
           bitbake_source: 'raspberrypi3-mesa-wpe-musl raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_42'
           bitbake_prefix: 'TCLIBC=musl'
-          repo_release: 'langdale'
-    needs: langdale-repo
+          repo_release: 'nanbield'
+    needs: nanbield-repo
 
-  langdale-raspberrypi3-mesa-weston-wpe-2-36:
+  nanbield-raspberrypi3-mesa-weston-wpe-2-40:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-36 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_36'
-          repo_release: 'langdale'
-    needs: langdale-repo
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-40 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_40'
+          repo_release: 'nanbield'
+    needs: nanbield-repo
 
-  langdale-raspberrypi4-64-weston-wpe-2-42:
-    runs-on: self-hosted
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-build
-        with:
-          bitbake_source: 'raspberrypi4-64-wpe-2-42 raspberrypi4-64 poky layers.raspberrypi.webkit conf_v4.wpe-2_42'
-          repo_release: 'langdale'
-    needs: langdale-repo
-
-  langdale-raspberrypi3-mesa-weston-gtk:
+  nanbield-raspberrypi3-mesa-weston-gtk:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
@@ -116,44 +105,16 @@ jobs:
         with:
           bitbake_source: 'raspberrypi3-mesa-webkitgtk raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4'
           bitbake_target: 'webkitgtk'
-          repo_release: 'langdale'
-    needs: langdale-repo
+          repo_release: 'nanbield'
+    needs: nanbield-repo
 
-  mickledore-repo:
-    runs-on: self-hosted
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-repo
-        with:
-          repo_release: 'mickledore'
-
-  mickledore-raspberrypi3-mesa-weston-wpe-2-42:
+  nanbield-raspberrypi4-64-weston-wpe-2-42:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-42 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_42'
-          repo_release: 'mickledore'
-    needs: mickledore-repo
-
-  matrix-kirkstone-wpe-2-40:
-    strategy:
-      fail-fast: false
-      matrix:
-        # note that it's "raspberrypi3-mesa" but "raspberrypi4-64-mesa" doesn't work, "-mesa" has to be removed
-        machine: ['raspberrypi3-mesa', 'raspberrypi4-64']
-        wpe_vers: ['2_40']
-        yocto_rel: ['kirkstone']
-    continue-on-error: true
-    runs-on: self-hosted
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    needs: kirkstone-repo
-    steps:
-      #- uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-build
-        with:
-          bitbake_source: '${{ matrix.machine }}-wpe-${{ matrix.wpe_vers }} ${{ matrix.machine }} poky layers.raspberrypi.webkit conf_v3.wpe-${{ matrix.wpe_vers }} --update-config'
-          repo_release: ${{ matrix.yocto_rel }}
+          bitbake_source: 'raspberrypi4-64-wpe-2-42 raspberrypi4-64 poky layers.raspberrypi.webkit conf_v4.wpe-2_42'
+          repo_release: 'nanbield'
+    needs: nanbield-repo
