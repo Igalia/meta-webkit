@@ -14,6 +14,7 @@
   <project remote="yocto" revision="dunfell" name="poky" path="sources/poky"/>
   <project remote="yocto" revision="dunfell" name="meta-raspberrypi" path="sources/meta-raspberrypi"/>
 
+  <project remote="github" revision="dunfell" name="kraj/meta-clang.git" path="sources/meta-clang"/>
   <project remote="github" revision="dunfell" name="OSSystems/meta-gstreamer1.0.git" path="sources/meta-gstreamer1.0"/>
 
   <project remote="igalia" revision="main" name="meta-webkit.git" path="sources/meta-webkit"/>
