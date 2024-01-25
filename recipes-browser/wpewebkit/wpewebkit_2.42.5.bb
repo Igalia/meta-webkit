@@ -3,11 +3,6 @@ require conf/include/devupstream.inc
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-# WebKit 2.42 requires GCC>=10 (not provided in dunfell) or Clang>=10
-# (provided by meta-clang in dunfell)
-TOOLCHAIN = "${@bb.utils.contains_any("LAYERSERIES_CORENAMES", 'dunfell', 'clang', 'gcc', d)}"
-LIBCPLUSPLUS = "${@bb.utils.contains_any("LAYERSERIES_CORENAMES", 'dunfell', '--stdlib=libc++', '', d)}"
-
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0001-FELightningNEON.cpp-fails-to-build-NEON-fast-path-se_2.42.patch \
            file://0002-Activate-HAVE_MISSING_STD_FILESYSTEM_PATH_CONSTRUCTO.patch \

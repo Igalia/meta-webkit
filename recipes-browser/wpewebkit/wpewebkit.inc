@@ -3,11 +3,11 @@ SUMMARY = "WPE WebKit port pairs the WebKit engine with OpenGL-ES (OpenGL for Em
            It is designed with hardware acceleration in mind, relying on EGL, and OpenGL ES."
 HOMEPAGE = "https://trac.webkit.org/wiki/WPE"
 BUGTRACKER = "https://bugs.webkit.org/"
-LICENSE = "BSD-2-Clause & ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', 'LGPL-2.0', 'LGPL-2.0-or-later', d)}"
+LICENSE = "BSD-2-Clause & LGPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf8b8a7c36b6eec80 "
 
 DEPENDS:append = " \
-    ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', 'libsoup-2.4', 'libsoup', d)} \
+    libsoup \
     bison-native gperf-native harfbuzz-native libxml2-native ccache-native ninja-native ruby-native cairo \
     fontconfig freetype glib-2.0 harfbuzz icu jpeg pcre sqlite3 zlib libpng \
     libwebp libxml2 libxslt virtual/egl virtual/libgles2 libepoxy libgcrypt \
@@ -60,12 +60,8 @@ export WK_USE_CCACHE="NO"
 PACKAGECONFIG ??= "jit dfg-jit mediasource mediastream video webaudio webcrypto woff2 gst_gl \
                    remote-inspector openjpeg unified-builds service-worker \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
-                   avif gbm speech-synthesis \
+                   avif gbm speech-synthesis jpegxl \
                   "
-
-# libsoup-3 is not available before Poky kirkstone.
-# http://git.yoctoproject.org/cgit/cgit.cgi/poky/commit/meta/recipes-support/libsoup/libsoup_3.0.1.bb?id=de296e2b2be876ca5cf2af309b710111e2b2581e
-PACKAGECONFIG:append = " ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', 'soup2', '', d)}"
 
 PACKAGECONFIG[reduce-size] = "-DCMAKE_BUILD_TYPE=MinSizeRel,-DCMAKE_BUILD_TYPE=Release,,"
 # WPE features
@@ -83,11 +79,9 @@ PACKAGECONFIG[gbm] = "-DUSE_GBM=ON,-DUSE_GBM=OFF,libdrm"
 PACKAGECONFIG[geolocation] = "-DENABLE_GEOLOCATION=ON,-DENABLE_GEOLOCATION=OFF,geoclue"
 PACKAGECONFIG[gpu-process] = "-DENABLE_GPU_PROCESS=ON,-DENABLE_GPU_PROCESS=OFF,"
 PACKAGECONFIG[gst_gl] = "-DUSE_GSTREAMER_GL=ON,-DUSE_GSTREAMER_GL=OFF,gstreamer1.0-plugins-base"
-PACKAGECONFIG[jit] = "-DENABLE_JIT=ON,-DENABLE_JIT=OFF,"
-# jpegxl: Added in 2.40+
-PACKAGECONFIG[jpegxl] = "-DUSE_JPEGXL=ON,-DUSE_JPEGXL=OFF,libjxl"
-PACKAGECONFIG:append = " ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', '', 'jpegxl', d)}"
 PACKAGECONFIG[introspection] = "-DENABLE_INTROSPECTION=ON,-DENABLE_INTROSPECTION=OFF, gobject-introspection-native"
+PACKAGECONFIG[jit] = "-DENABLE_JIT=ON,-DENABLE_JIT=OFF,"
+PACKAGECONFIG[jpegxl] = "-DUSE_JPEGXL=ON,-DUSE_JPEGXL=OFF,libjxl"
 PACKAGECONFIG[journald] = "-DENABLE_JOURNALD_LOG=ON,-DENABLE_JOURNALD_LOG=OFF,"
 PACKAGECONFIG[lbse] = "-DENABLE_LAYER_BASED_SVG_ENGINE=ON,-DENABLE_LAYER_BASED_SVG_ENGINE=OFF, "
 PACKAGECONFIG[lcms] = "-DUSE_LCMS=ON,-DUSE_LCMS=OFF,"
@@ -164,7 +158,7 @@ ARM_INSTRUCTION_SET:armv7r = "thumb"
 ARM_INSTRUCTION_SET:armv7m = "thumb"
 ARM_INSTRUCTION_SET:armv7ve = "thumb"
 
-GSTVIDEOCONVERTSCALEPLUGIN = "${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister kirkstone langdale', 'gstreamer1.0-plugins-base-videoconvert gstreamer1.0-plugins-base-videoscale', 'gstreamer1.0-plugins-base-videoconvertscale', d)}"
+GSTVIDEOCONVERTSCALEPLUGIN = "${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'kirkstone langdale', 'gstreamer1.0-plugins-base-videoconvert gstreamer1.0-plugins-base-videoscale', 'gstreamer1.0-plugins-base-videoconvertscale', d)}"
 
 # Extra runtime depends
 RDEPENDS:${PN} += " \

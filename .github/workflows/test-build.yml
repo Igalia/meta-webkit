@@ -2,26 +2,6 @@ name: Build tests
 on: [pull_request]
 jobs:
 
-  dunfell-repo:
-    runs-on: self-hosted
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-repo
-        with:
-          repo_release: 'dunfell'
-
-  dunfell-raspberrypi3-mesa-weston-wpe-2-42:
-    runs-on: self-hosted
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-build
-        with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-42 raspberrypi3-mesa poky layers.raspberrypi.clang.gstreamer.webkit conf_v1.wpe-2_42'
-          repo_release: 'dunfell'
-    needs: dunfell-repo
-
   kirkstone-repo:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
@@ -51,16 +31,23 @@ jobs:
         with:
           repo_release: 'nanbield'
 
-  nanbield-raspberrypi3-mesa-weston-wpe-2-42:
+  nanbield-matrix-wpe-2-42:
+    strategy:
+      fail-fast: false
+      matrix:
+        machine: ['raspberrypi3-mesa', 'raspberrypi4-64']
+        wpe_vers: ['2_42']
+        yocto_rel: ['nanbield']
+    continue-on-error: true
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
+    needs: nanbield-repo
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-42 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_42'
-          repo_release: 'nanbield'
-    needs: nanbield-repo
+          bitbake_source: '${{ matrix.machine }}-wpe-${{ matrix.wpe_vers }} ${{ matrix.machine }} poky layers.raspberrypi.webkit conf_v3.wpe-${{ matrix.wpe_vers }}'
+          repo_release: ${{ matrix.yocto_rel }}
 
   nanbield-raspberrypi3-mesa-weston-wpe-qt:
     runs-on: self-hosted
@@ -108,13 +95,23 @@ jobs:
           repo_release: 'nanbield'
     needs: nanbield-repo
 
-  nanbield-raspberrypi4-64-weston-wpe-2-42:
+  scarthgap-repo:
+    runs-on: self-hosted
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/bitbake-repo
+        with:
+          repo_release: 'scarthgap'
+
+  scarthgap-raspberrypi3-mesa-weston-wpe-2-42:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: 'raspberrypi4-64-wpe-2-42 raspberrypi4-64 poky layers.raspberrypi.webkit conf_v4.wpe-2_42'
-          repo_release: 'nanbield'
-    needs: nanbield-repo
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-42 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_42'
+          repo_release: 'scarthgap'
+    needs: scarthgap-repo
+
