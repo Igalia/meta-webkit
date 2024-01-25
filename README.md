@@ -20,12 +20,6 @@ This layer optionally depends on:
     branch: 5.12
     revision: HEAD
 
-You may also need meta-clang for the case of Yocto Dunfell and WebnKit 2.42:
-
-    URI: https://github.com/kraj/meta-clang.git
-    branch: dunfell
-    revision: HEAD
-
 If meta-qt5 is present, this layer will provide an opt-in Qt5 API as an
 alternative to other Qt5 web-engines such as QtWebKit and QtWebEngine.
 
