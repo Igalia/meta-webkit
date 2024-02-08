@@ -57,10 +57,10 @@ CMAKE_QT5_OECONF = "\
 
 export WK_USE_CCACHE="NO"
 
-PACKAGECONFIG ??= "jit dfg-jit mediasource video webaudio webcrypto woff2 gst_gl \
+PACKAGECONFIG ??= "jit dfg-jit mediasource mediastream video webaudio webcrypto woff2 gst_gl \
                    remote-inspector openjpeg unified-builds service-worker \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
-                   avif gbm webgl2 \
+                   avif gbm webgl2 speech-synthesis \
                   "
 
 # libsoup-3 is not available before Poky kirkstone.
@@ -92,6 +92,11 @@ PACKAGECONFIG[minibrowser] = "-DENABLE_MINIBROWSER=ON,-DENABLE_MINIBROWSER=OFF,w
 PACKAGECONFIG[mediasource] = "-DENABLE_MEDIA_SOURCE=ON,-DENABLE_MEDIA_SOURCE=OFF,gstreamer1.0 gstreamer1.0-plugins-good"
 PACKAGECONFIG[mediastream] = "-DENABLE_MEDIA_STREAM=ON -DUSE_GSTREAMER_TRANSCODER=OFF,-DENABLE_MEDIA_STREAM=OFF,gstreamer1.0 gstreamer1.0-plugins-bad"
 PACKAGECONFIG[service-worker] = "-DENABLE_SERVICE_WORKER=ON,-DENABLE_SERVICE_WORKER=OFF,"
+
+PACKAGECONFIG[speech-synthesis] = "DENABLE_SPEECH_SYNTHESIS=ON,-DENABLE_SPEECH_SYNTHESIS=OFF,flite"
+# Remove speech-synthesis. Flite is not available before langdale.
+PACKAGECONFIG:remove = "${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister kirkstone', 'speech-synthesis', '', d)}"
+
 PACKAGECONFIG[soup2] = "-DUSE_SOUP2=ON,-DUSE_SOUP2=OFF,libsoup-2.4"
 PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON,-DENABLE_VIDEO=OFF,gstreamer1.0 gstreamer1.0-plugins-base"
 PACKAGECONFIG[webaudio] = "-DENABLE_WEB_AUDIO=ON,-DENABLE_WEB_AUDIO=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good"
