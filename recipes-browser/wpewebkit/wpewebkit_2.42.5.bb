@@ -25,6 +25,3 @@ SRC_URI:class-devupstream = "\
 # WPE 2.42.X branch was forked from the main branch in this commit
 SRCREV:class-devupstream = "33c49ff64449389431294ba0ace6f7d0ad6306b7"
 
-# jpegxl: Added in 2.42+
-PACKAGECONFIG[jpegxl] = "-DUSE_JPEGXL=ON,-DUSE_JPEGXL=OFF,libjxl"
-PACKAGECONFIG:append = " ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister', '', 'jpegxl', d)}"
