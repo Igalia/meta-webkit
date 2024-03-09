@@ -10,5 +10,5 @@ SRCREV:class-devupstream = "8e1acd3704e22904acc2fee0d4a2f5344257434c"
 
 RDEPENDS:${PN} += "wpewebkit (>= 2.42)"
 
-# Required for 0.17+
-PACKAGECONFIG[soup2] = ",,libsoup-2.4"
+# Required for 0.18+
+PACKAGECONFIG[soup2] = "-Dwpe_api=1.0,,libsoup-2.4"
