@@ -12,6 +12,7 @@ DEPENDS:append = " \
     fontconfig freetype glib-2.0 harfbuzz icu jpeg pcre sqlite3 zlib libpng \
     libwebp libxml2 libxslt virtual/egl virtual/libgles2 libepoxy libgcrypt \
     unifdef-native \
+    libwpe virtual/wpebackend \
 "
 
 inherit cmake pkgconfig perlnative python3native
@@ -94,7 +95,7 @@ PACKAGECONFIG[service-worker] = "-DENABLE_SERVICE_WORKER=ON,-DENABLE_SERVICE_WOR
 
 PACKAGECONFIG[speech-synthesis] = "DENABLE_SPEECH_SYNTHESIS=ON,-DENABLE_SPEECH_SYNTHESIS=OFF,flite"
 # Remove speech-synthesis. Flite is not available before langdale.
-PACKAGECONFIG:remove = "${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'dunfell gatesgarth hardknott honister kirkstone', 'speech-synthesis', '', d)}"
+PACKAGECONFIG:remove = "${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'kirkstone', 'speech-synthesis', '', d)}"
 
 PACKAGECONFIG[soup2] = "-DUSE_SOUP2=ON,-DUSE_SOUP2=OFF,libsoup-2.4"
 PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON,-DENABLE_VIDEO=OFF,gstreamer1.0 gstreamer1.0-plugins-base"
