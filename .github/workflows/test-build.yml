@@ -11,14 +11,14 @@ jobs:
         with:
           repo_release: 'dunfell'
 
-  dunfell-raspberrypi3-mesa-weston-wpe-2-42:
+  dunfell-raspberrypi3-mesa-weston-wpe-2-44:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-42 raspberrypi3-mesa poky layers.raspberrypi.clang.gstreamer.webkit conf_v1.wpe-2_42'
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-44 raspberrypi3-mesa poky layers.raspberrypi.clang.gstreamer.webkit conf_v1.wpe-2_42'
           repo_release: 'dunfell'
     needs: dunfell-repo
 
@@ -31,14 +31,14 @@ jobs:
         with:
           repo_release: 'kirkstone'
 
-  kirkstone-raspberrypi3-mesa-weston-wpe-2-42:
+  kirkstone-raspberrypi3-mesa-weston-wpe-2-44:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-40 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v3.wpe-2_42'
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-42 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v3.wpe-2_42'
           repo_release: 'kirkstone'
     needs: kirkstone-repo
 
@@ -51,14 +51,14 @@ jobs:
         with:
           repo_release: 'nanbield'
 
-  nanbield-raspberrypi3-mesa-weston-wpe-2-42:
+  nanbield-raspberrypi3-mesa-weston-wpe-2-44:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-42 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_42'
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-44 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_42'
           repo_release: 'nanbield'
     needs: nanbield-repo
 
@@ -85,14 +85,14 @@ jobs:
           repo_release: 'nanbield'
     needs: nanbield-repo
 
-  nanbield-raspberrypi3-mesa-weston-wpe-2-40:
+  nanbield-raspberrypi3-mesa-weston-wpe-2-42:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-40 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_40'
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-42 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_40'
           repo_release: 'nanbield'
     needs: nanbield-repo
 
@@ -108,13 +108,13 @@ jobs:
           repo_release: 'nanbield'
     needs: nanbield-repo
 
-  nanbield-raspberrypi4-64-weston-wpe-2-42:
+  nanbield-raspberrypi4-64-weston-wpe-2-44:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: 'raspberrypi4-64-wpe-2-42 raspberrypi4-64 poky layers.raspberrypi.webkit conf_v4.wpe-2_42'
+          bitbake_source: 'raspberrypi4-64-wpe-2-44 raspberrypi4-64 poky layers.raspberrypi.webkit conf_v4.wpe-2_42'
           repo_release: 'nanbield'
     needs: nanbield-repo
