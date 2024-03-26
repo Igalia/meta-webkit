@@ -4,7 +4,7 @@ PACKAGECONFIG[dbus] = "-Dcog_dbus_control=system -Dcog_dbus_system_owner=${COG_D
 PACKAGECONFIG[drm] = ",,wpebackend-fdo libdrm virtual/libgbm libinput"
 PACKAGECONFIG[gtk4] = ",,gtk4"
 PACKAGECONFIG[headless] = ",,wpebackend-fdo"
-PACKAGECONFIG[soup2] = "-Dsoup2=enabled,-Dsoup2=disabled,libsoup-2.4"
+PACKAGECONFIG[soup2] = "-Dwpe_api=1.0,,libsoup-2.4"
 PACKAGECONFIG[weston-direct-display] = "-Dwayland_weston_direct_display=true,-Dwayland_weston_direct_display=false,weston"
 PACKAGECONFIG[wl] = ",,wpebackend-fdo"
 
