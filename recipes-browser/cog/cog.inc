@@ -30,6 +30,7 @@ DEPENDS:append:class-target = " \
 RDEPENDS:${PN} += "\
     ${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', '', 'virtual-wpebackend', d)} \
     xkeyboard-config \
+    wpewebkit (>= 2.42) \
     "
 
 inherit pkgconfig
