@@ -8,6 +8,7 @@ SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0003-LowLevelInterpreter.cpp-339-21-error-t6-was-not-decl.patch \
            file://0004-GLib-Script-rewrite-compile-commands-missing-from-re.patch \
            file://0005-WPE-GTK-Unreviewed-fix-build-for-Ubuntu-LTS-after-27.patch \
+           file://0006-WPE-Crash-on-ThreadedCompositor-renderLayerTree-duri.patch \
           "
 
 SRC_URI[tarball.sha256sum] = "0741862b559da0cbbf8e0bccb057361f8a1c6a96178ba10aa0375030b01f05d4"

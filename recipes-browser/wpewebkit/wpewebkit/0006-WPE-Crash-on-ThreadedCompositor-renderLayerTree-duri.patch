@@ -1,0 +1,49 @@
+From b1cff9cd707434045c6582f4dc336a8de2e7cec0 Mon Sep 17 00:00:00 2001
+From: Pablo Saavedra <psaavedra@igalia.com>
+Date: Thu, 4 Apr 2024 17:16:14 +0200
+Subject: [PATCH] [WPE] Fix crash on ThreadedCompositor::renderLayerTree()
+ during video playlist transitions
+ https://bugs.webkit.org/show_bug.cgi?id=272150
+
+Reviewed by NOBODY (OOPS!).
+
+Unnoticed default usage of dmabuf was leading to missing checks in the dmabuf
+proxy. This caused issues when activating a proxy in a TextureMapperLayer,
+removing any reference that another layer might have had to the previous proxy.
+Additionally, when invalidating, the reference to the proxy held by the TextureMapperLayer
+was also removed.
+
+This prevents an invalid memory access identified in the
+CoordinatedGraphicsScene::paintToCurrentGLContext().
+
+* Source/WebCore/platform/graphics/texmap/TextureMapperPlatformLayerProxyDMABuf.cpp:
+(WebCore::TextureMapperPlatformLayerProxyDMABuf::activateOnCompositingThread):
+(WebCore::TextureMapperPlatformLayerProxyDMABuf::invalidate):
+---
+ .../graphics/texmap/TextureMapperPlatformLayerProxyDMABuf.cpp | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+Upstream-Status: Accepted [https://github.com/WebKit/WebKit/pull/26845]
+
+diff --git a/Source/WebCore/platform/graphics/texmap/TextureMapperPlatformLayerProxyDMABuf.cpp b/Source/WebCore/platform/graphics/texmap/TextureMapperPlatformLayerProxyDMABuf.cpp
+index da8f20338f2c4..ff4c661db41c9 100644
+--- a/Source/WebCore/platform/graphics/texmap/TextureMapperPlatformLayerProxyDMABuf.cpp
++++ b/Source/WebCore/platform/graphics/texmap/TextureMapperPlatformLayerProxyDMABuf.cpp
+@@ -87,6 +87,8 @@ void TextureMapperPlatformLayerProxyDMABuf::activateOnCompositingThread(Composit
+     {
+         Locker locker { m_lock };
+         m_compositor = compositor;
++        if (m_targetLayer)
++            m_targetLayer->setContentsLayer(nullptr);
+         m_targetLayer = targetLayer;
+     }
+ }
+@@ -105,6 +107,8 @@ void TextureMapperPlatformLayerProxyDMABuf::invalidate()
+     m_layers = { };
+ 
+     m_compositor = nullptr;
++    if (m_targetLayer)
++        m_targetLayer->setContentsLayer(nullptr);
+     m_targetLayer = nullptr;
+ }
+ 
