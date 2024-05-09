@@ -30,11 +30,9 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI = " \
     https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
     file://0001-Activate-HAVE_MISSING_STD_FILESYSTEM_PATH_CONSTRUCTO.patch \
-    file://0002-LowLevelInterpreter.cpp-339-21-error-t6-was-not-decl.patch \
-    file://0003-GLib-Script-rewrite-compile-commands-missing-from-re.patch \
 "
 
-SRC_URI[tarball.sha256sum] = "c66530e41ba59b1edba4ee89ef20b2188e273bed0497e95084729e3cfbe30c87"
+SRC_URI[tarball.sha256sum] = "425b1459b0f04d0600c78d1abb5e7edfa3c060a420f8b231e9a6a2d5d29c5561"
 
 RRECOMMENDS:${PN} = "${PN}-bin \
                      ca-certificates \
