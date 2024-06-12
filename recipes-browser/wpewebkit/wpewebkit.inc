@@ -186,7 +186,7 @@ RDEPENDS:${PN} += " \
                                                     ', '', d)} \
 "
 
-RDEPENDS_${PN}-web-inspector-plugin += " \
+RDEPENDS:${PN}-web-inspector-plugin += " \
     shared-mime-info \
 "
 
