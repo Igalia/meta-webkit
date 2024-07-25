@@ -84,12 +84,16 @@ IMAGE_INSTALL:append = " \
     perf \
     pv \
     screen \
+    sysprof \
     smem \
     systemd-analyze \
     unifdef \
     waylandeglinfo \
     wayland-tools \
     "
+
+# vcgencmd and related tools for the RPi (works also with opensource stack)
+IMAGE_INSTALL:append:rpi = " userland"
 
 SDK_NATIVE_TOOLS = " \
     nativesdk-bison \

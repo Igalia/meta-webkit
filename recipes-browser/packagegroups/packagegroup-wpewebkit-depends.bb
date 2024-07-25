@@ -170,10 +170,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-desktop = "\
     libxtst \
     libx11-locale \
     xorg-minimal-fonts \
-    gdk-pixbuf-loader-ico \
-    gdk-pixbuf-loader-bmp \
-    gdk-pixbuf-loader-ani \
-    gdk-pixbuf-xlib \
+    gdk-pixbuf \
     liberation-fonts \
     atk \
     at-spi2-atk \
