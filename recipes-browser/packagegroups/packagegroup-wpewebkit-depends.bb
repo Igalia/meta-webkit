@@ -160,21 +160,22 @@ RDEPENDS:packagegroup-wpewebkit-depends-core:append:libc-glibc = "\
     localedef \
 "
 RDEPENDS:packagegroup-wpewebkit-depends-desktop = "\
-    libxt \
-    libxxf86vm \
-    libdrm \
-    libglu \
-    libportal \
-    libxi \
-    libxkbcommon \
-    libxtst \
-    libx11-locale \
-    xorg-minimal-fonts \
-    gdk-pixbuf \
-    liberation-fonts \
+    alsa-lib \
     atk \
     at-spi2-atk \
-    alsa-lib \
+    gdk-pixbuf \
+    libdrm \
+    liberation-fonts \
+    libglu \
+    libportal \
+    libx11-locale \
+    libxi \
+    libxkbcommon \
+    libxt \
+    libxtst \
+    libxxf86vm \
+    xcb-util-cursor \
+    xorg-minimal-fonts \
 "
 
 RDEPENDS:packagegroup-wpewebkit-depends-runtime-add = "\

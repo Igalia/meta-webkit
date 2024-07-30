@@ -126,6 +126,7 @@ TOOLCHAIN_TARGET_TASK:remove = "target-sdk-provides-dummy"
 
 IMAGE_INSTALL:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'xwayland weston-xwayland', '', d)}"
 IMAGE_INSTALL:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'weston-init weston-examples waylandeglinfo', '', d)}"
+IMAGE_INSTALL:append = " ${@bb.utils.contains_any('DISTRO_FEATURES', 'x11 wayland', 'gtk4','',d)}"
 IMAGE_INSTALL:append = " ${PREFERRED_PROVIDER_virtual/wpebackend}"
 IMAGE_INSTALL:append = " packagegroup-wpewebkit-depends"
 
