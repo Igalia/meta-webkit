@@ -65,6 +65,7 @@ PACKAGECONFIG ??= "jit dfg-jit mediasource mediastream video webaudio webcrypto 
                   "
 
 PACKAGECONFIG[reduce-size] = "-DCMAKE_BUILD_TYPE=MinSizeRel,-DCMAKE_BUILD_TYPE=Release,,"
+PACKAGECONFIG[release-with-debug-info] = "-DCMAKE_BUILD_TYPE=RelWithDebInfo,-DCMAKE_BUILD_TYPE=Release,,"
 # WPE features
 PACKAGECONFIG[accessibility] = "-DENABLE_ACCESSIBILITY=ON,-DENABLE_ACCESSIBILITY=OFF,atk at-spi2-atk"
 PACKAGECONFIG[avif] = "-DUSE_AVIF=ON,-DUSE_AVIF=OFF,libavif"
