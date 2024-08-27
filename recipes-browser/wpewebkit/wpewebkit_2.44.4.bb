@@ -7,7 +7,7 @@ SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0002-Activate-HAVE_MISSING_STD_FILESYSTEM_PATH_CONSTRUCTO.patch \
           "
 
-SRC_URI[tarball.sha256sum] = "2c9fbf4fcf8884d34102283e2b008ce0b0bc2cf07de78f564a8b34347e7bc19b"
+SRC_URI[tarball.sha256sum] = "cd6042c63a6f883cc1586e5cea94e846aaaee6a864c14988e8af4ef4f362ba3b"
 
 SRC_URI:class-devupstream = "git://github.com/WebKit/WebKit.git;protocol=https;branch=main"
 
@@ -18,8 +18,7 @@ PACKAGECONFIG[accessibility] = "-DUSE_ATK=ON,-DUSE_ATK=OFF,atk at-spi2-atk"
 # libbacktrace. Since 2.44+
 PACKAGECONFIG[libbacktrace] = "-DUSE_LIBBACKTRACE=ON,-DUSE_LIBBACKTRACE=OFF,libbacktrace"
 
-# The WPE 2.44.X branch was forked from the main branch in this commit
-SRCREV:class-devupstream = "39f0dc749a8d05eb34bbbcf497b5e44f4ff9e68d"
+SRCREV:class-devupstream = "fd73f137dcc66fd5c7146c3d9578346e77ae6d0a"
 
 PACKAGECONFIG:append = " libbacktrace"
 
