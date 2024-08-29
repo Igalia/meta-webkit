@@ -32,7 +32,7 @@ SRC_URI = " \
     file://0001-Activate-HAVE_MISSING_STD_FILESYSTEM_PATH_CONSTRUCTO.patch \
 "
 
-SRC_URI[tarball.sha256sum] = "425b1459b0f04d0600c78d1abb5e7edfa3c060a420f8b231e9a6a2d5d29c5561"
+SRC_URI[tarball.sha256sum] = "2ce4ec1b78413035037aba8326b31ed72696626b7bea7bace5e46ac0d8cbe796"
 
 RRECOMMENDS:${PN} = "${PN}-bin \
                      ca-certificates \
