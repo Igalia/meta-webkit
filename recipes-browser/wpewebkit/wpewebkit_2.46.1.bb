@@ -5,6 +5,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0001-JSC-Fix-build-failure-on-musl-Add-fallback-for-round.patch \
+           file://0003-WPE-Platform-fix-wpe_toplevel_qtquick-has-not-been-d.patch \
+           file://0004-WPE-Platform-fix-wpe_view_resize-was-not-declared-is.patch \
           "
 
 SRC_URI[tarball.sha256sum] = "1e0aaf870f36001c42b1ce5a2027b4101bed878746e437cc6d6fed0693afe9ad"
