@@ -12,7 +12,7 @@
   <project remote="oe" revision="scarthgap" name="meta-openembedded" path="sources/meta-openembedded"/>
 
   <project remote="yocto" revision="scarthgap" name="poky" path="sources/poky"/>
-  <project remote="yocto" revision="master" name="meta-raspberrypi" path="sources/meta-raspberrypi"/>
+  <project remote="yocto" revision="scarthgap" name="meta-raspberrypi" path="sources/meta-raspberrypi"/>
 
   <project remote="igalia" revision="main" name="meta-webkit.git" path="sources/meta-webkit"/>
 </manifest>
