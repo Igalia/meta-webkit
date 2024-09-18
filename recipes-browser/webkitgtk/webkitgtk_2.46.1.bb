@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://Source/JavaScriptCore/COPYING.LIB;md5=d0c6d6397a5d842
 
 # you need harfbuzz with icu enabled, you can add this to your config:
 # PACKAGECONFIG:append:pn-harfbuzz = " icu"
-DEPENDS = "curl libxml2 cairo libxslt libidn \
+DEPENDS = "curl libxml2 libxslt libidn \
            gtk+3 gstreamer1.0 gstreamer1.0-plugins-base flex-native icu \
            gperf-native perl-native ruby-native ninja-native \
            glib-2.0 \
@@ -27,12 +27,13 @@ DEPENDS = "curl libxml2 cairo libxslt libidn \
 "
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+
 SRC_URI = " \
     https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
-    file://0001-Activate-HAVE_MISSING_STD_FILESYSTEM_PATH_CONSTRUCTO.patch \
+    file://fix-bmalloc-armhf.patch \
 "
 
-SRC_URI[tarball.sha256sum] = "2ce4ec1b78413035037aba8326b31ed72696626b7bea7bace5e46ac0d8cbe796"
+SRC_URI[tarball.sha256sum] = "2a14faac359aff941d0bc4443eb5537e3702bcaf316b0a129e0e65f3ff8eaac0"
 
 RRECOMMENDS:${PN} = "${PN}-bin \
                      ca-certificates \
@@ -59,7 +60,6 @@ PACKAGECONFIG ??= " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)
                     ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'kirkstone langdale', '', 'gtk4', d)} \
                     jit \
                     jpegxl \
-                    libbacktrace \
                     libsecret \
                     openjpeg \
                     video \
@@ -96,6 +96,7 @@ EXTRA_OECMAKE = " \
                  -DENABLE_INTROSPECTION=OFF \
                  -DENABLE_GTKDOC=OFF \
                  -DENABLE_MINIBROWSER=ON \
+                 -DUSE_SYSPROF_CAPTURE=OFF \
                  -G Ninja \
                 "
 
@@ -110,6 +111,9 @@ PACKAGECONFIG:remove:riscv32 = "jit"
 PACKAGECONFIG:remove:riscv64 = "jit"
 PACKAGECONFIG:remove:mipsarchn64 = "jit"
 PACKAGECONFIG:remove:mipsarchn32 = "jit"
+
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=949621
+LDFLAGS += "-Wl,--reduce-memory-overheads"
 
 # http://errors.yoctoproject.org/Errors/Details/20370/
 ARM_INSTRUCTION_SET:armv4 = "arm"
