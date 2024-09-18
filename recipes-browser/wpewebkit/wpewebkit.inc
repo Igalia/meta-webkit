@@ -8,8 +8,8 @@ LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf
 
 DEPENDS:append = " \
     libsoup \
-    bison-native gperf-native harfbuzz-native libxml2-native ccache-native ninja-native ruby-native cairo \
-    fontconfig freetype glib-2.0 harfbuzz icu jpeg pcre sqlite3 zlib libpng \
+    bison-native gperf-native harfbuzz-native libxml2-native ccache-native ninja-native ruby-native \
+    fontconfig freetype glib-2.0 harfbuzz icu jpeg pcre sqlite3 zlib libpng libtasn1 \
     libwebp libxml2 libxslt virtual/egl virtual/libgles2 libepoxy libgcrypt \
     unifdef-native \
     libwpe virtual/wpebackend \
@@ -61,13 +61,13 @@ export WK_USE_CCACHE="NO"
 PACKAGECONFIG ??= "jit dfg-jit mediasource mediastream video webaudio webcrypto woff2 gst_gl \
                    remote-inspector openjpeg unified-builds service-worker \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
-                   avif gbm speech-synthesis jpegxl accessibility lbse \
+                   avif gbm speech-synthesis jpegxl accessibility lbse libbacktrace \
                   "
 
 PACKAGECONFIG[reduce-size] = "-DCMAKE_BUILD_TYPE=MinSizeRel,-DCMAKE_BUILD_TYPE=Release,,"
 PACKAGECONFIG[release-with-debug-info] = "-DCMAKE_BUILD_TYPE=RelWithDebInfo,-DCMAKE_BUILD_TYPE=Release,,"
 # WPE features
-PACKAGECONFIG[accessibility] = "-DENABLE_ACCESSIBILITY=ON,-DENABLE_ACCESSIBILITY=OFF,atk at-spi2-atk"
+PACKAGECONFIG[accessibility] = "-DUSE_ATK=ON,-DUSE_ATK=OFF,atk at-spi2-atk"
 PACKAGECONFIG[avif] = "-DUSE_AVIF=ON,-DUSE_AVIF=OFF,libavif"
 PACKAGECONFIG[bubblewrap] = "-DENABLE_BUBBLEWRAP_SANDBOX=ON -DBWRAP_EXECUTABLE=${bindir}/bwrap -DDBUS_PROXY_EXECUTABLE=${bindir}/xdg-dbus-proxy,-DENABLE_BUBBLEWRAP_SANDBOX=OFF,bubblewrap xdg-dbus-proxy libseccomp"
 PACKAGECONFIG[developer-mode] = "-DDEVELOPER_MODE=ON,-DDEVELOPER_MODE=OFF,wayland-native wayland-protocols wpebackend-fdo"
@@ -87,6 +87,7 @@ PACKAGECONFIG[jpegxl] = "-DUSE_JPEGXL=ON,-DUSE_JPEGXL=OFF,libjxl"
 PACKAGECONFIG[journald] = "-DENABLE_JOURNALD_LOG=ON,-DENABLE_JOURNALD_LOG=OFF,"
 PACKAGECONFIG[lbse] = "-DENABLE_LAYER_BASED_SVG_ENGINE=ON,-DENABLE_LAYER_BASED_SVG_ENGINE=OFF, "
 PACKAGECONFIG[lcms] = "-DUSE_LCMS=ON,-DUSE_LCMS=OFF,"
+PACKAGECONFIG[libbacktrace] = "-DUSE_LIBBACKTRACE=ON,-DUSE_LIBBACKTRACE=OFF,libbacktrace"
 PACKAGECONFIG[minibrowser] = "-DENABLE_MINIBROWSER=ON,-DENABLE_MINIBROWSER=OFF,wayland-native wayland-protocols wpebackend-fdo"
 PACKAGECONFIG[mediasource] = "-DENABLE_MEDIA_SOURCE=ON,-DENABLE_MEDIA_SOURCE=OFF,gstreamer1.0 gstreamer1.0-plugins-good"
 PACKAGECONFIG[mediastream] = "-DENABLE_MEDIA_STREAM=ON -DUSE_GSTREAMER_TRANSCODER=OFF,-DENABLE_MEDIA_STREAM=OFF,gstreamer1.0 gstreamer1.0-plugins-bad"
