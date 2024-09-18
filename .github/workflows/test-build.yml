@@ -79,7 +79,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: 'raspberrypi3-mesa-webkitgtk raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4'
+          bitbake_source: 'raspberrypi4-64-webkitgtk raspberrypi4-64 poky layers.raspberrypi.webkit conf_v4'
           bitbake_target: 'webkitgtk'
           repo_release: 'scarthgap'
     needs: scarthgap-repo

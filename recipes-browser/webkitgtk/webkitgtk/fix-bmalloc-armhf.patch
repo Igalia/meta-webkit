@@ -1,0 +1,19 @@
+From: Alberto Garcia <berto@igalia.com>
+Subject: Fix the armhf build if bmalloc is enabled
+Bug: https://bugs.webkit.org/show_bug.cgi?id=278858
+Index: webkitgtk/Source/WebKit/UIProcess/gtk/PointerLockManagerX11.cpp
+===================================================================
+--- webkitgtk.orig/Source/WebKit/UIProcess/gtk/PointerLockManagerX11.cpp
++++ webkitgtk/Source/WebKit/UIProcess/gtk/PointerLockManagerX11.cpp
+@@ -29,10 +29,10 @@
+ #if PLATFORM(X11)
+ 
+ #include "WebPageProxy.h"
+-#include <X11/Xlib.h>
+ #include <gtk/gtk.h>
+ #include <wtf/TZoneMallocInlines.h>
+ #include <wtf/glib/GRefPtr.h>
++#include <X11/Xlib.h>
+ 
+ #if USE(GTK4)
+ #include <gdk/x11/gdkx.h>
