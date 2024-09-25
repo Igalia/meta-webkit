@@ -6,6 +6,8 @@ BUGTRACKER = "https://bugs.webkit.org/"
 LICENSE = "BSD-2-Clause & LGPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf8b8a7c36b6eec80 "
 
+REQUIRED_DISTRO_FEATURES = "opengl"
+
 DEPENDS:append = " \
     libsoup \
     bison-native gperf-native harfbuzz-native libxml2-native ccache-native ninja-native ruby-native \
