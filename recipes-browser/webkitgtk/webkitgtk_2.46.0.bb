@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://Source/JavaScriptCore/COPYING.LIB;md5=d0c6d6397a5d842
 
 # you need harfbuzz with icu enabled, you can add this to your config:
 # PACKAGECONFIG:append:pn-harfbuzz = " icu"
-DEPENDS = "curl libxml2 cairo libxslt libidn \
+DEPENDS = "curl libxml2 libxslt libidn \
            gtk+3 gstreamer1.0 gstreamer1.0-plugins-base flex-native icu \
            gperf-native perl-native ruby-native ninja-native \
            glib-2.0 \
@@ -26,13 +26,11 @@ DEPENDS = "curl libxml2 cairo libxslt libidn \
            zlib \
 "
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI = " \
     https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
-    file://0001-Activate-HAVE_MISSING_STD_FILESYSTEM_PATH_CONSTRUCTO.patch \
 "
 
-SRC_URI[tarball.sha256sum] = "2ce4ec1b78413035037aba8326b31ed72696626b7bea7bace5e46ac0d8cbe796"
+SRC_URI[tarball.sha256sum] = "d4d433040f190151560c50bde840850089f87bad4fefa9ebdb4aae856a3df43a"
 
 RRECOMMENDS:${PN} = "${PN}-bin \
                      ca-certificates \
@@ -96,6 +94,7 @@ EXTRA_OECMAKE = " \
                  -DENABLE_INTROSPECTION=OFF \
                  -DENABLE_GTKDOC=OFF \
                  -DENABLE_MINIBROWSER=ON \
+                 -DUSE_SYSTEM_SYSPROF_CAPTURE=NO \
                  -G Ninja \
                 "
 

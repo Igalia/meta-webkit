@@ -1,0 +1,95 @@
+From e8256b1f3d581c97126a7f5a52e1be4a3f03d21a Mon Sep 17 00:00:00 2001
+From: Adrian Perez de Castro <aperez@igalia.com>
+Date: Wed, 18 Sep 2024 07:11:34 -0700
+Subject: [PATCH] [CMake][WPE] ENABLE_WPE_PLATFORM cannot be toggled
+ https://bugs.webkit.org/show_bug.cgi?id=279879
+
+Reviewed by Carlos Garcia Campos.
+
+Use WEBKIT_OPTION_DEFINE() to define ENABLE_WPE_PLATFORM, defaulting to
+enabled for developer builds. Ensure that the option cannot be enabled
+with the old 1.1 API with WEBKIT_OPTION_CONFLICT(), because WPEPlatform
+uses functionality from the 2.0 API. While at it, fix a build failure
+with ENABLE_WPE_PLATFORM=OFF.
+
+* Source/WebKit/UIProcess/API/glib/WebKitWebView.h.in: Replace an
+  ENABLE(2022_GLIB_API) guard with ENABLE(WPE_PLATFORM) around functions
+  that are available only when building the WPEPlatform library.
+* Source/WebKit/UIProcess/API/wpe/WebKitWebViewWPE.cpp: Ditto.
+* Source/cmake/OptionsWPE.cmake: Define option.
+
+Canonical link: https://commits.webkit.org/283838@main
+---
+ Source/WebKit/UIProcess/API/glib/WebKitWebView.h.in  | 4 ++--
+ Source/WebKit/UIProcess/API/wpe/WebKitWebViewWPE.cpp | 2 +-
+ Source/cmake/OptionsWPE.cmake                        | 5 +++--
+ 3 files changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/Source/WebKit/UIProcess/API/glib/WebKitWebView.h.in b/Source/WebKit/UIProcess/API/glib/WebKitWebView.h.in
+index 1e3d3323f9ca..39a975473c58 100644
+--- a/Source/WebKit/UIProcess/API/glib/WebKitWebView.h.in
++++ b/Source/WebKit/UIProcess/API/glib/WebKitWebView.h.in
+@@ -71,7 +71,7 @@
+ #include <wpe/WebKitColor.h>
+ #include <wpe/WebKitRectangle.h>
+ #include <wpe/WebKitWebViewBackend.h>
+-#if ENABLE(2022_GLIB_API)
++#if ENABLE(WPE_PLATFORM)
+ #include <wpe/wpe-platform.h>
+ #endif
+ #endif
+@@ -475,7 +475,7 @@ webkit_web_view_new_with_user_content_manager        (WebKitWebViewBackend
+ WEBKIT_API WebKitWebViewBackend *
+ webkit_web_view_get_backend                          (WebKitWebView             *web_view);
+ 
+-#if ENABLE(2022_GLIB_API)
++#if ENABLE(WPE_PLATFORM)
+ WEBKIT_API WPEDisplay *
+ webkit_web_view_get_display                          (WebKitWebView             *web_view);
+ 
+diff --git a/Source/WebKit/UIProcess/API/wpe/WebKitWebViewWPE.cpp b/Source/WebKit/UIProcess/API/wpe/WebKitWebViewWPE.cpp
+index 697ce0c5a2bf..eb0c2505df78 100644
+--- a/Source/WebKit/UIProcess/API/wpe/WebKitWebViewWPE.cpp
++++ b/Source/WebKit/UIProcess/API/wpe/WebKitWebViewWPE.cpp
+@@ -295,7 +295,7 @@ guint createShowOptionMenuSignal(WebKitWebViewClass* webViewClass)
+         WEBKIT_TYPE_RECTANGLE | G_SIGNAL_TYPE_STATIC_SCOPE);
+ }
+ 
+-#if ENABLE(2022_GLIB_API)
++#if ENABLE(WPE_PLATFORM)
+ /**
+  * webkit_web_view_toggle_inspector:
+  * @web_view: a #WebKitWebView
+diff --git a/Source/cmake/OptionsWPE.cmake b/Source/cmake/OptionsWPE.cmake
+index 25a60e4113a0..d76e21ef682a 100644
+--- a/Source/cmake/OptionsWPE.cmake
++++ b/Source/cmake/OptionsWPE.cmake
+@@ -96,6 +96,7 @@ endif ()
+ WEBKIT_OPTION_DEFINE(ENABLE_DOCUMENTATION "Whether to generate documentation." PUBLIC ON)
+ WEBKIT_OPTION_DEFINE(ENABLE_INTROSPECTION "Whether to enable GObject introspection." PUBLIC ON)
+ WEBKIT_OPTION_DEFINE(ENABLE_JOURNALD_LOG "Whether to enable journald logging" PUBLIC ON)
++WEBKIT_OPTION_DEFINE(ENABLE_WPE_PLATFORM "Whether to enable the WPEPlatform library" PUBLIC ${ENABLE_DEVELOPER_MODE})
+ WEBKIT_OPTION_DEFINE(ENABLE_WPE_PLATFORM_DRM "Whether to enable support for DRM platform" PUBLIC ON)
+ WEBKIT_OPTION_DEFINE(ENABLE_WPE_PLATFORM_HEADLESS "Whether to enable support for headless platform" PUBLIC ON)
+ WEBKIT_OPTION_DEFINE(ENABLE_WPE_PLATFORM_WAYLAND "Whether to enable support for Wayland platform" PUBLIC ON)
+@@ -113,6 +114,8 @@ WEBKIT_OPTION_DEFINE(USE_EXTERNAL_HOLEPUNCH "Whether to enable external holepunc
+ WEBKIT_OPTION_DEFINE(USE_SYSPROF_CAPTURE "Whether to use libsysprof-capture for tracing." PRIVATE ON)
+ WEBKIT_OPTION_DEFINE(USE_SYSTEM_SYSPROF_CAPTURE "Whether to use a system-provided libsysprof-capture" PRIVATE ${USE_SYSTEM_SYSPROF_CAPTURE_DEFAULT})
+ 
++WEBKIT_OPTION_CONFLICT(ENABLE_WPE_PLATFORM ENABLE_WPE_1_1_API)
++
+ WEBKIT_OPTION_DEPEND(ENABLE_DOCUMENTATION ENABLE_INTROSPECTION)
+ WEBKIT_OPTION_DEPEND(USE_SYSTEM_SYSPROF_CAPTURE USE_SYSPROF_CAPTURE)
+ 
+@@ -181,8 +184,6 @@ else ()
+ endif ()
+ find_package(GLIB ${GLIB_MINIMUM_VERSION} REQUIRED COMPONENTS gio gio-unix gobject gthread gmodule)
+ 
+-SET_AND_EXPOSE_TO_BUILD(ENABLE_WPE_PLATFORM ${ENABLE_2022_GLIB_API})
+-
+ if (WPE_API_VERSION VERSION_EQUAL "1.1")
+     CALCULATE_LIBRARY_VERSIONS_FROM_LIBTOOL_TRIPLE(WEBKIT 8 3 8)
+ else ()
+-- 
+2.43.0
+
