@@ -9,9 +9,9 @@ SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
 
 SRC_URI[tarball.sha256sum] = "1e0aaf870f36001c42b1ce5a2027b4101bed878746e437cc6d6fed0693afe9ad"
 
-SRC_URI:class-devupstream = "git://github.com/WebKit/WebKit.git;protocol=https;branch=main"
-
-SRCREV:class-devupstream = "8db1e051cf4a6d7877dd51b81b478e8367d3f052"
+SRCBRANCH:class-devupstream = "webkitglib/2.46"
+SRC_URI:class-devupstream = "git://github.com/WebKit/WebKit.git;protocol=https;branch=${SRCBRANCH}"
+SRCREV:class-devupstream = "eacf9977760d4ea5dfcb736be73ae48c7df16f27"
 
 # Experimental new WPE platform API
 PACKAGECONFIG[experimental-wpe-platform] = "-DENABLE_WPE_PLATFORM=ON,-DENABLE_WPE_PLATFORM=OFF,libinput"
