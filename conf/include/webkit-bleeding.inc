@@ -9,8 +9,16 @@ PREFERRED_VERSION_wpebackend-fdo = "devupstream+gitAUTOINC+%"
 PREFERRED_VERSION_wpebackend-rdk = "1.20200213+gitAUTOINC+%"
 PREFERRED_VERSION_wpewebkit = "2.42+httpsAUTOINC+%"
 
+SRCBRANCH:class-devupstream:pn-cog = "master"
 SRCREV:class-devupstream:pn-cog = "${AUTOREV}"
+
+SRCBRANCH:class-devupstream:pn-libwpe = "master"
 SRCREV:class-devupstream:pn-libwpe = "${AUTOREV}"
+
+SRCBRANCH:class-devupstream:pn-wpebackend-fdo = "master"
 SRCREV:class-devupstream:pn-wpebackend-fdo = "${AUTOREV}"
+
 SRCREV:class-devupstream:pn-wpebackend-rdk = "${AUTOREV}"
-SRCREV:class-devupstream:pn-wpewebkit = "${AUTOREV}"
+
+SRCBRANCH:class-devupstream:pn-wpewebkit = "main"
+SRCREV:class-devupstream:pn-wpebackend-rdk = "${AUTOREV}"
