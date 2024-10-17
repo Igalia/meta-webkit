@@ -19,44 +19,9 @@ DEPENDS:append = " \
 
 inherit cmake pkgconfig perlnative python3native
 
-# We cannot inherit cmake_qt5 because it will unconditionally add packages
-# to DEPENDS which cannot be removed later depending on the options chosen
-# with PACKAGECONFIG. Instead, copy the set of options defined in it, in turn
-# built upon qmake5_paths (which only defines things, without adding to the
-# dependencies), and add those options along the rest needed for the "qtwpe"
-# option ourselves.
-#
-inherit ${@'qmake5_paths' if 'qt5-layer' in d.getVar('BBFILE_COLLECTIONS').split() else ''}
-CMAKE_QT5_OECONF = "\
-    -DOE_QMAKE_PATH_PREFIX=${OE_QMAKE_PATH_PREFIX} \
-    -DOE_QMAKE_PATH_HEADERS=${OE_QMAKE_PATH_HEADERS} \
-    -DOE_QMAKE_PATH_LIBS=${OE_QMAKE_PATH_LIBS} \
-    -DOE_QMAKE_PATH_ARCHDATA=${OE_QMAKE_PATH_ARCHDATA} \
-    -DOE_QMAKE_PATH_DATA=${OE_QMAKE_PATH_DATA} \
-    -DOE_QMAKE_PATH_BINS=${OE_QMAKE_PATH_BINS} \
-    -DOE_QMAKE_PATH_LIBEXECS=${OE_QMAKE_PATH_LIBEXECS} \
-    -DOE_QMAKE_PATH_PLUGINS=${OE_QMAKE_PATH_PLUGINS} \
-    -DOE_QMAKE_PATH_QML=${OE_QMAKE_PATH_QML} \
-    -DOE_QMAKE_PATH_TRANSLATIONS=${OE_QMAKE_PATH_TRANSLATIONS} \
-    -DOE_QMAKE_PATH_DOCS=${OE_QMAKE_PATH_DOCS} \
-    -DOE_QMAKE_PATH_SETTINGS=${OE_QMAKE_PATH_SETTINGS} \
-    -DOE_QMAKE_PATH_EXAMPLES=${OE_QMAKE_PATH_EXAMPLES} \
-    -DOE_QMAKE_PATH_TESTS=${OE_QMAKE_PATH_TESTS} \
-    -DOE_QMAKE_PATH_HOST_PREFIX=${OE_QMAKE_PATH_HOST_PREFIX} \
-    -DOE_QMAKE_PATH_HOST_BINS=${OE_QMAKE_PATH_HOST_BINS} \
-    -DOE_QMAKE_PATH_HOST_DATA=${OE_QMAKE_PATH_HOST_DATA} \
-    -DOE_QMAKE_PATH_HOST_LIBS=${OE_QMAKE_PATH_HOST_LIBS} \
-    -DOE_QMAKE_PATH_EXTERNAL_HOST_BINS=${OE_QMAKE_PATH_EXTERNAL_HOST_BINS} \
-    -DOE_QMAKE_PATH_QT_HEADERS=${OE_QMAKE_PATH_QT_HEADERS} \
-    -DOE_QMAKE_PATH_QT_ARCHDATA=${OE_QMAKE_PATH_QT_ARCHDATA} \
-    -DOE_QMAKE_PATH_QT_DATA=${OE_QMAKE_PATH_QT_DATA} \
-    -DOE_QMAKE_PATH_QT_BINS=${OE_QMAKE_PATH_QT_BINS} \
-    -DOE_QMAKE_PATH_QT_TRANSLATIONS=${OE_QMAKE_PATH_QT_TRANSLATIONS} \
-    -DOE_QMAKE_PATH_QT_DOCS=${OE_QMAKE_PATH_QT_DOCS} \
-    -DOE_QMAKE_PATH_QT_SETTINGS=${OE_QMAKE_PATH_QT_SETTINGS} \
-    -DOE_QMAKE_PATH_QT_EXAMPLES=${OE_QMAKE_PATH_QT_EXAMPLES} \
-    -DOE_QMAKE_PATH_QT_TESTS=${OE_QMAKE_PATH_QT_TESTS} \
-"
+
+require ${@'wpewebkit-qt6.inc'  if 'qt6-layer' in d.getVar('BBFILE_COLLECTIONS').split() else ''}
+require ${@'wpewebkit-qt5.inc'  if 'qt5-layer' in d.getVar('BBFILE_COLLECTIONS').split() else ''}
 
 export WK_USE_CCACHE="NO"
 
@@ -108,7 +73,7 @@ PACKAGECONFIG[webcrypto] = "-DENABLE_WEB_CRYPTO=ON,-DENABLE_WEB_CRYPTO=OFF,libgc
 PACKAGECONFIG[woff2] = "-DUSE_WOFF2=ON,-DUSE_WOFF2=OFF,woff2"
 PACKAGECONFIG[remote-inspector] = "-DENABLE_REMOTE_INSPECTOR=ON,-DENABLE_REMOTE_INSPECTOR=OFF,"
 PACKAGECONFIG[webrtc] = "-DENABLE_WEB_RTC=ON,-DENABLE_WEB_RTC=OFF,libvpx libevent libopus openh264"
-PACKAGECONFIG[qtwpe] = "-DENABLE_WPE_QT_API=ON ${CMAKE_QT5_OECONF},-DENABLE_WPE_QT_API=OFF,qtbase-native qtbase qtdeclarative qtquickcontrols2 libepoxy wpebackend-fdo"
+PACKAGECONFIG[qtwpe] = "-DENABLE_WPE_QT_API=ON ${CMAKE_QT_OECONF},-DENABLE_WPE_QT_API=OFF,qtbase-native qtbase qtdeclarative libepoxy wpebackend-fdo ${QT_BUILD_DEPS}"
 PACKAGECONFIG[openjpeg] = "-DUSE_OPENJPEG=ON,-DUSE_OPENJPEG=OFF,openjpeg"
 PACKAGECONFIG[unified-builds] = "-DENABLE_UNIFIED_BUILDS=ON,-DENABLE_UNIFIED_BUILDS=OFF,"
 PACKAGECONFIG[thunder] = "-DENABLE_THUNDER=ON,-DENABLE_THUNDER=OFF,virtual/open-cdm"
@@ -154,7 +119,6 @@ FILES:${PN} += "${libdir}/wpe-webkit*/injected-bundle/libWPEInjectedBundle.so"
 FILES:${PN}-web-inspector-plugin += "${libdir}/libWPEWebInspectorResources.so ${libdir}/wpe-webkit-*/libWPEWebInspectorResources.so"
 INSANE_SKIP:${PN}-web-inspector-plugin = "dev-so"
 
-FILES:${PN}-qtwpe-qml-plugin += "${libdir}/qt5/qml/org/wpewebkit/qtwpe/*"
 INSANE_SKIP:${PN}-qtwpe-qml-plugin = "dev-so"
 
 # JSC JIT on ARMv7 is better supported with Thumb2 instruction set.
