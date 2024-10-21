@@ -17,7 +17,7 @@ DEPENDS:append = " \
     libwpe virtual/wpebackend \
 "
 
-inherit cmake pkgconfig perlnative python3native
+inherit cmake features_check pkgconfig perlnative python3native
 
 # We cannot inherit cmake_qt5 because it will unconditionally add packages
 # to DEPENDS which cannot be removed later depending on the options chosen
