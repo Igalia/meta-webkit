@@ -1,0 +1,305 @@
+From 38fa12920b01855f7819c6b1fb3cb09ca8a9e947 Mon Sep 17 00:00:00 2001
+From: Olivier Blin <olivier.blin@softathome.com>
+Date: Mon, 14 Oct 2024 01:41:01 -0700
+Subject: Build fixes for !ENABLE(VIDEO)
+ https://bugs.webkit.org/show_bug.cgi?id=281253
+
+Reviewed by Philippe Normand.
+
+* Source/WebCore/Modules/WebGPU/GPUDevice.h:
+    Flag variables only used with ENABLE(VIDEO)
+        m_videoElementToExternalTextureMap
+        m_previouslyImportedExternalTexture
+        m_lastCreatedExternalTextureBindGroup
+
+* Source/WebCore/css/CSSPseudoSelectors.json:
+    Flag -internal-in-window-fullscreen to avoid warning in SelectorChecker switch
+
+* Source/WebCore/dom/Document.cpp:
+(WebCore::eventTargetElementForDocument):
+    Flag HTMLVideoElement check
+
+* Source/WebCore/dom/FullscreenManager.cpp:
+(WebCore::FullscreenManager::willEnterFullscreen):
+    Fix unused variable warning
+
+* Source/WebCore/page/DiagnosticLoggingKeys.cpp:
+(WebCore::DiagnosticLoggingKeys::mediaElementSourceTypeDiagnosticLoggingKey): Deleted.
+* Source/WebCore/page/DiagnosticLoggingKeys.h:
+    Remove unused mediaElementSourceTypeDiagnosticLoggingKey after 282029@main
+
+* Source/WebCore/page/ElementTargetingController.cpp:
+(WebCore::hasAudibleMedia):
+(WebCore::urlForElement):
+    Flag HTMLMediaElement usage
+
+* Source/WebCore/rendering/updating/RenderTreeBuilder.cpp:
+(WebCore::RenderTreeBuilder::attachToRenderElementInternal):
+    Flag RenderVideo check
+
+* Source/WebCore/testing/Internals.cpp:
+* Source/WebCore/testing/Internals.h:
+* Source/WebCore/testing/Internals.idl:
+    Make isEffectivelyMuted conditional since it uses HTMLMediaElement
+
+* Source/WebKit/GPUProcess/GPUConnectionToWebProcess.cpp:
+(WebKit::GPUConnectionToWebProcess::didClose):
+    m_remoteMediaResourceManager is defined only with ENABLE(VIDEO)
+
+* Source/WebKit/WebProcess/GPU/media/gstreamer/VideoLayerRemoteGStreamer.cpp:
+    Flag the whole file under ENABLE(VIDEO) like other media GPU Process files
+
+Canonical link: https://commits.webkit.org/285114@main
+---
+ Source/WebCore/Modules/WebGPU/GPUDevice.h     |  3 ++-
+ Source/WebCore/css/CSSPseudoSelectors.json    |  2 +-
+ Source/WebCore/dom/Document.cpp               |  2 ++
+ Source/WebCore/dom/FullscreenManager.cpp      |  4 +++
+ Source/WebCore/page/DiagnosticLoggingKeys.cpp | 25 -------------------
+ Source/WebCore/page/DiagnosticLoggingKeys.h   |  2 --
+ .../page/ElementTargetingController.cpp       |  6 +++++
+ .../rendering/updating/RenderTreeBuilder.cpp  |  9 ++++---
+ Source/WebCore/testing/Internals.cpp          |  2 ++
+ Source/WebCore/testing/Internals.h            |  2 ++
+ Source/WebCore/testing/Internals.idl          |  2 +-
+ .../GPUProcess/GPUConnectionToWebProcess.cpp  |  2 ++
+ .../gstreamer/VideoLayerRemoteGStreamer.cpp   |  2 +-
+ 13 files changed, 29 insertions(+), 34 deletions(-)
+
+diff --git a/Source/WebCore/Modules/WebGPU/GPUDevice.h b/Source/WebCore/Modules/WebGPU/GPUDevice.h
+index 5dae0648..a869f0b4 100644
+--- a/Source/WebCore/Modules/WebGPU/GPUDevice.h
++++ b/Source/WebCore/Modules/WebGPU/GPUDevice.h
+@@ -172,11 +172,12 @@ private:
+ 
+ #if ENABLE(VIDEO)
+     GPUExternalTexture* externalTextureForDescriptor(const GPUExternalTextureDescriptor&);
+-#endif
+ 
+     WeakHashMap<HTMLVideoElement, WeakPtr<GPUExternalTexture>> m_videoElementToExternalTextureMap;
+     std::pair<RefPtr<HTMLVideoElement>, RefPtr<GPUExternalTexture>> m_previouslyImportedExternalTexture;
+     std::pair<Vector<GPUBindGroupEntry>, RefPtr<GPUBindGroup>> m_lastCreatedExternalTextureBindGroup;
++#endif
++
+     bool m_waitingForDeviceLostPromise { false };
+ };
+ 
+diff --git a/Source/WebCore/css/CSSPseudoSelectors.json b/Source/WebCore/css/CSSPseudoSelectors.json
+index 1eb73816..73bfcecd 100644
+--- a/Source/WebCore/css/CSSPseudoSelectors.json
++++ b/Source/WebCore/css/CSSPseudoSelectors.json
+@@ -47,7 +47,7 @@
+         },
+         "-internal-html-document": {},
+         "-internal-in-window-fullscreen": {
+-            "conditional": "ENABLE(FULLSCREEN_API)"
++            "conditional": "ENABLE(FULLSCREEN_API) && ENABLE(VIDEO)"
+         },
+         "-internal-media-document": {},
+         "-webkit-any": {
+diff --git a/Source/WebCore/dom/Document.cpp b/Source/WebCore/dom/Document.cpp
+index c13f0a7c..e3d9fc39 100644
+--- a/Source/WebCore/dom/Document.cpp
++++ b/Source/WebCore/dom/Document.cpp
+@@ -8692,8 +8692,10 @@ Element* eventTargetElementForDocument(Document* document)
+     if (!document)
+         return nullptr;
+ #if ENABLE(FULLSCREEN_API)
++#if ENABLE(VIDEO)
+     if (CheckedPtr fullscreenManager = document->fullscreenManagerIfExists(); fullscreenManager && fullscreenManager->isFullscreen() && is<HTMLVideoElement>(fullscreenManager->currentFullscreenElement()))
+         return fullscreenManager->currentFullscreenElement();
++#endif
+ #endif
+     Element* element = document->focusedElement();
+     if (!element) {
+diff --git a/Source/WebCore/dom/FullscreenManager.cpp b/Source/WebCore/dom/FullscreenManager.cpp
+index ee052eb1..67672b7e 100644
+--- a/Source/WebCore/dom/FullscreenManager.cpp
++++ b/Source/WebCore/dom/FullscreenManager.cpp
+@@ -459,6 +459,10 @@ bool FullscreenManager::isFullscreenEnabled() const
+ 
+ bool FullscreenManager::willEnterFullscreen(Element& element, HTMLMediaElementEnums::VideoFullscreenMode mode)
+ {
++#if !ENABLE(VIDEO)
++    UNUSED_PARAM(mode);
++#endif
++
+     if (backForwardCacheState() != Document::NotInBackForwardCache) {
+         ERROR_LOG(LOGIDENTIFIER, "Document in the BackForwardCache; bailing");
+         return false;
+diff --git a/Source/WebCore/page/DiagnosticLoggingKeys.cpp b/Source/WebCore/page/DiagnosticLoggingKeys.cpp
+index 60b553d6..103f2a2b 100644
+--- a/Source/WebCore/page/DiagnosticLoggingKeys.cpp
++++ b/Source/WebCore/page/DiagnosticLoggingKeys.cpp
+@@ -791,30 +791,5 @@ String DiagnosticLoggingKeys::audioCodecKey()
+     return "audioCodec"_s;
+ }
+ 
+-String DiagnosticLoggingKeys::mediaElementSourceTypeDiagnosticLoggingKey(HTMLMediaElementSourceType sourceType)
+-{
+-    switch (sourceType) {
+-    case HTMLMediaElementSourceType::File:
+-        return "file"_s;
+-    case HTMLMediaElementSourceType::HLS:
+-        return "hls"_s;
+-    case HTMLMediaElementSourceType::MediaSource:
+-        return "mediaSource"_s;
+-    case HTMLMediaElementSourceType::ManagedMediaSource:
+-        return "managedMediaSource"_s;
+-    case HTMLMediaElementSourceType::MediaStream:
+-        return "mediaStream"_s;
+-    case HTMLMediaElementSourceType::LiveStream:
+-        return "liveStream"_s;
+-    case HTMLMediaElementSourceType::StoredStream:
+-        return "storedStream"_s;
+-    }
+-
+-    ASSERT_NOT_REACHED();
+-    return nullString();
+-}
+-
+-
+-
+ } // namespace WebCore
+ 
+diff --git a/Source/WebCore/page/DiagnosticLoggingKeys.h b/Source/WebCore/page/DiagnosticLoggingKeys.h
+index 77ac008e..29883230 100644
+--- a/Source/WebCore/page/DiagnosticLoggingKeys.h
++++ b/Source/WebCore/page/DiagnosticLoggingKeys.h
+@@ -181,8 +181,6 @@ public:
+     WEBCORE_EXPORT static String memoryUsageToDiagnosticLoggingKey(uint64_t memoryUsage);
+     WEBCORE_EXPORT static String foregroundCPUUsageToDiagnosticLoggingKey(double cpuUsage);
+     WEBCORE_EXPORT static String backgroundCPUUsageToDiagnosticLoggingKey(double cpuUsage);
+-
+-    static String mediaElementSourceTypeDiagnosticLoggingKey(HTMLMediaElementSourceType);
+ };
+ 
+ } // namespace WebCore
+diff --git a/Source/WebCore/page/ElementTargetingController.cpp b/Source/WebCore/page/ElementTargetingController.cpp
+index 34d2d174..5ce89a41 100644
+--- a/Source/WebCore/page/ElementTargetingController.cpp
++++ b/Source/WebCore/page/ElementTargetingController.cpp
+@@ -616,6 +616,7 @@ static String searchableTextForTarget(Element& target)
+ 
+ static bool hasAudibleMedia(const Element& element)
+ {
++#if ENABLE(VIDEO)
+     if (RefPtr media = dynamicDowncast<HTMLMediaElement>(element))
+         return media->isAudible();
+ 
+@@ -628,6 +629,9 @@ static bool hasAudibleMedia(const Element& element)
+         if (hasAudibleMedia(documentElement))
+             return true;
+     }
++#else
++    UNUSED_PARAM(element);
++#endif
+ 
+     return false;
+ }
+@@ -640,8 +644,10 @@ static URL urlForElement(const Element& element)
+     if (RefPtr image = dynamicDowncast<HTMLImageElement>(element))
+         return image->currentURL();
+ 
++#if ENABLE(VIDEO)
+     if (RefPtr media = dynamicDowncast<HTMLMediaElement>(element))
+         return media->currentSrc();
++#endif
+ 
+     if (CheckedPtr renderer = element.renderer()) {
+         if (auto& style = renderer->style(); style.hasBackgroundImage()) {
+diff --git a/Source/WebCore/rendering/updating/RenderTreeBuilder.cpp b/Source/WebCore/rendering/updating/RenderTreeBuilder.cpp
+index a0f9e590..a56e2c39 100644
+--- a/Source/WebCore/rendering/updating/RenderTreeBuilder.cpp
++++ b/Source/WebCore/rendering/updating/RenderTreeBuilder.cpp
+@@ -480,9 +480,12 @@ void RenderTreeBuilder::attachToRenderElementInternal(RenderElement& parent, Ren
+             // FIXME: Introduce a dirty bit to bridge the gap between parent and containing block which would
+             // not trigger layout but a simple traversal all the way to the direct parent and also expand it non-direct parent cases.
+             // FIXME: RenderVideo's setNeedsLayout pattern does not play well with this optimization: see webkit.org/b/276253
+-            if (newChild->containingBlock() == &parent && !is<RenderVideo>(*newChild))
+-                parent.setOutOfFlowChildNeedsStaticPositionLayout();
+-            else
++            if (newChild->containingBlock() == &parent) {
++#if ENABLE(VIDEO)
++                if (!is<RenderVideo>(*newChild))
++#endif
++                    parent.setOutOfFlowChildNeedsStaticPositionLayout();
++            } else
+                 parent.setChildNeedsLayout();
+         } else
+             parent.setChildNeedsLayout();
+diff --git a/Source/WebCore/testing/Internals.cpp b/Source/WebCore/testing/Internals.cpp
+index a4308c8f..695a64ce 100644
+--- a/Source/WebCore/testing/Internals.cpp
++++ b/Source/WebCore/testing/Internals.cpp
+@@ -7550,10 +7550,12 @@ const String& Internals::defaultSpatialTrackingLabel() const
+     return nullString();
+ }
+ 
++#if ENABLE(VIDEO)
+ bool Internals::isEffectivelyMuted(const HTMLMediaElement& element)
+ {
+     return element.effectiveMuted();
+ }
++#endif
+ 
+ std::optional<RenderingMode> Internals::getEffectiveRenderingModeOfNewlyCreatedAcceleratedImageBuffer()
+ {
+diff --git a/Source/WebCore/testing/Internals.h b/Source/WebCore/testing/Internals.h
+index 284c0844..7d70386d 100644
+--- a/Source/WebCore/testing/Internals.h
++++ b/Source/WebCore/testing/Internals.h
+@@ -1481,7 +1481,9 @@ public:
+ 
+     const String& defaultSpatialTrackingLabel() const;
+ 
++#if ENABLE(VIDEO)
+     bool isEffectivelyMuted(const HTMLMediaElement&);
++#endif
+ 
+     using RenderingMode = WebCore::RenderingMode;
+     std::optional<RenderingMode> getEffectiveRenderingModeOfNewlyCreatedAcceleratedImageBuffer();
+diff --git a/Source/WebCore/testing/Internals.idl b/Source/WebCore/testing/Internals.idl
+index b28007dd..e6ecd9e1 100644
+--- a/Source/WebCore/testing/Internals.idl
++++ b/Source/WebCore/testing/Internals.idl
+@@ -1395,7 +1395,7 @@ enum RenderingMode {
+ 
+     readonly attribute DOMString defaultSpatialTrackingLabel;
+ 
+-    boolean isEffectivelyMuted(HTMLMediaElement element);
++    [Conditional=VIDEO] boolean isEffectivelyMuted(HTMLMediaElement element);
+ 
+     RenderingMode? getEffectiveRenderingModeOfNewlyCreatedAcceleratedImageBuffer();
+     Promise<ImageBufferResourceLimits> getImageBufferResourceLimits();
+diff --git a/Source/WebKit/GPUProcess/GPUConnectionToWebProcess.cpp b/Source/WebKit/GPUProcess/GPUConnectionToWebProcess.cpp
+index 9e7c7ce9..af9fcd03 100644
+--- a/Source/WebKit/GPUProcess/GPUConnectionToWebProcess.cpp
++++ b/Source/WebKit/GPUProcess/GPUConnectionToWebProcess.cpp
+@@ -425,8 +425,10 @@ void GPUConnectionToWebProcess::didClose(IPC::Connection& connection)
+     RemoteLegacyCDMFactoryProxy& legacyCdmFactoryProxy();
+ #endif
+ 
++#if ENABLE(VIDEO)
+     if (RefPtr remoteMediaResourceManager = m_remoteMediaResourceManager)
+         remoteMediaResourceManager->stopListeningForIPC();
++#endif
+ 
+     Ref gpuProcess = this->gpuProcess();
+     gpuProcess->connectionToWebProcessClosed(connection);
+diff --git a/Source/WebKit/WebProcess/GPU/media/gstreamer/VideoLayerRemoteGStreamer.cpp b/Source/WebKit/WebProcess/GPU/media/gstreamer/VideoLayerRemoteGStreamer.cpp
+index 4a553472..8baa1f7c 100644
+--- a/Source/WebKit/WebProcess/GPU/media/gstreamer/VideoLayerRemoteGStreamer.cpp
++++ b/Source/WebKit/WebProcess/GPU/media/gstreamer/VideoLayerRemoteGStreamer.cpp
+@@ -26,7 +26,7 @@
+ #include "config.h"
+ #include "VideoLayerRemote.h"
+ 
+-#if ENABLE(GPU_PROCESS)
++#if ENABLE(GPU_PROCESS) && ENABLE(VIDEO)
+ 
+ #include <WebCore/NotImplemented.h>
+ #include <WebCore/PlatformLayer.h>
+-- 
+2.34.1
+

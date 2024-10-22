@@ -1,0 +1,33 @@
+From ee5736a2f1886c2fa1623f27f7ab8aee75c6c64e Mon Sep 17 00:00:00 2001
+From: Olivier Blin <olivier.blin@softathome.com>
+Date: Mon, 14 Oct 2024 06:24:30 -0700
+Subject: Fix WebKitSettings build for !ENABLE(VIDEO)
+ https://bugs.webkit.org/show_bug.cgi?id=281424
+
+Reviewed by Adrian Perez de Castro.
+
+Since 278688@main, WebKitSettings uses GUniquePtr for config file parsing.
+The <wtf/glib/GUniquePtr.h> header should be explicitly included.
+
+* Source/WebKit/UIProcess/API/glib/WebKitSettings.cpp:
+
+Canonical link: https://commits.webkit.org/285120@main
+---
+ Source/WebKit/UIProcess/API/glib/WebKitSettings.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Source/WebKit/UIProcess/API/glib/WebKitSettings.cpp b/Source/WebKit/UIProcess/API/glib/WebKitSettings.cpp
+index a7980c6d..9519ca83 100644
+--- a/Source/WebKit/UIProcess/API/glib/WebKitSettings.cpp
++++ b/Source/WebKit/UIProcess/API/glib/WebKitSettings.cpp
+@@ -43,6 +43,7 @@
+ #include <cmath>
+ #include <glib/gi18n-lib.h>
+ #include <pal/text/TextEncodingRegistry.h>
++#include <wtf/glib/GUniquePtr.h>
+ #include <wtf/glib/WTFGType.h>
+ #include <wtf/text/CString.h>
+ 
+-- 
+2.34.1
+
