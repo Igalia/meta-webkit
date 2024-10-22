@@ -33,7 +33,7 @@ SRC_URI = " \
     file://fix-bmalloc-armhf.patch \
 "
 
-SRC_URI[tarball.sha256sum] = "2a14faac359aff941d0bc4443eb5537e3702bcaf316b0a129e0e65f3ff8eaac0"
+SRC_URI[tarball.sha256sum] = "5aae1c5c0a30d5e9c5831652b6f1bdefc31d75e0ad81cb40185b0aed92ce79b6"
 
 RRECOMMENDS:${PN} = "${PN}-bin \
                      ca-certificates \
