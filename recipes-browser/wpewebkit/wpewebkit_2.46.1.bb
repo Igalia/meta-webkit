@@ -8,6 +8,7 @@ SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0001-Build-fixes-for-ENABLE-VIDEO-https-bugs.webkit.org-s.patch \
            file://0002-Fix-WebKitSettings-build-for-ENABLE-VIDEO-https-bugs.patch \
            file://0003-Build-broken-with-ENABLE_WEB_AUDIO-OFF-https-bugs.we.patch \
+           file://0004-REGRESSION-277190-main-GTK-WPE-FELightingNeonParalle.patch \
           "
 
 SRC_URI[tarball.sha256sum] = "1e0aaf870f36001c42b1ce5a2027b4101bed878746e437cc6d6fed0693afe9ad"

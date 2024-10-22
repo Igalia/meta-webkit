@@ -1,0 +1,39 @@
+From 8ea155f88627cc9ccc8769770358def437885d59 Mon Sep 17 00:00:00 2001
+From: Adrian Perez de Castro <aperez@igalia.com>
+Date: Wed, 16 Oct 2024 07:35:37 -0700
+Subject: REGRESSION(277190@main): [GTK][WPE] FELightingNeonParallelApplier.cpp
+ build failed for cortexa8hf-neon
+ https://bugs.webkit.org/show_bug.cgi?id=276938
+
+Reviewed by Michael Catanzaro.
+
+PixelBuffer::bytes() returns a std::span after 277190@main, so do
+one more hoop through std::span::data() to get access to the raw
+pixel data pointer.
+
+* Source/WebCore/platform/graphics/cpu/arm/filters/FELightingNeonParallelApplier.cpp:
+(WebCore::FELightingNeonParallelApplier::applyPlatformParallel const):
+
+Canonical link: https://commits.webkit.org/285263@main
+---
+ .../graphics/cpu/arm/filters/FELightingNeonParallelApplier.cpp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Source/WebCore/platform/graphics/cpu/arm/filters/FELightingNeonParallelApplier.cpp b/Source/WebCore/platform/graphics/cpu/arm/filters/FELightingNeonParallelApplier.cpp
+index dccc003d..9152b693 100644
+--- a/Source/WebCore/platform/graphics/cpu/arm/filters/FELightingNeonParallelApplier.cpp
++++ b/Source/WebCore/platform/graphics/cpu/arm/filters/FELightingNeonParallelApplier.cpp
+@@ -520,8 +520,9 @@ void FELightingNeonParallelApplier::applyPlatformWorker(ApplyParameters* paramet
+ void FELightingNeonParallelApplier::applyPlatformParallel(const LightingData& data, const LightSource::PaintingData& paintingData) const
+ {
+     alignas(16) FloatArguments floatArguments;
++    auto bytes = data.pixels->bytes();
+     ApplyParameters neonData = {
+-        data.pixels->bytes(),
++        bytes.data(),
+         1,
+         data.width - 2,
+         data.height - 2,
+-- 
+2.34.1
+
