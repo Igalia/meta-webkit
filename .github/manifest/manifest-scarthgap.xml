@@ -14,5 +14,5 @@
   <project remote="yocto" revision="scarthgap" name="poky" path="sources/poky"/>
   <project remote="yocto" revision="scarthgap" name="meta-raspberrypi" path="sources/meta-raspberrypi"/>
 
-  <project remote="igalia" revision="main" name="meta-webkit.git" path="sources/meta-webkit"/>
+  <project remote="igalia" revision="scarthgap" name="meta-webkit.git" path="sources/meta-webkit"/>
 </manifest>
