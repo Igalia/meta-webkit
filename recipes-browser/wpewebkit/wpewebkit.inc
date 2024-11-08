@@ -62,7 +62,7 @@ PACKAGECONFIG[offscreen-canvas] = "-DENABLE_OFFSCREEN_CANVAS=ON -DENABLE_OFFSCRE
 
 PACKAGECONFIG[service-worker] = "-DENABLE_SERVICE_WORKER=ON,-DENABLE_SERVICE_WORKER=OFF,"
 
-PACKAGECONFIG[speech-synthesis] = "DENABLE_SPEECH_SYNTHESIS=ON,-DENABLE_SPEECH_SYNTHESIS=OFF,flite"
+PACKAGECONFIG[speech-synthesis] = "-DENABLE_SPEECH_SYNTHESIS=ON,-DENABLE_SPEECH_SYNTHESIS=OFF,flite"
 # Remove speech-synthesis. Flite is not available before langdale.
 PACKAGECONFIG:remove = "${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'kirkstone', 'speech-synthesis', '', d)}"
 
