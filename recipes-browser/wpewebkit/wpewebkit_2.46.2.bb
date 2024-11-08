@@ -15,6 +15,6 @@ SRC_URI:class-devupstream = "git://github.com/WebKit/WebKit.git;protocol=https;b
 SRCREV:class-devupstream = "4b5574d5a42399b41117f0932048a7b6905a43b6"
 
 # Experimental new WPE platform API
-PACKAGECONFIG[experimental-wpe-platform] = "-DENABLE_WPE_PLATFORM=ON,-DENABLE_WPE_PLATFORM=OFF,libinput"
+PACKAGECONFIG[experimental-wpe-platform] = "-DENABLE_WPE_PLATFORM=ON,-DENABLE_WPE_PLATFORM=OFF,libinput wayland-native"
 
 EXTRA_OECMAKE += "-DUSE_SYSTEM_SYSPROF_CAPTURE=OFF"
