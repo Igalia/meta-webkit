@@ -6,6 +6,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0003-WPE-Platform-fix-wpe_toplevel_qtquick-has-not-been-d.patch \
            file://0004-WPE-Platform-fix-wpe_view_resize-was-not-declared-is.patch \
+           file://0005-WPEPlatform-Input-methods-do-not-work.patch \
           "
 
 SRC_URI[tarball.sha256sum] = "1b0ee5a6c8bfdc2f8d8aaa8be143d87e33a47117591176e41555252432cb13b6"
