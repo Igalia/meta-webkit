@@ -206,7 +206,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-alternative = " \
     libopus \
     libtasn1 \
     libvpx \
-    openh264 \
+    ${@bb.utils.contains('LICENSE_FLAGS_ACCEPTED', 'commercial', 'openh264', '', d)} \
     openjpeg \
     openxr \
     sparkle-cdm \
@@ -239,7 +239,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-video = " \
     gstreamer1.0-plugins-bad-mpegtsdemux \
     gstreamer1.0-plugins-bad-smoothstreaming \
     gstreamer1.0-plugins-bad-videoparsersbad \
-    gstreamer1.0-libav \
+    ${@bb.utils.contains('LICENSE_FLAGS_ACCEPTED', 'commercial', 'gstreamer1.0-libav', '', d)} \
 "
 
 RDEPENDS:packagegroup-wpewebkit-depends-extra = " \
