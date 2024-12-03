@@ -1,0 +1,1019 @@
+From da71e44afcd267e8bea6b5a3e4e6cde1745e13c5 Mon Sep 17 00:00:00 2001
+From: Adrian Perez de Castro <aperez@igalia.com>
+Date: Fri, 29 Nov 2024 15:49:42 +0200
+Subject: [PATCH] Unreviewed, reverting 292@webkitglib/2.46 (cdbaf316924a)
+ https://bugs.webkit.org/show_bug.cgi?id=283820
+
+REGRESSION(286605@main): [WPE] Massive performance regression on postercircle
+
+Reverted change:
+
+    Cherry-pick 286605@main (d40d59e4e550). https://bugs.webkit.org/show_bug.cgi?id=282682
+    https://bugs.webkit.org/show_bug.cgi?id=282682
+    292@webkitglib/2.46 (cdbaf316924a)
+
+Issue: https://bugs.webkit.org/show_bug.cgi?id=283820
+Depends-On: https://bugs.webkit.org/show_bug.cgi?id=284026
+Depends-on: https://bugs.webkit.org/show_bug.cgi?id=284027
+Related-To: https://bugs.webkit.org/show_bug.cgi?id=282682
+
+Upstream-Status: Submitted [https://github.com/WebKit/WebKit/commit/7d076f98a13598cea187c6e489562b6d988af607]
+---
+ Source/WebCore/platform/TextureMapper.cmake   |   6 -
+ .../platform/graphics/texmap/FloatPlane3D.cpp |  43 ------
+ .../platform/graphics/texmap/FloatPlane3D.h   |  58 -------
+ .../graphics/texmap/FloatPolygon3D.cpp        | 119 ---------------
+ .../platform/graphics/texmap/FloatPolygon3D.h |  61 --------
+ .../graphics/texmap/TextureMapper.cpp         |  63 --------
+ .../platform/graphics/texmap/TextureMapper.h  |   2 -
+ .../graphics/texmap/TextureMapperLayer.cpp    | 135 +++++++++++-----
+ .../graphics/texmap/TextureMapperLayer.h      |   9 +-
+ .../TextureMapperLayer3DRenderingContext.cpp  | 144 ------------------
+ .../TextureMapperLayer3DRenderingContext.h    |  96 ------------
+ .../transforms/TransformationMatrix.cpp       |   7 -
+ .../transforms/TransformationMatrix.h         |   2 -
+ 13 files changed, 105 insertions(+), 640 deletions(-)
+ delete mode 100644 Source/WebCore/platform/graphics/texmap/FloatPlane3D.cpp
+ delete mode 100644 Source/WebCore/platform/graphics/texmap/FloatPlane3D.h
+ delete mode 100644 Source/WebCore/platform/graphics/texmap/FloatPolygon3D.cpp
+ delete mode 100644 Source/WebCore/platform/graphics/texmap/FloatPolygon3D.h
+ delete mode 100644 Source/WebCore/platform/graphics/texmap/TextureMapperLayer3DRenderingContext.cpp
+ delete mode 100644 Source/WebCore/platform/graphics/texmap/TextureMapperLayer3DRenderingContext.h
+
+diff --git a/Source/WebCore/platform/TextureMapper.cmake b/Source/WebCore/platform/TextureMapper.cmake
+index f108d0be..d27b08a4 100644
+--- a/Source/WebCore/platform/TextureMapper.cmake
++++ b/Source/WebCore/platform/TextureMapper.cmake
+@@ -6,15 +6,12 @@ list(APPEND WebCore_SOURCES
+     platform/graphics/texmap/BitmapTexture.cpp
+     platform/graphics/texmap/BitmapTexturePool.cpp
+     platform/graphics/texmap/ClipStack.cpp
+-    platform/graphics/texmap/FloatPlane3D.cpp
+-    platform/graphics/texmap/FloatPolygon3D.cpp
+     platform/graphics/texmap/GraphicsContextGLTextureMapperANGLE.cpp
+     platform/graphics/texmap/TextureMapper.cpp
+     platform/graphics/texmap/TextureMapperBackingStore.cpp
+     platform/graphics/texmap/TextureMapperFPSCounter.cpp
+     platform/graphics/texmap/TextureMapperGCGLPlatformLayer.cpp
+     platform/graphics/texmap/TextureMapperLayer.cpp
+-    platform/graphics/texmap/TextureMapperLayer3DRenderingContext.cpp
+     platform/graphics/texmap/TextureMapperShaderProgram.cpp
+     platform/graphics/texmap/TextureMapperTile.cpp
+ )
+@@ -23,8 +20,6 @@ list(APPEND WebCore_PRIVATE_FRAMEWORK_HEADERS
+     platform/graphics/texmap/BitmapTexture.h
+     platform/graphics/texmap/BitmapTexturePool.h
+     platform/graphics/texmap/ClipStack.h
+-    platform/graphics/texmap/FloatPlane3D.h
+-    platform/graphics/texmap/FloatPolygon3D.h
+     platform/graphics/texmap/GraphicsContextGLTextureMapperANGLE.h
+     platform/graphics/texmap/GraphicsLayerTextureMapper.h
+     platform/graphics/texmap/TextureMapper.h
+@@ -33,7 +28,6 @@ list(APPEND WebCore_PRIVATE_FRAMEWORK_HEADERS
+     platform/graphics/texmap/TextureMapperFPSCounter.h
+     platform/graphics/texmap/TextureMapperGLHeaders.h
+     platform/graphics/texmap/TextureMapperLayer.h
+-    platform/graphics/texmap/TextureMapperLayer3DRenderingContext.h
+     platform/graphics/texmap/TextureMapperPlatformLayer.h
+     platform/graphics/texmap/TextureMapperPlatformLayerProxy.h
+     platform/graphics/texmap/TextureMapperPlatformLayerProxyGL.h
+diff --git a/Source/WebCore/platform/graphics/texmap/FloatPlane3D.cpp b/Source/WebCore/platform/graphics/texmap/FloatPlane3D.cpp
+deleted file mode 100644
+index b54e64bd..00000000
+--- a/Source/WebCore/platform/graphics/texmap/FloatPlane3D.cpp
++++ /dev/null
+@@ -1,43 +0,0 @@
+-/*
+- * Copyright (C) 2024 Jani Hautakangas <jani@kodegood.com>
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions
+- * are met:
+- *
+- * 1. Redistributions of source code must retain the above copyright
+- *    notice, this list of conditions and the following disclaimer.
+- * 2. Redistributions in binary form must reproduce the above
+- *    copyright notice, this list of conditions and the following
+- *    disclaimer in the documentation and/or other materials provided
+- *    with the distribution.
+- *
+- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+- * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+- */
+-
+-#include "config.h"
+-#include "FloatPlane3D.h"
+-
+-#include <wtf/TZoneMallocInlines.h>
+-
+-namespace WebCore {
+-
+-WTF_MAKE_TZONE_ALLOCATED_IMPL(FloatPlane3D);
+-
+-FloatPlane3D::FloatPlane3D(const FloatPoint3D& normal, const FloatPoint3D& point)
+-    : m_normal(normal)
+-    , m_distanceConstant(m_normal.dot(point))
+-{
+-}
+-
+-} // namespace WebCore
+diff --git a/Source/WebCore/platform/graphics/texmap/FloatPlane3D.h b/Source/WebCore/platform/graphics/texmap/FloatPlane3D.h
+deleted file mode 100644
+index db640d7a..00000000
+--- a/Source/WebCore/platform/graphics/texmap/FloatPlane3D.h
++++ /dev/null
+@@ -1,58 +0,0 @@
+-/*
+- * Copyright (C) 2024 Jani Hautakangas <jani@kodegood.com>
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions
+- * are met:
+- *
+- * 1. Redistributions of source code must retain the above copyright
+- *    notice, this list of conditions and the following disclaimer.
+- * 2. Redistributions in binary form must reproduce the above
+- *    copyright notice, this list of conditions and the following
+- *    disclaimer in the documentation and/or other materials provided
+- *    with the distribution.
+- *
+- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+- * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+- */
+-
+-#pragma once
+-
+-#include "FloatPoint3D.h"
+-#include <wtf/TZoneMalloc.h>
+-
+-namespace WebCore {
+-
+-class FloatPlane3D {
+-    WTF_MAKE_TZONE_ALLOCATED(FloatPlane3D);
+-public:
+-    FloatPlane3D(const FloatPoint3D&, const FloatPoint3D&);
+-
+-    const FloatPoint3D& normal() const { return m_normal; }
+-
+-    // Getter for the distance from the origin (plane constant d)
+-    float distanceConstant() const { return m_distanceConstant; }
+-
+-    // Signed distance. The sign of the return value is positive
+-    // if the point is on the front side of the plane, negative if the
+-    // point is on the back side, and zero if the point is on the plane.
+-    float distanceToPoint(const FloatPoint3D& point) const
+-    {
+-        return m_normal.dot(point) - m_distanceConstant;
+-    }
+-
+-private:
+-    FloatPoint3D m_normal;
+-    float m_distanceConstant;
+-};
+-
+-} // namespace WebCore
+diff --git a/Source/WebCore/platform/graphics/texmap/FloatPolygon3D.cpp b/Source/WebCore/platform/graphics/texmap/FloatPolygon3D.cpp
+deleted file mode 100644
+index 852a370f..00000000
+--- a/Source/WebCore/platform/graphics/texmap/FloatPolygon3D.cpp
++++ /dev/null
+@@ -1,119 +0,0 @@
+-/*
+- * Copyright (C) 2024 Jani Hautakangas <jani@kodegood.com>
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions
+- * are met:
+- *
+- * 1. Redistributions of source code must retain the above copyright
+- *    notice, this list of conditions and the following disclaimer.
+- * 2. Redistributions in binary form must reproduce the above
+- *    copyright notice, this list of conditions and the following
+- *    disclaimer in the documentation and/or other materials provided
+- *    with the distribution.
+- *
+- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+- * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+- */
+-
+-#include "config.h"
+-#include "FloatPolygon3D.h"
+-
+-#include <wtf/TZoneMallocInlines.h>
+-
+-namespace WebCore {
+-
+-WTF_MAKE_TZONE_ALLOCATED_IMPL(FloatPolygon3D);
+-
+-FloatPolygon3D::FloatPolygon3D(const FloatRect& rect, const TransformationMatrix& transform)
+-{
+-    m_vertices.append(transform.mapPoint(FloatPoint3D(rect.minXMinYCorner())));
+-    m_vertices.append(transform.mapPoint(FloatPoint3D(rect.maxXMinYCorner())));
+-    m_vertices.append(transform.mapPoint(FloatPoint3D(rect.maxXMaxYCorner())));
+-    m_vertices.append(transform.mapPoint(FloatPoint3D(rect.minXMaxYCorner())));
+-
+-    if (auto inverse = transform.inverse())
+-        m_normal = inverse->transpose().mapPoint(m_normal);
+-    else {
+-        FloatPoint3D edge1(m_vertices[1].x() - m_vertices[0].x(), m_vertices[1].y() - m_vertices[0].y(), m_vertices[1].z() - m_vertices[0].z());
+-        FloatPoint3D edge2(m_vertices[2].x() - m_vertices[0].x(), m_vertices[2].y() - m_vertices[0].y(), m_vertices[2].z() - m_vertices[0].z());
+-        m_normal = edge1.cross(edge2);
+-    }
+-    m_normal.normalize();
+-}
+-
+-FloatPolygon3D::FloatPolygon3D(Vector<FloatPoint3D>&& vertices, const FloatPoint3D& normal)
+-    : m_vertices(WTFMove(vertices))
+-    , m_normal(normal)
+-{
+-}
+-
+-// Splits the polygon into two parts relative to the given plane.
+-// Algorithm:
+-// - For each edge of the polygon:
+-//   - Compute the signed distances of the edge's vertices from the plane.
+-//   - If both vertices are on the same side of the plane, add the starting vertex to the corresponding side's list.
+-//   - If the edge crosses the plane, compute the intersection point:
+-//     - t = di / (di - dj)
+-//     - intersectionPoint = vi + t * (vj - vi)
+-//     - Add the starting vertex and the intersection point to the appropriate lists.
+-// - Construct two new polygons from the collected vertices.
+-std::pair<FloatPolygon3D, FloatPolygon3D> FloatPolygon3D::split(const FloatPlane3D& plane) const
+-{
+-    Vector<FloatPoint3D> positiveVertices;
+-    Vector<FloatPoint3D> negativeVertices;
+-
+-    const float epsilon = std::numeric_limits<float>::epsilon(); // Tolerance for floating point comparisons
+-
+-    unsigned numberOfVertices = m_vertices.size();
+-    for (unsigned i = 0; i < numberOfVertices; ++i) {
+-        const FloatPoint3D& vi = m_vertices[i];
+-        const FloatPoint3D& vj = m_vertices[(i + 1) % numberOfVertices];
+-        float di = plane.distanceToPoint(vi);
+-        float dj = plane.distanceToPoint(vj);
+-
+-        bool viPos = di > epsilon;
+-        bool viNeg = di < -epsilon;
+-
+-        if (viPos) {
+-            positiveVertices.append(vi);
+-
+-            if (dj < -epsilon) {
+-                // Edge crosses from positive to negative
+-                float t = di / (di - dj);
+-                FloatPoint3D intersectionPoint = vi + (vj - vi) * t;
+-                positiveVertices.append(intersectionPoint);
+-                negativeVertices.append(intersectionPoint);
+-            }
+-
+-        } else if (viNeg) {
+-            negativeVertices.append(vi);
+-
+-            if (dj > epsilon) {
+-                // Edge crosses from negative to positive
+-                float t = di / (di - dj);
+-                FloatPoint3D intersectionPoint = vi + (vj - vi) * t;
+-                negativeVertices.append(intersectionPoint);
+-                positiveVertices.append(intersectionPoint);
+-            }
+-
+-        } else { // vi is approximately on the plane
+-            positiveVertices.append(vi);
+-            negativeVertices.append(vi);
+-        }
+-    }
+-
+-    // Create new polygons for each side
+-    return { { WTFMove(negativeVertices), m_normal }, { WTFMove(positiveVertices), m_normal } };
+-}
+-
+-} // namespace WebCore
+diff --git a/Source/WebCore/platform/graphics/texmap/FloatPolygon3D.h b/Source/WebCore/platform/graphics/texmap/FloatPolygon3D.h
+deleted file mode 100644
+index d7cc789e..00000000
+--- a/Source/WebCore/platform/graphics/texmap/FloatPolygon3D.h
++++ /dev/null
+@@ -1,61 +0,0 @@
+-/*
+- * Copyright (C) 2024 Jani Hautakangas <jani@kodegood.com>
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions
+- * are met:
+- *
+- * 1. Redistributions of source code must retain the above copyright
+- *    notice, this list of conditions and the following disclaimer.
+- * 2. Redistributions in binary form must reproduce the above
+- *    copyright notice, this list of conditions and the following
+- *    disclaimer in the documentation and/or other materials provided
+- *    with the distribution.
+- *
+- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+- * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+- */
+-
+-#pragma once
+-
+-#include "FloatPlane3D.h"
+-#include "FloatPoint3D.h"
+-#include "FloatRect.h"
+-#include "TransformationMatrix.h"
+-#include <wtf/TZoneMalloc.h>
+-#include <wtf/Vector.h>
+-
+-namespace WebCore {
+-
+-// FloatPolygon3D represents planar polygon in 3D space
+-
+-class FloatPolygon3D {
+-    WTF_MAKE_TZONE_ALLOCATED(FloatPolygon3D);
+-public:
+-    FloatPolygon3D() = default;
+-    FloatPolygon3D(const FloatRect&, const TransformationMatrix&);
+-
+-    const FloatPoint3D& vertexAt(unsigned index) const { return m_vertices[index]; }
+-    unsigned numberOfVertices() const { return m_vertices.size(); }
+-
+-    const FloatPoint3D& normal() const { return m_normal; }
+-
+-    std::pair<FloatPolygon3D, FloatPolygon3D> split(const FloatPlane3D&) const;
+-
+-private:
+-    FloatPolygon3D(Vector<FloatPoint3D>&&, const FloatPoint3D&);
+-
+-    Vector<FloatPoint3D> m_vertices;
+-    FloatPoint3D m_normal = { 0, 0, 1 };
+-};
+-
+-} // namespace WebCore
+diff --git a/Source/WebCore/platform/graphics/texmap/TextureMapper.cpp b/Source/WebCore/platform/graphics/texmap/TextureMapper.cpp
+index 0974d514..e1a50c70 100644
+--- a/Source/WebCore/platform/graphics/texmap/TextureMapper.cpp
++++ b/Source/WebCore/platform/graphics/texmap/TextureMapper.cpp
+@@ -26,7 +26,6 @@
+ 
+ #include "BitmapTexture.h"
+ #include "FilterOperations.h"
+-#include "FloatPolygon.h"
+ #include "FloatQuad.h"
+ #include "FloatRoundedRect.h"
+ #include "GLContext.h"
+@@ -1318,68 +1317,6 @@ void TextureMapper::beginClip(const TransformationMatrix& modelViewMatrix, const
+     clipStack().applyIfNeeded();
+ }
+ 
+-void TextureMapper::beginClip(const TransformationMatrix& modelViewMatrix, const FloatPolygon& polygon)
+-{
+-    clipStack().push();
+-    data().initializeStencil();
+-
+-    Ref<TextureMapperShaderProgram> program = data().getShaderProgram(TextureMapperShaderProgram::SolidColor);
+-
+-    glUseProgram(program->programID());
+-    glEnableVertexAttribArray(program->vertexLocation());
+-
+-    unsigned numberOfVertices = polygon.numberOfVertices();
+-    Vector<GLfloat> polygonVertices;
+-    polygonVertices.reserveCapacity(numberOfVertices * 2);
+-    for (unsigned i = 0; i < numberOfVertices; i++) {
+-        auto v = polygon.vertexAt(i);
+-        polygonVertices.append(v.x());
+-        polygonVertices.append(v.y());
+-    }
+-
+-    int stencilIndex = clipStack().getStencilIndex();
+-
+-    glEnable(GL_STENCIL_TEST);
+-
+-    // Make sure we don't do any actual drawing.
+-    glStencilFunc(GL_NEVER, stencilIndex, stencilIndex);
+-
+-    // Operate only on the stencilIndex and above.
+-    glStencilMask(0xff & ~(stencilIndex - 1));
+-
+-    // First clear the entire buffer at the current index.
+-    static const TransformationMatrix fullProjectionMatrix = TransformationMatrix::rectToRect(FloatRect(0, 0, 1, 1), FloatRect(-1, -1, 2, 2));
+-    const GLfloat unitRect[] = { 0, 0, 1, 0, 1, 1, 0, 1 };
+-    GLuint vbo = data().getStaticVBO(GL_ARRAY_BUFFER, sizeof(GLfloat) * 8, unitRect);
+-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+-    glVertexAttribPointer(program->vertexLocation(), 2, GL_FLOAT, false, 0, 0);
+-    program->setMatrix(program->projectionMatrixLocation(), fullProjectionMatrix);
+-    program->setMatrix(program->modelViewMatrixLocation(), TransformationMatrix());
+-    glStencilOp(GL_ZERO, GL_ZERO, GL_ZERO);
+-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+-
+-    // Now apply the current index to the new polygon.
+-    GLuint polygonVBO;
+-    glGenBuffers(1, &polygonVBO);
+-    glBindBuffer(GL_ARRAY_BUFFER, polygonVBO);
+-    glBufferData(GL_ARRAY_BUFFER, polygonVertices.size() * sizeof(GLfloat), polygonVertices.data(), GL_STATIC_DRAW);
+-    glVertexAttribPointer(program->vertexLocation(), 2, GL_FLOAT, false, 0, 0);
+-    glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+-    program->setMatrix(program->projectionMatrixLocation(), data().projectionMatrix);
+-    program->setMatrix(program->modelViewMatrixLocation(), modelViewMatrix);
+-    glDrawArrays(GL_TRIANGLE_FAN, 0, polygonVertices.size() / 2);
+-    glDeleteBuffers(1, &polygonVBO);
+-
+-    // Clear the state.
+-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+-    glDisableVertexAttribArray(program->vertexLocation());
+-    glStencilMask(0);
+-
+-    // Increase stencilIndex and apply stencil testing.
+-    clipStack().setStencilIndex(stencilIndex * 2);
+-    clipStack().applyIfNeeded();
+-}
+-
+ void TextureMapper::endClip()
+ {
+     clipStack().pop();
+diff --git a/Source/WebCore/platform/graphics/texmap/TextureMapper.h b/Source/WebCore/platform/graphics/texmap/TextureMapper.h
+index 7f921051..0252a50f 100644
+--- a/Source/WebCore/platform/graphics/texmap/TextureMapper.h
++++ b/Source/WebCore/platform/graphics/texmap/TextureMapper.h
+@@ -41,7 +41,6 @@ namespace WebCore {
+ class TextureMapperGLData;
+ class TextureMapperShaderProgram;
+ class FilterOperations;
+-class FloatPolygon;
+ class FloatRoundedRect;
+ enum class TextureMapperFlags : uint16_t;
+ 
+@@ -77,7 +76,6 @@ public:
+     void bindSurface(BitmapTexture* surface);
+     BitmapTexture* currentSurface();
+     void beginClip(const TransformationMatrix&, const FloatRoundedRect&);
+-    void beginClip(const TransformationMatrix&, const FloatPolygon&);
+     WEBCORE_EXPORT void beginPainting(FlipY = FlipY::No, BitmapTexture* = nullptr);
+     WEBCORE_EXPORT void endPainting();
+     void endClip();
+diff --git a/Source/WebCore/platform/graphics/texmap/TextureMapperLayer.cpp b/Source/WebCore/platform/graphics/texmap/TextureMapperLayer.cpp
+index 27949d79..3ff5abe7 100644
+--- a/Source/WebCore/platform/graphics/texmap/TextureMapperLayer.cpp
++++ b/Source/WebCore/platform/graphics/texmap/TextureMapperLayer.cpp
+@@ -25,7 +25,6 @@
+ #include "FloatQuad.h"
+ #include "Region.h"
+ #include "TextureMapper.h"
+-#include "TextureMapperLayer3DRenderingContext.h"
+ #include <wtf/MathExtras.h>
+ #include <wtf/SetForScope.h>
+ 
+@@ -44,6 +43,9 @@ public:
+     IntSize offset;
+     TextureMapperLayer* backdropLayer { nullptr };
+     TextureMapperLayer* replicaLayer { nullptr };
++    bool preserves3D { false };
++    Vector<IntRect> holePunchRects;
++    bool isPreserves3DFirstTile { false };
+ };
+ 
+ struct TextureMapperLayer::ComputeTransformData {
+@@ -309,6 +311,9 @@ void TextureMapperLayer::computeTransformsRecursive(ComputeTransformData& data)
+     data.updateDepthRange(calculateZ(rect.x(), rect.y() + rect.height()));
+     data.updateDepthRange(calculateZ(rect.x() + rect.width(), rect.y() + rect.height()));
+ 
++    if (m_parent && m_parent->m_state.preserves3D)
++        m_centerZ = calculateZ(rect.x() + rect.width() / 2, rect.y() + rect.height() / 2);
++
+     if (m_state.backdropLayer)
+         m_state.backdropLayer->computeTransformsRecursive(data);
+ 
+@@ -323,6 +328,10 @@ void TextureMapperLayer::computeTransformsRecursive(ComputeTransformData& data)
+         }
+     }
+ 
++    // Reorder children if needed on the way back up.
++    if (m_state.preserves3D)
++        sortByZOrder(m_children);
++
+ #if USE(COORDINATED_GRAPHICS)
+     if (m_backingStore && m_animatedBackingStoreClient)
+         m_animatedBackingStoreClient->requestBackingStoreUpdateIfNeeded(m_layerTransforms.futureCombined);
+@@ -426,7 +435,10 @@ void TextureMapperLayer::paintSelf(TextureMapperPaintOptions& options)
+         options.textureMapper.beginClip(transform, m_state.contentsClippingRect);
+     }
+ 
+-    contentsLayer->paintToTextureMapper(options.textureMapper, m_state.contentsRect, transform, options.opacity);
++    if (options.preserves3D && contentsLayer->isHolePunchBuffer())
++        paintPreserves3DHolePunch(contentsLayer, transform, options);
++    else
++        contentsLayer->paintToTextureMapper(options.textureMapper, m_state.contentsRect, transform, options.opacity);
+ 
+     if (shouldClip)
+         options.textureMapper.endClip();
+@@ -435,6 +447,40 @@ void TextureMapperLayer::paintSelf(TextureMapperPaintOptions& options)
+         contentsLayer->drawBorder(options.textureMapper, m_state.debugBorderColor, m_state.debugBorderWidth, m_state.contentsRect, transform);
+ }
+ 
++void TextureMapperLayer::paintPreserves3DHolePunch(TextureMapperPlatformLayer* contentsLayer, const TransformationMatrix& transform, TextureMapperPaintOptions& options)
++{
++    // In preserve3D mode we're painting into an intermediate surface. To make holepunch work we need to
++    // paint the transparent rectangle in this layer, but also in the background layer.
++    // The rendering to the intermediate surface is also tiled, which means that this layer can be painted
++    // several times in different tiles. We need to notify the video position and queue the paint of the
++    // background hole only once, while the transparent rectangle to this layer needs to be painted
++    // for each tile.
++
++    if (options.isPreserves3DFirstTile) {
++        // We can't use the passed transform here cause it was created with a modified offset to paint
++        // into the intermediate surface. We need to calculate the real position of the video sink
++        // here by using a transform that doesn't have the intermediate surface offset.
++        TransformationMatrix videoSinkTransform;
++        videoSinkTransform.multiply(options.transform);
++        videoSinkTransform.multiply(m_layerTransforms.combined);
++
++        // Enqueue the holepunch rect to be painted in the background and notify the position to the
++        // video sink.
++        options.holePunchRects.append(enclosingIntRect(videoSinkTransform.mapRect(m_state.contentsRect)));
++        contentsLayer->notifyVideoPosition(m_state.contentsRect, videoSinkTransform);
++    }
++    // Paint the transparent rectangle in the intermediate surface with the original transform.
++    contentsLayer->paintTransparentRectangle(options.textureMapper, m_state.contentsRect, transform);
++}
++
++void TextureMapperLayer::sortByZOrder(Vector<TextureMapperLayer* >& array)
++{
++    std::sort(array.begin(), array.end(),
++        [](TextureMapperLayer* a, TextureMapperLayer* b) {
++            return a->m_centerZ < b->m_centerZ;
++        });
++}
++
+ void TextureMapperLayer::paintBackdrop(TextureMapperPaintOptions& options)
+ {
+     TransformationMatrix clipTransform;
+@@ -994,38 +1040,64 @@ void TextureMapperLayer::paintFlattened(TextureMapperPaintOptions& options)
+ 
+ void TextureMapperLayer::paintWith3DRenderingContext(TextureMapperPaintOptions& options)
+ {
+-    Vector<TextureMapperLayer*> layers;
+-    collect3DSceneLayers(layers);
++    if (options.preserves3D) {
++        paintSelfAndChildrenWithReplica(options);
++        return;
++    }
++    SetForScope scopedPreserves3D(options.preserves3D, true);
++
++    Region overlapRegion;
++    Region nonOverlapRegion;
++    ComputeOverlapRegionData data {
++        ComputeOverlapRegionMode::Union,
++        options.textureMapper.clipBounds(),
++        overlapRegion,
++        nonOverlapRegion
++    };
++    data.clipBounds.move(-options.offset);
++    computeOverlapRegions(data, options.transform, false);
++    ASSERT(nonOverlapRegion.isEmpty());
+ 
+-    TextureMapperLayer3DRenderingContext context;
+-    context.paint(layers, [&](TextureMapperLayer* layer, const FloatPolygon& clipArea) {
+-        if (!clipArea.isEmpty())
+-            options.textureMapper.beginClip(layer->toSurfaceTransform(), clipArea);
++    auto rects = overlapRegion.rects();
++    static const size_t OverlapRegionConsolidationThreshold = 4;
++    if (rects.size() > OverlapRegionConsolidationThreshold) {
++        rects.clear();
++        rects.append(overlapRegion.bounds());
++    }
+ 
+-        if (layer->preserves3D())
+-            layer->paintSelf(options);
+-        else
+-            layer->paintRecursive(options);
++    IntSize maxTextureSize = options.textureMapper.maxTextureSize();
++    for (auto& rect : rects) {
++        for (int x = rect.x(); x < rect.maxX(); x += maxTextureSize.width()) {
++            for (int y = rect.y(); y < rect.maxY(); y += maxTextureSize.height()) {
++                IntRect tileRect(IntPoint(x, y), maxTextureSize);
++                tileRect.intersect(rect);
++                auto surface = options.textureMapper.acquireTextureFromPool(tileRect.size(), { BitmapTexture::Flags::SupportsAlpha, BitmapTexture::Flags::DepthBuffer });
++                {
++                    SetForScope scopedSurface(options.surface, surface);
++                    SetForScope scopedOffset(options.offset, -toIntSize(tileRect.location()));
++                    SetForScope scopedOpacity(options.opacity, 1);
++                    SetForScope scopedFirstPass(options.isPreserves3DFirstTile, x == rect.x() && y == rect.y());
++
++                    options.textureMapper.bindSurface(options.surface.get());
++                    paintSelfAndChildrenWithReplica(options);
++                }
+ 
+-        if (!clipArea.isEmpty())
+-            options.textureMapper.endClip();
+-    });
+-}
++                // Once the subtree is painted into the intermediate surface, we need to blend it into the main framebuffer.
++                tileRect.move(options.offset);
++                options.textureMapper.bindSurface(options.surface.get());
+ 
+-void TextureMapperLayer::collect3DSceneLayers(Vector<TextureMapperLayer*>& layers)
+-{
+-    bool isLeafOf3DScene = !m_state.preserves3D && (m_parent && m_parent->preserves3D());
+-    if (preserves3D() || isLeafOf3DScene) {
+-        if (m_state.visible)
+-            layers.append(this);
++                // There can't be nested preserves3D contexts, so the previous bindSurface always puts us on the
++                // main framebuffer. Draw the holepunch rectangles that we got from the subtree before blending
++                // the intermediate texture.
++                for (auto rect : options.holePunchRects)
++                    options.textureMapper.drawSolidColor(rect, { }, Color::transparentBlack, false);
++                options.holePunchRects.clear();
+ 
+-        // Stop recursion on scene leaf
+-        if (isLeafOf3DScene)
+-            return;
++                // And finally, blend the intermediate surface.
++                options.textureMapper.drawTexture(*surface, tileRect, { }, options.opacity);
++            }
++        }
+     }
+-
+-    for (auto* child : m_children)
+-        child->collect3DSceneLayers(layers);
+ }
+ 
+ void TextureMapperLayer::setChildren(const Vector<TextureMapperLayer*>& newChildren)
+@@ -1313,11 +1385,4 @@ void TextureMapperLayer::recordDamage(const FloatRect& rect, const Transformatio
+     m_visitor->recordDamage(transformedRect);
+ }
+ 
+-FloatRect TextureMapperLayer::effectiveLayerRect() const
+-{
+-    if (isFlattened())
+-        return m_flattenedLayer->layerRect();
+-    return layerRect();
+-}
+-
+ }
+diff --git a/Source/WebCore/platform/graphics/texmap/TextureMapperLayer.h b/Source/WebCore/platform/graphics/texmap/TextureMapperLayer.h
+index 7ad89565..20211246 100644
+--- a/Source/WebCore/platform/graphics/texmap/TextureMapperLayer.h
++++ b/Source/WebCore/platform/graphics/texmap/TextureMapperLayer.h
+@@ -84,7 +84,6 @@ public:
+     FloatSize size() const { return m_state.size; }
+     float opacity() const { return m_state.opacity; }
+     TransformationMatrix transform() const { return m_state.transform; }
+-    const TransformationMatrix& toSurfaceTransform() const { return m_layerTransforms.combined; }
+     void setContentsVisible(bool);
+     void setContentsOpaque(bool);
+     void setBackfaceVisibility(bool);
+@@ -132,8 +131,6 @@ public:
+     ALWAYS_INLINE void addDamage(const Damage&);
+     ALWAYS_INLINE void addDamage(const FloatRect&);
+ 
+-    FloatRect effectiveLayerRect() const;
+-
+ private:
+     TextureMapperLayer& rootLayer() const
+     {
+@@ -155,10 +152,14 @@ private:
+     struct ComputeTransformData;
+     void computeTransformsRecursive(ComputeTransformData&);
+ 
++    static void sortByZOrder(Vector<TextureMapperLayer* >& array);
++
+     TransformationMatrix replicaTransform();
+     void removeFromParent();
+     void removeAllChildren();
+ 
++    void paintPreserves3DHolePunch(TextureMapperPlatformLayer*, const TransformationMatrix&, TextureMapperPaintOptions&);
++
+     enum class ComputeOverlapRegionMode : uint8_t {
+         Intersection,
+         Union,
+@@ -187,7 +188,6 @@ private:
+     void paintBackdrop(TextureMapperPaintOptions&);
+     void applyMask(TextureMapperPaintOptions&);
+     void recordDamage(const FloatRect&, const TransformationMatrix&, const TextureMapperPaintOptions&);
+-    void collect3DSceneLayers(Vector<TextureMapperLayer*>&);
+ 
+     bool isVisible() const;
+ 
+@@ -211,6 +211,7 @@ private:
+     std::unique_ptr<TextureMapperFlattenedLayer> m_flattenedLayer;
+     float m_currentOpacity { 1.0 };
+     FilterOperations m_currentFilters;
++    float m_centerZ { 0 };
+ 
+     struct State {
+         FloatPoint pos;
+diff --git a/Source/WebCore/platform/graphics/texmap/TextureMapperLayer3DRenderingContext.cpp b/Source/WebCore/platform/graphics/texmap/TextureMapperLayer3DRenderingContext.cpp
+deleted file mode 100644
+index a60e9b20..00000000
+--- a/Source/WebCore/platform/graphics/texmap/TextureMapperLayer3DRenderingContext.cpp
++++ /dev/null
+@@ -1,144 +0,0 @@
+-/*
+- * Copyright (C) 2024 Jani Hautakangas <jani@kodegood.com>
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions
+- * are met:
+- *
+- * 1. Redistributions of source code must retain the above copyright
+- *    notice, this list of conditions and the following disclaimer.
+- * 2. Redistributions in binary form must reproduce the above
+- *    copyright notice, this list of conditions and the following
+- *    disclaimer in the documentation and/or other materials provided
+- *    with the distribution.
+- *
+- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+- * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+- */
+-
+-#include "config.h"
+-#include "TextureMapperLayer3DRenderingContext.h"
+-
+-#include "TextureMapperLayer.h"
+-#include <wtf/TZoneMallocInlines.h>
+-
+-namespace WebCore {
+-
+-WTF_MAKE_TZONE_ALLOCATED_IMPL(TextureMapperLayer3DRenderingContext);
+-
+-void TextureMapperLayer3DRenderingContext::paint(const Vector<TextureMapperLayer*>& layers, const std::function<void(TextureMapperLayer*, const FloatPolygon&)>& paintLayerFunction)
+-{
+-    if (layers.isEmpty())
+-        return;
+-
+-    Deque<TextureMapperLayerPolygon> layerList;
+-    for (auto* layer : layers)
+-        layerList.append({ { layer->effectiveLayerRect(), layer->toSurfaceTransform() }, layer, false });
+-
+-    auto root = makeUnique<TextureMapperLayerNode>(layerList.takeFirst());
+-    buildTree(*root, layerList);
+-    traverseTreeAndPaint(*root, paintLayerFunction);
+-}
+-
+-// Build BSP tree for rendering polygons with painter's algorithm.
+-// For more information:
+-// https://en.wikipedia.org/wiki/Binary_space_partitioning
+-void TextureMapperLayer3DRenderingContext::buildTree(TextureMapperLayerNode& root, Deque<TextureMapperLayerPolygon>& polygons)
+-{
+-    if (polygons.isEmpty())
+-        return;
+-
+-    auto& rootGeometry = root.firstPolygon().geometry;
+-    FloatPlane3D rootPlane(rootGeometry.normal(), rootGeometry.vertexAt(0));
+-
+-    Deque<TextureMapperLayerPolygon> backList, frontList;
+-    for (auto& polygon : polygons) {
+-        switch (classifyPolygon(polygon, rootPlane)) {
+-        case PolygonPosition::InFront:
+-            frontList.append(WTFMove(polygon));
+-            break;
+-        case PolygonPosition::Behind:
+-            backList.append(WTFMove(polygon));
+-            break;
+-        case PolygonPosition::Coplanar:
+-            root.polygons.append(WTFMove(polygon));
+-            break;
+-        case PolygonPosition::Intersecting:
+-            auto [backGeometry, frontGeometry] = polygon.geometry.split(rootPlane);
+-            if (backGeometry.numberOfVertices() > 2)
+-                backList.append({ backGeometry, polygon.layer, true });
+-            if (frontGeometry.numberOfVertices() > 2)
+-                frontList.append({ frontGeometry, polygon.layer, true });
+-            break;
+-        }
+-    }
+-
+-    if (!frontList.isEmpty()) {
+-        root.frontNode = makeUnique<TextureMapperLayerNode>(frontList.takeFirst());
+-        buildTree(*root.frontNode, frontList);
+-    }
+-
+-    if (!backList.isEmpty()) {
+-        root.backNode = makeUnique<TextureMapperLayerNode>(backList.takeFirst());
+-        buildTree(*root.backNode, backList);
+-    }
+-}
+-
+-void TextureMapperLayer3DRenderingContext::traverseTreeAndPaint(TextureMapperLayerNode& node, const std::function<void(TextureMapperLayer*, const FloatPolygon&)>& paintLayerFunction)
+-{
+-    auto& geometry = node.firstPolygon().geometry;
+-    FloatPlane3D plane(geometry.normal(), geometry.vertexAt(0));
+-
+-    auto* frontNode = node.frontNode.get();
+-    auto* backNode = node.backNode.get();
+-
+-    // if polygon is facing away from camera then swap nodes to reverse
+-    // the traversal order
+-    if (plane.normal().z() < 0)
+-        std::swap(frontNode, backNode);
+-
+-    if (backNode)
+-        traverseTreeAndPaint(*backNode, paintLayerFunction);
+-
+-    for (auto& polygon : node.polygons)
+-        paintLayerFunction(polygon.layer, polygon.layerClipArea());
+-
+-    if (frontNode)
+-        traverseTreeAndPaint(*frontNode, paintLayerFunction);
+-}
+-
+-TextureMapperLayer3DRenderingContext::PolygonPosition TextureMapperLayer3DRenderingContext::classifyPolygon(const TextureMapperLayerPolygon& polygon, const FloatPlane3D& plane)
+-{
+-    const float epsilon = 0.05f; // Tolerance for intersection check
+-
+-    int inFrontCount = 0;
+-    int behindCount = 0;
+-    for (unsigned i = 0; i < polygon.geometry.numberOfVertices(); i++) {
+-        const auto& vertex = polygon.geometry.vertexAt(i);
+-        float distance = plane.distanceToPoint(vertex);
+-
+-        if (distance > epsilon)
+-            inFrontCount++;
+-        else if (distance < -epsilon)
+-            behindCount++;
+-    }
+-
+-    if (inFrontCount > 0 && behindCount > 0)
+-        return PolygonPosition::Intersecting;
+-    if (inFrontCount > 0)
+-        return PolygonPosition::InFront;
+-    if (behindCount > 0)
+-        return PolygonPosition::Behind;
+-    return PolygonPosition::Coplanar;
+-}
+-
+-} // namespace WebCore
+diff --git a/Source/WebCore/platform/graphics/texmap/TextureMapperLayer3DRenderingContext.h b/Source/WebCore/platform/graphics/texmap/TextureMapperLayer3DRenderingContext.h
+deleted file mode 100644
+index 9ba4083a..00000000
+--- a/Source/WebCore/platform/graphics/texmap/TextureMapperLayer3DRenderingContext.h
++++ /dev/null
+@@ -1,96 +0,0 @@
+-/*
+- * Copyright (C) 2024 Jani Hautakangas <jani@kodegood.com>
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions
+- * are met:
+- *
+- * 1. Redistributions of source code must retain the above copyright
+- *    notice, this list of conditions and the following disclaimer.
+- * 2. Redistributions in binary form must reproduce the above
+- *    copyright notice, this list of conditions and the following
+- *    disclaimer in the documentation and/or other materials provided
+- *    with the distribution.
+- *
+- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+- * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+- */
+-
+-#pragma once
+-
+-#include "FloatPlane3D.h"
+-#include "FloatPolygon.h"
+-#include "FloatPolygon3D.h"
+-#include "TextureMapperLayer.h"
+-#include <wtf/Deque.h>
+-#include <wtf/TZoneMalloc.h>
+-
+-namespace WebCore {
+-
+-class TextureMapperLayer;
+-
+-class TextureMapperLayer3DRenderingContext final {
+-    WTF_MAKE_TZONE_ALLOCATED(TextureMapperLayerPreserves3DContext);
+-public:
+-    void paint(const Vector<TextureMapperLayer*>&, const std::function<void(TextureMapperLayer*, const FloatPolygon&)>&);
+-
+-private:
+-    enum class PolygonPosition {
+-        InFront,
+-        Behind,
+-        Coplanar,
+-        Intersecting
+-    };
+-
+-    struct TextureMapperLayerPolygon final {
+-        FloatPolygon layerClipArea() const
+-        {
+-            unsigned numVertices = geometry.numberOfVertices();
+-            Vector<FloatPoint> vertices;
+-            vertices.reserveCapacity(numVertices);
+-            auto toLayerTransform = layer->toSurfaceTransform().inverse();
+-            if (isSplitted && toLayerTransform) {
+-                for (unsigned i = 0; i < numVertices; i++) {
+-                    auto v = toLayerTransform->mapPoint(geometry.vertexAt(i));
+-                    vertices.append(FloatPoint(v.x(), v.y()));
+-                }
+-            }
+-
+-            return { WTFMove(vertices), WindRule::NonZero };
+-        }
+-
+-        FloatPolygon3D geometry;
+-        TextureMapperLayer* layer = { nullptr };
+-        bool isSplitted = { false };
+-    };
+-
+-    struct TextureMapperLayerNode final {
+-        WTF_MAKE_STRUCT_FAST_ALLOCATED;
+-
+-        explicit TextureMapperLayerNode(TextureMapperLayerPolygon&& polygon)
+-        {
+-            polygons.append(WTFMove(polygon));
+-        }
+-
+-        const TextureMapperLayerPolygon& firstPolygon() const  { return polygons[0]; }
+-
+-        Vector<TextureMapperLayerPolygon> polygons;
+-        std::unique_ptr<TextureMapperLayerNode> frontNode;
+-        std::unique_ptr<TextureMapperLayerNode> backNode;
+-    };
+-
+-    void buildTree(TextureMapperLayerNode&, Deque<TextureMapperLayerPolygon>&);
+-    void traverseTreeAndPaint(TextureMapperLayerNode&, const std::function<void(TextureMapperLayer*, const FloatPolygon&)>&);
+-    static PolygonPosition classifyPolygon(const TextureMapperLayerPolygon&, const FloatPlane3D&);
+-};
+-
+-} // namespace WebCore
+diff --git a/Source/WebCore/platform/graphics/transforms/TransformationMatrix.cpp b/Source/WebCore/platform/graphics/transforms/TransformationMatrix.cpp
+index bb57e097..01fb1d20 100644
+--- a/Source/WebCore/platform/graphics/transforms/TransformationMatrix.cpp
++++ b/Source/WebCore/platform/graphics/transforms/TransformationMatrix.cpp
+@@ -1925,13 +1925,6 @@ bool TransformationMatrix::isBackFaceVisible() const
+     return zComponentOfTransformedNormal < 0;
+ }
+ 
+-TransformationMatrix TransformationMatrix::transpose() const
+-{
+-    TransformationMatrix transpose;
+-    transposeMatrix4(m_matrix, transpose.m_matrix);
+-    return transpose;
+-}
+-
+ TextStream& operator<<(TextStream& ts, const TransformationMatrix& transform)
+ {
+     TextStream::IndentScope indentScope(ts);
+diff --git a/Source/WebCore/platform/graphics/transforms/TransformationMatrix.h b/Source/WebCore/platform/graphics/transforms/TransformationMatrix.h
+index 164d6e9d..2267dd78 100644
+--- a/Source/WebCore/platform/graphics/transforms/TransformationMatrix.h
++++ b/Source/WebCore/platform/graphics/transforms/TransformationMatrix.h
+@@ -440,8 +440,6 @@ public:
+     // face would be visible to a camera looking along the negative z-axis in the target space.
+     bool isBackFaceVisible() const;
+ 
+-    TransformationMatrix transpose() const;
+-
+ private:
+     // multiply passed 2D point by matrix (assume z=0)
+     void multVecMatrix(double x, double y, double& dstX, double& dstY) const;
