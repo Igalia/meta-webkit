@@ -120,7 +120,7 @@ SDK_NATIVE_TOOLS = " \
     nativesdk-wayland-dev \
     "
 
-TOOLCHAIN_HOST_TASK:append = "${SDK_NATIVE_TOOLS}"
+TOOLCHAIN_HOST_TASK:append = " ${SDK_NATIVE_TOOLS}"
 TOOLCHAIN_TARGET_TASK:append = " openjpeg-staticdev libjxl"
 TOOLCHAIN_TARGET_TASK:remove = "target-sdk-provides-dummy"
 
