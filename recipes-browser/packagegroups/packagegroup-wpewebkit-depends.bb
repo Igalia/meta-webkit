@@ -259,8 +259,6 @@ RDEPENDS:packagegroup-wpewebkit-depends-tests = " \
     git \
     subversion \
     bzip2 \
-    apache2 \
-    apache2-scripts \
     curl \
     gdb \
     php \

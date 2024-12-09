@@ -51,8 +51,6 @@ IMAGE_INSTALL:append = " \
     alsa-utils-aplay \
     alsa-utils-midi \
     alsa-utils-speakertest \
-    apache2 \
-    apache2-scripts \
     bridge-utils \
     cmake \
     curl \
