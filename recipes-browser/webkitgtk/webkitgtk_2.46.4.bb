@@ -28,12 +28,12 @@ DEPENDS = "curl libxml2 libxslt libidn \
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-SRC_URI = " \
-    https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
-    file://fix-bmalloc-armhf.patch \
-"
+SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
+           file://fix-bmalloc-armhf.patch \
+           file://0001-Build-fixes-for-gbm-disabled-and-release-logs-disabl.patch \
+           "
 
-SRC_URI[tarball.sha256sum] = "5aae1c5c0a30d5e9c5831652b6f1bdefc31d75e0ad81cb40185b0aed92ce79b6"
+SRC_URI[tarball.sha256sum] = "0eff5f0ab0a2872ec87df62bc32e3289c8af625716ac71e94b298d74e0374176"
 
 RRECOMMENDS:${PN} = "${PN}-bin \
                      ca-certificates \
