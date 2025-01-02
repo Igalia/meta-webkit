@@ -30,10 +30,9 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
            file://fix-bmalloc-armhf.patch \
-           file://0001-Build-fixes-for-gbm-disabled-and-release-logs-disabl.patch \
            "
 
-SRC_URI[tarball.sha256sum] = "0eff5f0ab0a2872ec87df62bc32e3289c8af625716ac71e94b298d74e0374176"
+SRC_URI[tarball.sha256sum] = "bad4020bb0cfb3e740df3082c2d9cbf67cf4095596588a56aecdde6702137805"
 
 RRECOMMENDS:${PN} = "${PN}-bin \
                      ca-certificates \
