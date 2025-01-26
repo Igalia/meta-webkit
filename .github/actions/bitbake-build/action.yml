@@ -28,7 +28,22 @@ runs:
         ulimit -n 4096
         source sources/meta-webkit/.github/scripts/setup-environment ${{ inputs.bitbake_source }}
         rm -rf tmp
-        ${{ inputs.bitbake_prefix }} bitbake ${{ inputs.bitbake_target }}
+        MAX_RETRIES=5
+        export ${{ inputs.bitbake_prefix }}
+        for i in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt $i to fetch sources for ${{ inputs.bitbake_target }} ..."
+            if bitbake ${{ inputs.bitbake_target }} --runall=fetch; then
+                echo "All sources fetched successfully."
+                break
+            fi
+
+            if [ $i -lt $MAX_RETRIES ]; then
+                echo "Retrying fetch process..."
+            else
+                echo "Max retries reached. Some sources may still be missing."
+            fi
+        done
+        bitbake ${{ inputs.bitbake_target }}
     - name: Clean the tmp dir
       if: always()
       shell: bash
