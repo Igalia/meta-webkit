@@ -32,7 +32,7 @@ SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarbal
            file://fix-bmalloc-armhf.patch \
            "
 
-SRC_URI[tarball.sha256sum] = "bad4020bb0cfb3e740df3082c2d9cbf67cf4095596588a56aecdde6702137805"
+SRC_URI[tarball.sha256sum] = "f2b31de693220ba9bab76ce6ddfe5b0bfab2515cb2b0a70f3c54d4050766c32b"
 
 RRECOMMENDS:${PN} = "${PN}-bin \
                      ca-certificates \
