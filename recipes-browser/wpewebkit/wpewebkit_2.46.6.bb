@@ -9,11 +9,11 @@ SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0005-WPEPlatform-Input-methods-do-not-work.patch \
            "
 
-SRC_URI[tarball.sha256sum] = "2efd4831efcf86e29546c028d6f17a7b775b61b6499ed62399a00da8f06ea456"
+SRC_URI[tarball.sha256sum] = "2f8f8447b9c7b0578f7d751ca27c682a2c180b5abb91542af52a96e8a24a6262"
 
 SRCBRANCH:class-devupstream = "webkitglib/2.46"
 SRC_URI:class-devupstream = "git://github.com/WebKit/WebKit.git;protocol=https;branch=${SRCBRANCH}"
-SRCREV:class-devupstream = "43751e1d1959cf0735d155346a408fca80aecadb"
+SRCREV:class-devupstream = "2df8c2be6c990bc06d188b606595d9c8fe9e1870"
 
 # Experimental new WPE platform API
 PACKAGECONFIG[experimental-wpe-platform] = "-DENABLE_WPE_PLATFORM=ON,-DENABLE_WPE_PLATFORM=OFF,libinput wayland-native"
