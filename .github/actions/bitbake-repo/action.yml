@@ -20,18 +20,28 @@ runs:
     - name: Set bitbake environment
       shell: bash
       run:  |
-        mkdir -p ~/yocto-webkit-${{ inputs.repo_release }}/builds
-        cp /local-host.conf ~/yocto-webkit-${{ inputs.repo_release }}/builds/
+        sudo apt-get install -y git git-lfs repo
+        mkdir -p ~/yocto-webkit-${{ inputs.repo_release }}
         cd ~/yocto-webkit-${{ inputs.repo_release }}
-        rm -rf sources .repo
         repo init -u ${{ inputs.repo_url }} -m .github/manifest/manifest-${{ inputs.repo_release }}.xml -b ${{ inputs.repo_ref }}
         repo sync --force-sync
         pushd sources/meta-webkit
-        git remote remove tmp || true
+        git config --global user.email "meta-webkit-bot@igalia.com"
+        git config --global user.name "meta-webkit CI Bot"
         git remote add tmp ${{ inputs.repo_url }}
         git fetch tmp main
         git fetch tmp ${{ inputs.repo_ref }}:${{ inputs.repo_ref }}
         git checkout ${{ inputs.repo_ref }}
         git rebase tmp/main
         popd
+    - name: Tar Work Dir
+      shell: bash
+      run:  |
+        cd ~
+        tar -cf yocto-webkit-${{ inputs.repo_release }}.tar yocto-webkit-${{ inputs.repo_release }}
+    - name: Upload Tar Work Dir Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: yocto-webkit-${{ inputs.repo_release }}
+        path:  ~/yocto-webkit-${{ inputs.repo_release }}.tar
 

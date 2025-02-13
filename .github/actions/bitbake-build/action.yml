@@ -21,10 +21,28 @@ runs:
         echo "BITBAKE_TARGET=${{ inputs.bitbake_target }}"
         echo "RELEASE=${{ inputs.repo_release }}"
         echo "======================================================================"
+    - name: Clean the build dir
+      shell: bash
+      run:  |
+        rm -rf ~/yocto-webkit-${{ inputs.repo_release }}
+        rm -rf ~/yocto-webkit-${{ inputs.repo_release }}.tar
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: yocto-webkit-${{ inputs.repo_release }}
+        path:  ~/
+    - name: Untar Work Dir
+      shell: bash
+      run:  |
+        cd ~
+        tar -xf yocto-webkit-${{ inputs.repo_release }}.tar
+        rm -rf ~/yocto-webkit-${{ inputs.repo_release }}.tar
     - name: Build
       shell: bash
       run:  |
         cd ~/yocto-webkit-${{ inputs.repo_release }}
+        mkdir ~/yocto-webkit-${{ inputs.repo_release }}/builds/
+        cp /local-host.conf ~/yocto-webkit-${{ inputs.repo_release }}/builds/
         ulimit -n 4096
         source sources/meta-webkit/.github/scripts/setup-environment ${{ inputs.bitbake_source }}
         rm -rf tmp
