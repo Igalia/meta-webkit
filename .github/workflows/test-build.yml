@@ -3,7 +3,7 @@ on: [pull_request]
 jobs:
 
   kirkstone-repo:
-    runs-on: self-hosted
+    runs-on: ubuntu-22.04
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - uses: actions/checkout@v3
@@ -23,7 +23,7 @@ jobs:
     needs: kirkstone-repo
 
   scarthgap-repo:
-    runs-on: self-hosted
+    runs-on: ubuntu-22.04
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - uses: actions/checkout@v3
@@ -84,7 +84,7 @@ jobs:
     needs: scarthgap-repo
 
   styhead-repo:
-    runs-on: self-hosted
+    runs-on: ubuntu-22.04
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - uses: actions/checkout@v3
@@ -104,7 +104,7 @@ jobs:
     needs: styhead-repo
 
   walnascar-repo:
-    runs-on: self-hosted
+    runs-on: ubuntu-22.04
     continue-on-error: true
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
