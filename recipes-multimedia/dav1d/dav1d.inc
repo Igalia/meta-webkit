@@ -4,7 +4,11 @@ BUGTRACKER = "https://code.videolan.org/videolan/dav1d/-/issues"
 
 DEPENDS = "nasm-native"
 
-SRC_URI = "https://code.videolan.org/videolan/${BPN}/-/archive/${PV}/${BPN}-${PV}.tar.gz"
+SRC_URI = " \
+    https://code.videolan.org/videolan/${BPN}/-/archive/${PV}/${BPN}-${PV}.tar.gz \
+    file://CVE-2024-1580.patch \
+    "
+    
 SRC_URI[sha256sum] = "097db6f370b88bf09fec62919c0d3af64e07d58210c665ec461d63f4ec79f6a2"
 
 LICENSE = "BSD-2-Clause"
