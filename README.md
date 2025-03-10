@@ -9,10 +9,12 @@ This layer depends on:
     URI: git://git.openembedded.org/openembedded-core
     branch: main
     revision: HEAD
+    layers: meta
 
     URI: git://git.openembedded.org/meta-openembedded
     branch: main
     revision: HEAD
+    layers: meta-multimedia, meta-oe, meta-python
 
 This layer optionally depends on:
 
