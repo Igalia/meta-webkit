@@ -1,6 +1,6 @@
 DESCRIPTION = "WPE Testbed Application"
 LICENSE = "MIT"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=fc9c8be99e989ccbabacb74e024806d9"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=aa5d8bc638fd8f3a4b250d702c005401"
 
 inherit cmake pkgconfig
 
