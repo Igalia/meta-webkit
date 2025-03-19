@@ -25,10 +25,12 @@ require ${@'wpewebkit-qt5.inc'  if 'qt5-layer' in d.getVar('BBFILE_COLLECTIONS')
 
 export WK_USE_CCACHE="NO"
 
-PACKAGECONFIG ??= "jit dfg-jit mediasource mediastream video webaudio woff2 \
-                   remote-inspector openjpeg unified-builds service-worker \
+PACKAGECONFIG ??= "accessibility avif dfg-jit gbm \
+                   jit jpegxl libbacktrace \
+                   mediasource mediastream openjpeg \
+                   remote-inspector service-worker speech-synthesis \
+                   unified-builds video webaudio woff2 \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
-                   avif gbm speech-synthesis jpegxl accessibility libbacktrace \
                   "
 
 PACKAGECONFIG[reduce-size] = "-DCMAKE_BUILD_TYPE=MinSizeRel,-DCMAKE_BUILD_TYPE=Release,,"
