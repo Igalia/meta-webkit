@@ -25,7 +25,7 @@ require ${@'wpewebkit-qt5.inc'  if 'qt5-layer' in d.getVar('BBFILE_COLLECTIONS')
 
 export WK_USE_CCACHE="NO"
 
-PACKAGECONFIG ??= "jit dfg-jit mediasource mediastream video webaudio webcrypto woff2 gst_gl \
+PACKAGECONFIG ??= "jit dfg-jit mediasource mediastream video webaudio webcrypto woff2 \
                    remote-inspector openjpeg unified-builds service-worker \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
                    avif gbm speech-synthesis jpegxl accessibility lbse libbacktrace \
@@ -47,7 +47,6 @@ PACKAGECONFIG[gamepad] = "-DENABLE_GAMEPAD=ON,-DENABLE_GAMEPAD=OFF,"
 PACKAGECONFIG[gbm] = "-DUSE_GBM=ON,-DUSE_GBM=OFF,libdrm"
 PACKAGECONFIG[geolocation] = "-DENABLE_GEOLOCATION=ON,-DENABLE_GEOLOCATION=OFF,geoclue"
 PACKAGECONFIG[gpu-process] = "-DENABLE_GPU_PROCESS=ON,-DENABLE_GPU_PROCESS=OFF,"
-PACKAGECONFIG[gst_gl] = "-DUSE_GSTREAMER_GL=ON,-DUSE_GSTREAMER_GL=OFF,gstreamer1.0-plugins-base"
 PACKAGECONFIG[introspection] = "-DENABLE_INTROSPECTION=ON,-DENABLE_INTROSPECTION=OFF, gobject-introspection-native"
 PACKAGECONFIG[jit] = "-DENABLE_JIT=ON,-DENABLE_JIT=OFF,"
 PACKAGECONFIG[jpegxl] = "-DUSE_JPEGXL=ON,-DUSE_JPEGXL=OFF,libjxl"
