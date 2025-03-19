@@ -11,28 +11,36 @@ LIC_FILES_CHKSUM = "file://Source/JavaScriptCore/COPYING.LIB;md5=d0c6d6397a5d842
 
 # you need harfbuzz with icu enabled, you can add this to your config:
 # PACKAGECONFIG:append:pn-harfbuzz = " icu"
-DEPENDS = "curl libxml2 libxslt libidn \
-           gtk+3 gstreamer1.0 gstreamer1.0-plugins-base flex-native icu \
-           gperf-native perl-native ruby-native ninja-native \
-           glib-2.0 \
-           gettext-native glib-2.0-native \
+DEPENDS = "curl \
+           flex-native \
+           gettext-native \
+           glib-2.0 glib-2.0-native \
+           gperf-native \
+           gstreamer1.0 gstreamer1.0-plugins-base \
+           gtk+3 \
            harfbuzz \
-           libwebp \
-           python3-native python3-packaging-native \
-           sqlite3 libgcrypt \
-           unifdef-native \
+           icu \
            libavif \
+           libgcrypt \
+           libidn \
            libsoup \
+           libtasn1 \
+           libwebp \
+           libxml2 libxslt \
+           ninja-native \
+           perl-native \
+           python3-native python3-packaging-native \
+           ruby-native \
+           sqlite3 \
+           unifdef-native \
            zlib \
 "
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
-           file://fix-bmalloc-armhf.patch \
-           "
+SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball"
 
-SRC_URI[tarball.sha256sum] = "f2b31de693220ba9bab76ce6ddfe5b0bfab2515cb2b0a70f3c54d4050766c32b"
+SRC_URI[tarball.sha256sum] = "94904a55cf12d44a4e36ceadafff02d46da73d76be9b4769f34cbfdf0eebf88e"
 
 RRECOMMENDS:${PN} = "${PN}-bin \
                      ca-certificates \
@@ -61,8 +69,8 @@ PACKAGECONFIG ??= " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)
                     jpegxl \
                     libsecret \
                     openjpeg \
+                    speech-synthesis \
                     video \
-                    webcrypto \
                     woff2 \
                   "
 
@@ -80,11 +88,13 @@ PACKAGECONFIG[libhyphen] = "-DUSE_LIBHYPHEN=ON,-DUSE_LIBHYPHEN=OFF,libhyphen"
 PACKAGECONFIG[libsecret] = "-DUSE_LIBSECRET=ON,-DUSE_LIBSECRET=OFF,libsecret"
 PACKAGECONFIG[opengl] = "-DUSE_OPENGL_OR_ES=ON,-DUSE_OPENGL_OR_ES=OFF,virtual/libgl"
 PACKAGECONFIG[openjpeg] = "-DUSE_OPENJPEG=ON,-DUSE_OPENJPEG=OFF,openjpeg"
+PACKAGECONFIG[speech-synthesis] = "-DENABLE_SPEECH_SYNTHESIS=ON,-DENABLE_SPEECH_SYNTHESIS=OFF,flite"
+# Remove speech-synthesis. Flite is not available before langdale.
+PACKAGECONFIG:remove = "${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'kirkstone', 'speech-synthesis', '', d)}"
 PACKAGECONFIG[systemd] = "-DUSE_SYSTEMD=ON,-DUSE_SYSTEMD=OFF,systemd"
 PACKAGECONFIG[journald] = "-DENABLE_JOURNALD_LOG=ON,-DENABLE_JOURNALD_LOG=OFF,"
 PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON,-DENABLE_VIDEO=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad"
 PACKAGECONFIG[wayland] = "-DENABLE_WAYLAND_TARGET=ON,-DENABLE_WAYLAND_TARGET=OFF,wayland wayland-native"
-PACKAGECONFIG[webcrypto] = "-DENABLE_WEB_CRYPTO=ON,-DENABLE_WEB_CRYPTO=OFF,libgcrypt libtasn1"
 PACKAGECONFIG[webgl] = "-DENABLE_WEBGL=ON,-DENABLE_WEBGL=OFF,virtual/libgl"
 PACKAGECONFIG[woff2] = "-DUSE_WOFF2=ON,-DUSE_WOFF2=OFF,woff2"
 PACKAGECONFIG[x11] = "-DENABLE_X11_TARGET=ON,-DENABLE_X11_TARGET=OFF,virtual/libx11 libxt"
