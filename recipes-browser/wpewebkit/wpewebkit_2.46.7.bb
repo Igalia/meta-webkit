@@ -8,7 +8,7 @@ SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0005-WPEPlatform-Input-methods-do-not-work.patch \
            "
 
-SRC_URI[tarball.sha256sum] = "2f8f8447b9c7b0578f7d751ca27c682a2c180b5abb91542af52a96e8a24a6262"
+SRC_URI[tarball.sha256sum] = "cf3e47638595d86de96abdb94db69a836c8aa509fc063be714f52c5a24bb5cd5"
 
 # Experimental new WPE platform API
 PACKAGECONFIG[experimental-wpe-platform] = "-DENABLE_WPE_PLATFORM=ON,-DENABLE_WPE_PLATFORM=OFF,libinput wayland-native"
