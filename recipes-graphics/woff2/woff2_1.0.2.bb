@@ -8,10 +8,13 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=027c71da9e4664fdf192e6ec615f4d18"
 UPSTREAM_CHECK_URI = "https://github.com/google/woff2/releases"
 
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+
 DEPENDS = "brotli"
 
 S = "${WORKDIR}/git"
-SRC_URI = "git://github.com/google/woff2.git;branch=master;protocol=https"
+SRC_URI = "git://github.com/google/woff2.git;branch=master;protocol=https \
+           file://0001-Fix-compilation-errors-by-including-cstdint.patch"
 SRCREV = "1bccf208bca986e53a647dfe4811322adb06ecf8"
 
 inherit cmake lib_package
