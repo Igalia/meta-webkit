@@ -1,9 +1,9 @@
 require wpebackend-fdo.inc
 require conf/include/devupstream.inc
 
-SRC_URI[sha256sum] = "10121842595a850291db3e82f3db0b9984df079022d386ce42c2b8508159dc6c"
+SRC_URI[sha256sum] = "d0edbd8f1850f5eb179bfa675db79d91b6f9ee8c8f94694a449e3cd975763410"
 
 SRCBRANCH:class-devupstream ?= "wpebackend-fdo-1.14"
 SRC_URI:class-devupstream = "git://github.com/Igalia/WPEBackend-fdo.git;protocol=https;branch=${SRCBRANCH}"
-SRCREV:class-devupstream = "04ccf2ef1753e72345770fb0a60bf38c5a100de8"
+SRCREV:class-devupstream = "b61725fe2dd523e99dbc2b81b23b298043540727"
 
