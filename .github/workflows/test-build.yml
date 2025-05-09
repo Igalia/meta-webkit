@@ -2,45 +2,25 @@ name: Build tests
 on: [pull_request]
 jobs:
 
-  kirkstone-repo:
+  walnascar-repo:
     runs-on: ubuntu-22.04
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-repo
         with:
-          repo_release: 'kirkstone'
+          repo_release: 'walnascar'
 
-  kirkstone-raspberrypi3-mesa-weston-wpe-2-48:
-    runs-on: self-hosted
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-build
-        with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-48 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v3.wpe-2_48'
-          repo_release: 'kirkstone'
-    needs: kirkstone-repo
-
-  scarthgap-repo:
-    runs-on: ubuntu-22.04
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-repo
-        with:
-          repo_release: 'scarthgap'
-
-  scarthgap-matrix-wpe-2-48:
+  walnascar-matrix-wpe-2-48:
     strategy:
       fail-fast: false
       matrix:
         machine: ['raspberrypi3-mesa', 'raspberrypi4-64']
         wpe_vers: ['2_48']
-        yocto_rel: ['scarthgap']
+        yocto_rel: ['walnascar']
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
-    needs: scarthgap-repo
+    needs: walnascar-repo
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
@@ -48,7 +28,7 @@ jobs:
           bitbake_source: '${{ matrix.machine }}-wpe-${{ matrix.wpe_vers }} ${{ matrix.machine }} poky layers.raspberrypi.webkit conf_v3.wpe-${{ matrix.wpe_vers }}'
           repo_release: ${{ matrix.yocto_rel }}
 
-  scarthgap-raspberrypi3-mesa-weston-wpe-musl:
+  walnascar-raspberrypi3-mesa-weston-wpe-musl:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
@@ -57,10 +37,10 @@ jobs:
         with:
           bitbake_source: 'raspberrypi3-mesa-wpe-musl raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_48'
           bitbake_prefix: 'TCLIBC=musl'
-          repo_release: 'scarthgap'
-    needs: scarthgap-repo
+          repo_release: 'walnascar'
+    needs: walnascar-repo
 
-  scarthgap-raspberrypi3-mesa-weston-wpe-2-46:
+  walnascar-raspberrypi3-mesa-weston-wpe-2-46:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
@@ -68,10 +48,10 @@ jobs:
       - uses: ./.github/actions/bitbake-build
         with:
           bitbake_source: 'raspberrypi3-mesa-wpe-2-46 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_46'
-          repo_release: 'scarthgap'
-    needs: scarthgap-repo
+          repo_release: 'walnascar'
+    needs: walnascar-repo
 
-  scarthgap-raspberrypi3-mesa-weston-gtk:
+  walnascar-raspberrypi3-mesa-weston-gtk:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
@@ -80,48 +60,5 @@ jobs:
         with:
           bitbake_source: 'raspberrypi4-64-webkitgtk raspberrypi4-64 poky layers.raspberrypi.webkit conf_v4'
           bitbake_target: 'webkitgtk'
-          repo_release: 'scarthgap'
-    needs: scarthgap-repo
-
-  styhead-repo:
-    runs-on: ubuntu-22.04
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-repo
-        with:
-          repo_release: 'styhead'
-
-  styhead-raspberrypi3-mesa-weston-wpe-2-48:
-    runs-on: self-hosted
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-build
-        with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-48 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_48'
-          repo_release: 'styhead'
-    needs: styhead-repo
-
-  walnascar-repo:
-    runs-on: ubuntu-22.04
-    continue-on-error: true
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-repo
-        with:
-          repo_release: 'walnascar'
-
-  walnascar-raspberrypi3-mesa-weston-wpe-2-48:
-    runs-on: self-hosted
-    continue-on-error: true
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-build
-        with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-48 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_48'
           repo_release: 'walnascar'
     needs: walnascar-repo
-

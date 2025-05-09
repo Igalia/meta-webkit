@@ -1,0 +1,26 @@
+From 8939b47f23b2f46ed4a4bcc79e02c4cd5f7c7154 Mon Sep 17 00:00:00 2001
+From: Pablo Saavedra <psaavedra@igalia.com>
+Date: Fri, 9 May 2025 13:19:15 +0000
+Subject: linux-user: Guard RESOLVE_CACHED flag with preprocessor check
+
+Wrap RESOLVE_CACHED usage in #ifdef to avoid build errors
+
+Upstream-Status: Pending
+---
+ linux-user/strace.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/linux-user/strace.c b/linux-user/strace.c
+index 3b744ccd4..12230b10d 100644
+--- a/linux-user/strace.c
++++ b/linux-user/strace.c
+@@ -1119,7 +1119,9 @@ UNUSED static const struct flags openat2_resolve_flags[] = {
+     FLAG_GENERIC(RESOLVE_NO_SYMLINKS),
+     FLAG_GENERIC(RESOLVE_BENEATH),
+     FLAG_GENERIC(RESOLVE_IN_ROOT),
++#ifdef RESOLVE_CACHED
+     FLAG_GENERIC(RESOLVE_CACHED),
++#endif
+ #endif
+     FLAG_END,
+ };
