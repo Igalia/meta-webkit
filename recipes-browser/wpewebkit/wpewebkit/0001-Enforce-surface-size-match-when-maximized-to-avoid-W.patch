@@ -1,0 +1,55 @@
+From 5148867f6520800b686043e1c1d86e0206629a10 Mon Sep 17 00:00:00 2001
+From: Pablo Saavedra <psaavedra@igalia.com>
+Date: Mon, 19 May 2025 12:24:49 +0200
+Subject: [PATCH] Enforce surface size match when maximized to avoid Wayland
+ errors https://bugs.webkit.org/show_bug.cgi?id=293172
+
+Reviewed by NOBODY (OOPS!).
+
+Prevents xdg_wm_base.invalid_surface_state protocol violations by
+checking if view is in maximized state before rendering buffer and
+skipping buffers with mismatched scaled dimensions.
+
+This is based on fix proposed in Cog[1].
+
+[1] https://github.com/Igalia/cog/pull/539
+
+* Source/WebKit/WPEPlatform/wpe/wayland/WPEViewWayland.cpp:
+(wpeViewWaylandRenderBuffer):
+---
+ .../WPEPlatform/wpe/wayland/WPEViewWayland.cpp     | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+Upstream-Status: Backport [https://bugs.webkit.org/show_bug.cgi?id=293172]
+
+diff --git a/Source/WebKit/WPEPlatform/wpe/wayland/WPEViewWayland.cpp b/Source/WebKit/WPEPlatform/wpe/wayland/WPEViewWayland.cpp
+index 7702a918b05e..d765f0bc06a0 100644
+--- a/Source/WebKit/WPEPlatform/wpe/wayland/WPEViewWayland.cpp
++++ b/Source/WebKit/WPEPlatform/wpe/wayland/WPEViewWayland.cpp
+@@ -358,10 +358,22 @@ static gboolean wpeViewWaylandRenderBuffer(WPEView* view, WPEBuffer* buffer, con
+     if (!wlBuffer)
+         return FALSE;
+ 
++    auto* toplevel = wpe_view_get_toplevel(view);
++    if (wpe_toplevel_get_state(toplevel) & WPE_TOPLEVEL_STATE_MAXIMIZED) {
++        // The surface is maximized. The window geometry specified in the configure
++        // event must be obeyed by the client, or the xdg_wm_base.invalid_surface_state
++        // error is raised.
++        auto scale = wpe_view_get_scale(view);
++        if (wpe_view_get_width(view) * scale != wpe_buffer_get_width(buffer) || wpe_view_get_height(view) * scale != wpe_buffer_get_height(buffer)) {
++            wpe_view_buffer_rendered(view, buffer);
++            return TRUE;
++        }
++    }
++
+     auto* priv = WPE_VIEW_WAYLAND(view)->priv;
+     priv->buffer = buffer;
+ 
+-    wpeToplevelWaylandUpdateOpaqueRegion(WPE_TOPLEVEL_WAYLAND(wpe_view_get_toplevel(view)));
++    wpeToplevelWaylandUpdateOpaqueRegion(WPE_TOPLEVEL_WAYLAND(toplevel));
+ 
+     auto* wlSurface = wpe_view_wayland_get_wl_surface(WPE_VIEW_WAYLAND(view));
+     wl_surface_attach(wlSurface, wlBuffer, 0, 0);
+-- 
+2.34.1
+
