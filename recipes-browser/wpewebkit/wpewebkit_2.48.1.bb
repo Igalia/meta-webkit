@@ -3,7 +3,9 @@ require conf/include/devupstream.inc
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball"
+SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
+           file://0001-Enforce-surface-size-match-when-maximized-to-avoid-W.patch \
+          "
 
 SRC_URI[tarball.sha256sum] = "2f411b692bb4c2a924d9bddf0c794fd69a24931ad836d6a93c9a65f5adb0357f"
 
