@@ -29,8 +29,8 @@ jobs:
 
           # Use --color only if stdout is a terminal
           if [ -t 1 ]; then
-            oelint-adv --color $FILES
+            oelint-adv --color --hide info $FILES
           else
-            oelint-adv $FILES
+            oelint-adv --hide info $FILES
           fi
 
