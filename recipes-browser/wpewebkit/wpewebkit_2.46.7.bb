@@ -1,7 +1,5 @@
 require wpewebkit.inc
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
-
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0003-WPE-Platform-fix-wpe_toplevel_qtquick-has-not-been-d.patch \
            file://0004-WPE-Platform-fix-wpe_view_resize-was-not-declared-is.patch \
