@@ -8,5 +8,3 @@ SRCBRANCH:class-devupstream ?= "cog-0.18"
 SRC_URI:class-devupstream = "git://github.com/Igalia/cog.git;protocol=https;branch=${SRCBRANCH}"
 SRCREV:class-devupstream = "c4625676a21308e7c82175f1ce9a6c8849f22800"
 
-RDEPENDS:${PN} += "wpewebkit (>= 2.42)"
-
