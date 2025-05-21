@@ -1,0 +1,36 @@
+name: oelint-adv-lint
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'  # Runs every Sunday at 00:00 UTC
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container:
+      image: python:3.11-slim
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install oelint-adv
+        run: |
+          pip install --no-cache-dir oelint-adv
+
+      - name: Run oelint-adv
+        run: |
+          FILES=$(find . \( \
+            -name "*.bb" -o \
+            -name "*.bbappend" -o \
+            -name "*.bbclass" \
+          \) | sort -u)
+
+          # Use --color only if stdout is a terminal
+          if [ -t 1 ]; then
+            oelint-adv --color $FILES
+          else
+            oelint-adv $FILES
+          fi
+
