@@ -16,21 +16,19 @@ DEFAULT_PREFERENCE = "-1"
 # PREFERRED_VERSION_wpewebkit = "1.downstream%"
 #
 
-
 # NOTE: The build of this recipe is currently broken after the versioning
 #        changes done on wpebackend recipes. Remove this note and update
 #        the commit below once that is fixed on the downstream repository.
 PV = "1.downstream-20180424"
-SRCREV = "a8f773758e16492d641456eb34a982029249fda4"
+
 SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEWebKit.git;protocol=https;branch=master"
+SRCREV = "a8f773758e16492d641456eb34a982029249fda4"
 
-DEPENDS += " virtual/wpebackend"
-
-S = "${WORKDIR}/git"
+S = "${UNPACKDIR}/git"
 
 # Some config options are only available on the downstream version, like:
 PACKAGECONFIG[fusion] = "-DUSE_FUSION_API_GSTREAMER=ON,-DUSE_FUSION_API_GSTREAMER=OFF,"
-PACKAGECONFIG[logs] ="-DENABLE_LOGS=ON,-DENABLE_LOGS=OFF,"
+PACKAGECONFIG[logs] = "-DENABLE_LOGS=ON,-DENABLE_LOGS=OFF,"
 PACKAGECONFIG[nativevideo] = "-DENABLE_NATIVE_VIDEO=ON,-DENABLE_NATIVE_VIDEO=OFF,"
 PACKAGECONFIG[subtitle] = "-DENABLE_TEXT_SINK=ON,-DENABLE_TEXT_SINK=OFF,"
 PACKAGECONFIG[gst_httpsrc] = "-DUSE_GSTREAMER_WEBKIT_HTTP_SRC=ON,,"

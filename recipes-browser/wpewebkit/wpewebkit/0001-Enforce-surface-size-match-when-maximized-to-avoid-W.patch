@@ -21,7 +21,7 @@ This is based on fix proposed in Cog[1].
  1 file changed, 13 insertions(+), 1 deletion(-)
 
 Upstream-Status: Backport [https://bugs.webkit.org/show_bug.cgi?id=293172]
-
+Signed-off-by: Pablo Saavedra <psaavedra@igalia.com>
 diff --git a/Source/WebKit/WPEPlatform/wpe/wayland/WPEViewWayland.cpp b/Source/WebKit/WPEPlatform/wpe/wayland/WPEViewWayland.cpp
 index 7702a918b05e..d765f0bc06a0 100644
 --- a/Source/WebKit/WPEPlatform/wpe/wayland/WPEViewWayland.cpp

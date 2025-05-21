@@ -24,7 +24,7 @@ Canonical link: https://commits.webkit.org/284155@main
  3 files changed, 8 insertions(+), 2 deletions(-)
 
 Upstream-Status: Backport [https://commits.webkit.org/284155@main]
-
+Signed-off-by: Pablo Saavedra <psaavedra@igalia.com>
 diff --git a/Source/WebKit/Shared/NativeWebKeyboardEvent.h b/Source/WebKit/Shared/NativeWebKeyboardEvent.h
 index 17cb4210..c72c9733 100644
 --- a/Source/WebKit/Shared/NativeWebKeyboardEvent.h

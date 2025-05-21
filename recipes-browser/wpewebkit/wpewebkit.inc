@@ -1,8 +1,11 @@
-SUMMARY = "WPE WebKit port pairs the WebKit engine with OpenGL-ES (OpenGL for Embedded Systems), \
-           allowing embedders to create simple and performant systems based on Web platform technologies. \
-           It is designed with hardware acceleration in mind, relying on EGL, and OpenGL ES."
-HOMEPAGE = "https://trac.webkit.org/wiki/WPE"
-BUGTRACKER = "https://bugs.webkit.org/"
+SUMMARY ?= "WPEWebKit is a lightweight, embedded-optimized port of the WebKit engine"
+DESCRIPTION = "WPE WebKit port pairs the WebKit engine with OpenGL-ES (OpenGL \
+               for Embedded Systems), allowing embedders to create simple and \
+               performant systems based on Web platform technologies. \
+               It is designed with hardware acceleration in mind, relying on \
+               EGL, and OpenGL ES."
+HOMEPAGE ?= "https://wpewebkit.org/"
+BUGTRACKER ?= "https://bugs.webkit.org/"
 LICENSE = "BSD-2-Clause & LGPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf8b8a7c36b6eec80 "
 
@@ -19,7 +22,6 @@ DEPENDS:append = " \
 
 inherit cmake features_check pkgconfig perlnative python3native
 
-
 require ${@'wpewebkit-qt6.inc'  if 'qt6-layer' in d.getVar('BBFILE_COLLECTIONS').split() else ''}
 require ${@'wpewebkit-qt5.inc'  if 'qt5-layer' in d.getVar('BBFILE_COLLECTIONS').split() else ''}
 
@@ -31,7 +33,7 @@ PACKAGECONFIG ??= "accessibility avif dfg-jit gbm \
                    remote-inspector service-worker speech-synthesis \
                    unified-builds video webaudio woff2 \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
-                  "
+                   "
 
 PACKAGECONFIG[reduce-size] = "-DCMAKE_BUILD_TYPE=MinSizeRel,-DCMAKE_BUILD_TYPE=Release,,"
 PACKAGECONFIG[release-with-debug-info] = "-DCMAKE_BUILD_TYPE=RelWithDebInfo,-DCMAKE_BUILD_TYPE=Release,,"
@@ -81,7 +83,7 @@ PACKAGECONFIG[webxr] = "-DENABLE_WEBXR=ON,-DENABLE_WEBXR=OFF,openxr"
 # Build option for WPE API 1.1
 PACKAGECONFIG[wpe-1-1-api] = "-DENABLE_WPE_1_1_API:BOOL=ON,-DENABLE_WPE_1_1_API:BOOL=OFF,"
 
-EXTRA_OECMAKE = " -DPORT=WPE -G Ninja"
+EXTRA_OECMAKE = "-DPORT=WPE -G Ninja"
 
 # TODO: documentation and introspection are disabled by default because the are
 # causing cross-compiling build errors
@@ -106,6 +108,7 @@ PACKAGECONFIG:remove:loongarch64 = "jit"
 # Javascript JIT is not supported on x86
 PACKAGECONFIG:remove:x86 = "jit"
 
+# nooelint: oelint.vars.specific
 PACKAGECONFIG:remove:mipsarcho32:toolchain-clang = "jit"
 
 LDFLAGS:append:riscv64 = " -pthread"
@@ -116,8 +119,10 @@ LEAD_SONAME = "libWPEWebKit.so"
 PACKAGES =+ "${PN}-web-inspector-plugin ${PN}-qtwpe-qml-plugin"
 FILES:${PN} += "${libdir}/wpe-webkit*/injected-bundle/libWPEInjectedBundle.so"
 FILES:${PN}-web-inspector-plugin += "${libdir}/libWPEWebInspectorResources.so ${libdir}/wpe-webkit-*/libWPEWebInspectorResources.so"
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-web-inspector-plugin = "dev-so"
 
+# nooelint: oelint.vars.insaneskip
 INSANE_SKIP:${PN}-qtwpe-qml-plugin = "dev-so"
 
 # JSC JIT on ARMv7 is better supported with Thumb2 instruction set.
@@ -129,7 +134,8 @@ ARM_INSTRUCTION_SET:armv7ve = "thumb"
 GSTVIDEOCONVERTSCALEPLUGIN = "${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'kirkstone langdale', 'gstreamer1.0-plugins-base-videoconvert gstreamer1.0-plugins-base-videoscale', 'gstreamer1.0-plugins-base-videoconvertscale', d)}"
 
 # Extra runtime depends
-RDEPENDS:${PN} += " \
+# nooelint: oelint.vars.dependsordered
+RDEPENDS:${PN} += "\
     libgles2 \
     virtual-wpebackend \
     ${@bb.utils.contains('PACKAGECONFIG', 'remote-inspector', '${PN}-web-inspector-plugin', '', d)} \
@@ -153,12 +159,12 @@ RDEPENDS:${PN} += " \
                                                     ', '', d)} \
 "
 
-RDEPENDS:${PN}-web-inspector-plugin += " \
+RDEPENDS:${PN}-web-inspector-plugin += "\
     shared-mime-info \
 "
 
 # Extra runtime recommends
-RRECOMMENDS:${PN} += " \
+RRECOMMENDS:${PN} += "\
     ca-certificates \
     ttf-dejavu-sans \
     ttf-dejavu-sans-mono \

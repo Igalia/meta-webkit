@@ -8,7 +8,7 @@ PACKAGECONFIG[soup2] = "-Dwpe_api=1.0,,libsoup-2.4"
 PACKAGECONFIG[weston-direct-display] = "-Dwayland_weston_direct_display=true,-Dwayland_weston_direct_display=false,weston"
 PACKAGECONFIG[wl] = ",,wpebackend-fdo"
 
-# possible platforms: drm, headless, wayland (COG_PLATFORM_WL)
+# nooelint: oelint.task.noanonpython - possible platforms: drm, headless, wayland (COG_PLATFORM_WL)
 python __anonymous() {
     packageconfig = (d.getVar("PACKAGECONFIG") or "").split()
     available_platforms = {'drm': 'drm', 'gtk4': 'gtk4', 'headless': 'headless', 'wl': 'wayland'}
