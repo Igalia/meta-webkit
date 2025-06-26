@@ -7,11 +7,11 @@ SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0001-Enforce-surface-size-match-when-maximized-to-avoid-W.patch \
           "
 
-SRC_URI[tarball.sha256sum] = "2f411b692bb4c2a924d9bddf0c794fd69a24931ad836d6a93c9a65f5adb0357f"
+SRC_URI[tarball.sha256sum] = "807571f07e87823b8fb79564692c9b1ef81ee62edbf51345a15bd0e7e1f2e07b"
 
 SRCBRANCH:class-devupstream = "webkitglib/2.48"
 SRC_URI:class-devupstream = "git://github.com/WebKit/WebKit.git;protocol=https;branch=${SRCBRANCH}"
-SRCREV:class-devupstream = "80fc85dcfbc994e312c3ba307019549e209354c6"
+SRCREV:class-devupstream = "50eef6579cbecfb73971fcbc0c82b7187a657fdc"
 
 # Experimental new WPE platform API
 PACKAGECONFIG[experimental-wpe-platform] = "-DENABLE_WPE_PLATFORM=ON,-DENABLE_WPE_PLATFORM=OFF,libinput wayland-native"
