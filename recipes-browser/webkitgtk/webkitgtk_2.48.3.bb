@@ -40,7 +40,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball"
 
-SRC_URI[tarball.sha256sum] = "98efdf21c4cdca0fe0b73ab5a8cb52093b5aa52d9b1b016a93f71dbfa1eb258f"
+SRC_URI[tarball.sha256sum] = "d4dc5970f0fc6a529ff7fd67bcbfab2bbb5e91be789b2e9279640b3217a782c3"
 
 RRECOMMENDS:${PN} = "${PN}-bin \
                      ca-certificates \
@@ -62,18 +62,18 @@ PACKAGECONFIG ??= " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)
                     ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
                     ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'opengl gles2 webgl', '', d)} \
                     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
-                    enchant \
-                    gbm \
+                   enchant \
+                   gbm \
                     ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'kirkstone langdale', '', 'gtk4', d)} \
-                    jit \
-                    jpegxl \
-                    libsecret \
-                    openjpeg \
-                    pdfjs \
-                    speech-synthesis \
-                    video \
-                    woff2 \
-                  "
+                   jit \
+                   jpegxl \
+                   libsecret \
+                   openjpeg \
+                   pdfjs \
+                   speech-synthesis \
+                   video \
+                   woff2 \
+                   "
 
 PACKAGECONFIG[reduce-size] = "-DCMAKE_BUILD_TYPE=MinSizeRel,-DCMAKE_BUILD_TYPE=Release,,"
 PACKAGECONFIG[bubblewrap] = "-DENABLE_BUBBLEWRAP_SANDBOX=ON -DBWRAP_EXECUTABLE=${bindir}/bwrap -DDBUS_PROXY_EXECUTABLE=${bindir}/xdg-dbus-proxy,-DENABLE_BUBBLEWRAP_SANDBOX=OFF,bubblewrap xdg-dbus-proxy libseccomp"
@@ -103,14 +103,14 @@ PACKAGECONFIG[woff2] = "-DUSE_WOFF2=ON,-DUSE_WOFF2=OFF,woff2"
 PACKAGECONFIG[x11] = "-DENABLE_X11_TARGET=ON,-DENABLE_X11_TARGET=OFF,virtual/libx11 libxt"
 PACKAGECONFIG[jit] = "-DENABLE_JIT=ON -DENABLE_C_LOOP=OFF,-DENABLE_JIT=OFF -DENABLE_C_LOOP=ON,"
 
-EXTRA_OECMAKE = " \
-                 -DPORT=GTK \
-                 -DENABLE_INTROSPECTION=OFF \
-                 -DENABLE_GTKDOC=OFF \
-                 -DENABLE_MINIBROWSER=ON \
-                 -DUSE_SYSPROF_CAPTURE=OFF \
-                 -G Ninja \
-                "
+EXTRA_OECMAKE = "\
+    -DPORT=GTK \
+    -DENABLE_INTROSPECTION=OFF \
+    -DENABLE_GTKDOC=OFF \
+    -DENABLE_MINIBROWSER=ON \
+    -DUSE_SYSPROF_CAPTURE=OFF \
+    -G Ninja \
+"
 
 # Javascript JIT is not supported on ppc/arm < v6/RISCV/mips64
 PACKAGECONFIG:remove:powerpc = "jit"
