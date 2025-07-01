@@ -81,6 +81,7 @@ IMAGE_INSTALL:append = " \
     parted \
     perf \
     pv \
+    rsync \
     screen \
     sysprof \
     smem \
