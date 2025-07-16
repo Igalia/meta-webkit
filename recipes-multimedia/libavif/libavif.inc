@@ -2,7 +2,9 @@ SUMMARY = "This library aims to be a friendly, portable C implementation of the 
 HOMEPAGE = "https://github.com/AOMediaCodec/libavif"
 BUGTRACKER = "https://github.com/AOMediaCodec/libavif/issues"
 
-SRC_URI = "git://github.com/AOMediaCodec/libavif.git;protocol=https;branch=main"
+SRC_URI = "git://github.com/AOMediaCodec/libavif.git;protocol=https;branch=main \
+	   file://CVE-2025-48174.patch \
+	  "
 SRCREV = "6ab53189045e7a6fe0bd93d14977b2a4f8efa5e9"
 
 S = "${WORKDIR}/git"
