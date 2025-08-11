@@ -11,8 +11,6 @@ SRC_URI = "file://CMakeLists.txt \
            file://qml.qrc \
 "
 
-S = "${WORKDIR}"
-
 inherit cmake cmake_qt5
 
 do_install() {
