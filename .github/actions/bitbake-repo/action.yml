@@ -29,9 +29,9 @@ runs:
         pushd sources/meta-webkit
         git remote remove tmp || true
         git remote add tmp ${{ inputs.repo_url }}
-        git fetch tmp main
+        git fetch tmp ${{ github.base_ref }}
         git fetch tmp ${{ inputs.repo_ref }}:${{ inputs.repo_ref }}
         git checkout ${{ inputs.repo_ref }}
-        git rebase tmp/main
+        git rebase tmp/${{ github.base_ref }}
         popd
 
