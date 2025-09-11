@@ -83,7 +83,6 @@ IMAGE_INSTALL:append = " \
     pv \
     rsync \
     screen \
-    sysprof \
     smem \
     systemd-analyze \
     unifdef \

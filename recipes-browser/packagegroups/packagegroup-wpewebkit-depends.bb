@@ -132,6 +132,8 @@ RDEPENDS:packagegroup-wpewebkit-depends-core = "\
     icu \
     jpeg \
     sqlite3 \
+    sysprof \
+    sysprof-staticdev \
     zlib \
     libpng \
     libsoup \
