@@ -25,7 +25,7 @@ require ${@'wpewebkit-qt5.inc'  if 'qt5-layer' in d.getVar('BBFILE_COLLECTIONS')
 
 export WK_USE_CCACHE="NO"
 
-PACKAGECONFIG ??= "accessibility avif dfg-jit gbm \
+PACKAGECONFIG ??= "accessibility avif dfg-jit gbm gpu-process \
                    jit jpegxl libbacktrace \
                    mediasource mediastream openjpeg \
                    remote-inspector service-worker speech-synthesis \
@@ -81,7 +81,7 @@ PACKAGECONFIG[webxr] = "-DENABLE_WEBXR=ON,-DENABLE_WEBXR=OFF,openxr"
 # Build option for WPE API 1.1
 PACKAGECONFIG[wpe-1-1-api] = "-DENABLE_WPE_1_1_API:BOOL=ON,-DENABLE_WPE_1_1_API:BOOL=OFF,"
 
-EXTRA_OECMAKE = " -DPORT=WPE -G Ninja"
+EXTRA_OECMAKE = " -DPORT=WPE -G Ninja -DUSE_SYSTEM_SYSPROF_CAPTURE=OFF"
 
 # TODO: documentation and introspection are disabled by default because the are
 # causing cross-compiling build errors
@@ -115,7 +115,7 @@ FULL_OPTIMIZATION:remove = "-g"
 LEAD_SONAME = "libWPEWebKit.so"
 PACKAGES =+ "${PN}-web-inspector-plugin ${PN}-qtwpe-qml-plugin"
 FILES:${PN} += "${libdir}/wpe-webkit*/injected-bundle/libWPEInjectedBundle.so"
-FILES:${PN}-web-inspector-plugin += "${libdir}/libWPEWebInspectorResources.so ${libdir}/wpe-webkit-*/libWPEWebInspectorResources.so"
+FILES:${PN}-web-inspector-plugin += "${datadir}/wpe-webkit-*/inspector.gresource"
 INSANE_SKIP:${PN}-web-inspector-plugin = "dev-so"
 
 INSANE_SKIP:${PN}-qtwpe-qml-plugin = "dev-so"
