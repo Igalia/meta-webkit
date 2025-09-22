@@ -11,3 +11,5 @@ SRC_URI[tarball.sha256sum] = "01f36010705adb14404c56baf033147f7927cc7c6badec81bb
 
 # Experimental new WPE platform API
 PACKAGECONFIG[experimental-wpe-platform] = "-DENABLE_WPE_PLATFORM=ON,-DENABLE_WPE_PLATFORM=OFF,libinput wayland-native"
+
+PACKAGECONFIG[soup2] = "-DUSE_SOUP2=ON,-DUSE_SOUP2=OFF,libsoup-2.4"

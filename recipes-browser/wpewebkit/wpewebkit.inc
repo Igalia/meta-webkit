@@ -27,8 +27,8 @@ export WK_USE_CCACHE="NO"
 
 PACKAGECONFIG ??= "accessibility avif dfg-jit gbm gpu-process \
                    jit jpegxl libbacktrace \
-                   mediasource mediastream openjpeg \
-                   remote-inspector service-worker speech-synthesis \
+                   mediasource mediastream \
+                   remote-inspector speech-synthesis \
                    unified-builds video webaudio woff2 \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
                   "
@@ -61,20 +61,16 @@ PACKAGECONFIG[mediastream] = "-DENABLE_MEDIA_STREAM=ON -DUSE_GSTREAMER_TRANSCODE
 # pdfjs adds +3MB to the binary size of libWPEWebKit
 PACKAGECONFIG[pdfjs] = "-DENABLE_PDFJS=ON,-DENABLE_PDFJS=OFF,"
 
-PACKAGECONFIG[service-worker] = "-DENABLE_SERVICE_WORKER=ON,-DENABLE_SERVICE_WORKER=OFF,"
-
 PACKAGECONFIG[speech-synthesis] = "-DENABLE_SPEECH_SYNTHESIS=ON,-DENABLE_SPEECH_SYNTHESIS=OFF,flite"
 # Remove speech-synthesis. Flite is not available before langdale.
 PACKAGECONFIG:remove = "${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'kirkstone', 'speech-synthesis', '', d)}"
 
-PACKAGECONFIG[soup2] = "-DUSE_SOUP2=ON,-DUSE_SOUP2=OFF,libsoup-2.4"
 PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON,-DENABLE_VIDEO=OFF,gstreamer1.0 gstreamer1.0-plugins-base"
 PACKAGECONFIG[webaudio] = "-DENABLE_WEB_AUDIO=ON,-DENABLE_WEB_AUDIO=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good"
 PACKAGECONFIG[woff2] = "-DUSE_WOFF2=ON,-DUSE_WOFF2=OFF,woff2"
 PACKAGECONFIG[remote-inspector] = "-DENABLE_REMOTE_INSPECTOR=ON,-DENABLE_REMOTE_INSPECTOR=OFF,"
 PACKAGECONFIG[webrtc] = "-DENABLE_WEB_RTC=ON,-DENABLE_WEB_RTC=OFF,libvpx libevent libopus openh264"
 PACKAGECONFIG[qtwpe] = "-DENABLE_WPE_QT_API=ON ${CMAKE_QT_OECONF},-DENABLE_WPE_QT_API=OFF,qtbase-native qtbase qtdeclarative libepoxy wpebackend-fdo ${QT_BUILD_DEPS}"
-PACKAGECONFIG[openjpeg] = "-DUSE_OPENJPEG=ON,-DUSE_OPENJPEG=OFF,openjpeg"
 PACKAGECONFIG[unified-builds] = "-DENABLE_UNIFIED_BUILDS=ON,-DENABLE_UNIFIED_BUILDS=OFF,"
 PACKAGECONFIG[thunder] = "-DENABLE_THUNDER=ON,-DENABLE_THUNDER=OFF,virtual/open-cdm"
 PACKAGECONFIG[webxr] = "-DENABLE_WEBXR=ON,-DENABLE_WEBXR=OFF,openxr"
