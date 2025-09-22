@@ -15,5 +15,7 @@ SRCBRANCH:class-devupstream = "webkitglib/2.50"
 SRC_URI:class-devupstream = "git://github.com/WebKit/WebKit.git;protocol=https;branch=${SRCBRANCH}"
 SRCREV:class-devupstream = "eef2adcc65cf91d1c97ccc9f5ca6b2d87774f16a"
 
+PACKAGECONFIG[mediastream] = "-DENABLE_MEDIA_STREAM=ON,-DENABLE_MEDIA_STREAM=OFF,gstreamer1.0 gstreamer1.0-plugins-bad"
+
 # Enable WPE platform API
 PACKAGECONFIG[wpe-platform] = "-DENABLE_WPE_PLATFORM=ON,-DENABLE_WPE_PLATFORM=OFF,libinput wayland-native"
