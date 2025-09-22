@@ -10,14 +10,14 @@ jobs:
         with:
           repo_release: 'kirkstone'
 
-  kirkstone-raspberrypi3-mesa-weston-wpe-2-48:
+  kirkstone-raspberrypi3-mesa-weston-wpe-2-50:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-48 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v3.wpe-2_48'
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-50 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v3.wpe-2_50'
           repo_release: 'kirkstone'
     needs: kirkstone-repo
 
@@ -30,12 +30,12 @@ jobs:
         with:
           repo_release: 'scarthgap'
 
-  scarthgap-matrix-wpe-2-48:
+  scarthgap-matrix-wpe-2-50:
     strategy:
       fail-fast: false
       matrix:
         machine: ['raspberrypi3-mesa', 'raspberrypi4-64']
-        wpe_vers: ['2_48']
+        wpe_vers: ['2_50']
         yocto_rel: ['scarthgap']
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
@@ -54,19 +54,19 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-musl raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_48'
+          bitbake_source: 'raspberrypi3-mesa-wpe-musl raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_50'
           bitbake_prefix: 'TCLIBC=musl'
           repo_release: 'scarthgap'
     needs: scarthgap-repo
 
-  scarthgap-raspberrypi3-mesa-weston-wpe-2-46:
+  scarthgap-raspberrypi3-mesa-weston-wpe-2-48:
     runs-on: self-hosted
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-46 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_46'
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-48 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_48'
           repo_release: 'scarthgap'
     needs: scarthgap-repo
 
@@ -92,7 +92,7 @@ jobs:
         with:
           repo_release: 'walnascar'
 
-  walnascar-raspberrypi3-mesa-weston-wpe-2-48:
+  walnascar-raspberrypi3-mesa-weston-wpe-2-50:
     runs-on: self-hosted
     continue-on-error: true
     if: "!contains(github.event.head_commit.message, 'ci skip')"
@@ -100,7 +100,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-48 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_48'
+          bitbake_source: 'raspberrypi3-mesa-wpe-2-50 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_50'
           repo_release: 'walnascar'
     needs: walnascar-repo
 
