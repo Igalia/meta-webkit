@@ -7,6 +7,7 @@ SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0001-Cherry-pick-300316-main-2b754f0fec28-.-https-bugs.we.patch \
            file://0002-Cherry-pick-300315-main-79a0cf9b1bef-.-https-bugs.we.patch \
            file://0003-Cherry-pick-300185-main-f0d8991bbfe3-.-https-bugs.we.patch \
+           file://fix-ftbfs-32bits.patch \
           "
 
 SRC_URI[tarball.sha256sum] = "a9af62c5e18551b7386b7db864e8ba8156f219b8e6c639934bf6f3a567969922"
