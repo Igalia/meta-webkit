@@ -1,86 +1,60 @@
 name: Build tests
 on: [pull_request]
 jobs:
-  scarthgap-repo:
+  repo:
     runs-on: ubuntu-22.04
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    strategy:
+      fail-fast: true
+      matrix:
+        yocto_release: ['scarthgap', 'whinlatter']
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-repo
         with:
-          repo_release: 'scarthgap'
+          repo_release: ${{ matrix.yocto_release }}
 
-  scarthgap-matrix-wpe-2-50:
+  build-wpe:
+    runs-on: self-hosted
+    continue-on-error: ${{ matrix.yocto_release == 'whinlatter' }}
     strategy:
       fail-fast: false
       matrix:
+        yocto_release: ['scarthgap', 'whinlatter']
         machine: ['raspberrypi3-mesa', 'raspberrypi4-64']
+        yocto_prefix: ['TCLIBC=glibc']
         wpe_vers: ['2_50']
-        yocto_rel: ['scarthgap']
-    runs-on: self-hosted
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    needs: scarthgap-repo
+        include:
+          - yocto_release: scarthgap
+            machine: raspberrypi4-64
+            yocto_prefix: TCLIBC=musl
+            wpe_vers: 2_50
+          - yocto_release: whinlatter
+            machine: raspberrypi4-64
+            yocto_prefix: TCLIBC=musl
+            wpe_vers: 2_50
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: '${{ matrix.machine }}-wpe-${{ matrix.wpe_vers }} ${{ matrix.machine }} poky layers.raspberrypi.webkit conf_v3.wpe-${{ matrix.wpe_vers }}'
-          repo_release: ${{ matrix.yocto_rel }}
+          bitbake_source: '${{ matrix.machine }}-wpe-${{ matrix.wpe_vers }} ${{ matrix.machine }} poky layers.raspberrypi.webkit conf_v4.wpe-${{ matrix.wpe_vers }}'
+          repo_release: ${{ matrix.yocto_release }}
+    needs: repo
 
-  scarthgap-raspberrypi3-mesa-weston-wpe-musl:
+  build-gtk:
     runs-on: self-hosted
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    continue-on-error: ${{ matrix.yocto_release == 'whinlatter' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        yocto_release: ['scarthgap', 'whinlatter']
+        machine: ['raspberrypi3-mesa', 'raspberrypi4-64']
+        yocto_prefix: ['TCLIBC=glibc']
+        wpe_vers: ['2_50']
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-musl raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_50'
-          bitbake_prefix: 'TCLIBC=musl'
-          repo_release: 'scarthgap'
-    needs: scarthgap-repo
-
-  scarthgap-raspberrypi3-mesa-weston-wpe-2-48:
-    runs-on: self-hosted
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-build
-        with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-48 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_48'
-          repo_release: 'scarthgap'
-    needs: scarthgap-repo
-
-  scarthgap-raspberrypi3-mesa-weston-gtk:
-    runs-on: self-hosted
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-build
-        with:
-          bitbake_source: 'raspberrypi4-64-webkitgtk raspberrypi4-64 poky layers.raspberrypi.webkit conf_v4'
-          bitbake_target: 'webkitgtk'
-          repo_release: 'scarthgap'
-    needs: scarthgap-repo
-
-  walnascar-repo:
-    runs-on: ubuntu-22.04
-    continue-on-error: true
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-repo
-        with:
-          repo_release: 'walnascar'
-
-  walnascar-raspberrypi3-mesa-weston-wpe-2-50:
-    runs-on: self-hosted
-    continue-on-error: true
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-build
-        with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-50 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v4.wpe-2_50'
-          repo_release: 'walnascar'
-    needs: walnascar-repo
-
+          bitbake_source: '${{ matrix.machine }}-wpe-${{ matrix.wpe_vers }} ${{ matrix.machine }} poky layers.raspberrypi.webkit conf_v4.wpe-${{ matrix.wpe_vers }}'
+          bitbake_target: webkitgtk
+          repo_release: ${{ matrix.yocto_release }}
+    needs: repo

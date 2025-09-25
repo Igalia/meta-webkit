@@ -18,18 +18,19 @@ This layer depends on:
 
 This layer optionally depends on:
 
-    URI: http://code.qt.io/yocto/meta-qt5.git
-    branch: 5.12
+    URI: http://code.qt.io/yocto/meta-qt6.git
+    branch: lts-6.8.5
     revision: HEAD
 
-If meta-qt5 is present, this layer will provide an opt-in Qt5 API as an
-alternative to other Qt5 web-engines such as QtWebKit and QtWebEngine.
+If meta-qt6 is present, this layer will provide an opt-in Qt6 API as an
+alternative to other Qt6 web-engines such as QtWebKit and QtWebEngine.
 
 **Warning**: The default branch has been renamed to `main` because
 [#219](https://github.com/Igalia/meta-webkit/issues/219). The old default
 branch (`master`) will still be kept as a mirror of the `main` until February
-of 2022 [#220](https://github.com/Igalia/meta-webkit/issues/220). Please update
-any external reference from `master` to `main` as soon as possible.
+of 2022 [#220](https://github.com/Igalia/meta-webkit/issues/220), at least.
+Please update any external reference from `master` to `main` as soon as
+possible.
 
 Building the WPE engine or WebKitGTK+
 =====================================

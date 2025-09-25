@@ -64,7 +64,7 @@ PACKAGECONFIG ??= " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)
                     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
                    enchant \
                    gbm \
-                    ${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'kirkstone langdale', '', 'gtk4', d)} \
+                   gtk4 \
                    jit \
                    jpegxl \
                    libsecret \
@@ -90,8 +90,6 @@ PACKAGECONFIG[opengl] = "-DUSE_OPENGL_OR_ES=ON,-DUSE_OPENGL_OR_ES=OFF,virtual/li
 # pdfjs adds +3MB to the binary size of libwebkitgtk
 PACKAGECONFIG[pdfjs] = "-DENABLE_PDFJS=ON,-DENABLE_PDFJS=OFF,"
 PACKAGECONFIG[speech-synthesis] = "-DENABLE_SPEECH_SYNTHESIS=ON,-DENABLE_SPEECH_SYNTHESIS=OFF,flite"
-# Remove speech-synthesis. Flite is not available before langdale.
-PACKAGECONFIG:remove = "${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'kirkstone', 'speech-synthesis', '', d)}"
 PACKAGECONFIG[systemd] = "-DUSE_SYSTEMD=ON,-DUSE_SYSTEMD=OFF,systemd"
 PACKAGECONFIG[journald] = "-DENABLE_JOURNALD_LOG=ON,-DENABLE_JOURNALD_LOG=OFF,"
 PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON,-DENABLE_VIDEO=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad"
@@ -112,7 +110,8 @@ EXTRA_OECMAKE = "\
 
 # Unless DEBUG_BUILD is enabled, pass -g1 to massively reduce the size of the
 # debug symbols (4.3GB to 700M at time of writing)
-DEBUG_FLAGS:append = "${@oe.utils.vartrue('DEBUG_BUILD', '', ' -g1', d)}"
+DEBUG_FLAGS:append = "${@bb.utils.contains('LAYERSERIES_CORENAMES', 'scarthgap', oe.utils.vartrue('DEBUG_BUILD', '', ' -g1', d), '', d)}"
+DEBUG_LEVELFLAG = "${@bb.utils.contains('LAYERSERIES_CORENAMES', 'scarthgap', '', '-g1', d)}"
 
 # Javascript JIT is not supported on ppc/arm < v6/RISCV/mips64
 PACKAGECONFIG:remove:powerpc = "jit"
