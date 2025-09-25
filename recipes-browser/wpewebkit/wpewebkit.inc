@@ -21,7 +21,6 @@ inherit cmake features_check pkgconfig perlnative python3native
 
 
 require ${@'wpewebkit-qt6.inc'  if 'qt6-layer' in d.getVar('BBFILE_COLLECTIONS').split() else ''}
-require ${@'wpewebkit-qt5.inc'  if 'qt5-layer' in d.getVar('BBFILE_COLLECTIONS').split() else ''}
 
 export WK_USE_CCACHE="NO"
 
@@ -58,13 +57,11 @@ PACKAGECONFIG[lcms] = "-DUSE_LCMS=ON,-DUSE_LCMS=OFF,"
 PACKAGECONFIG[libbacktrace] = "-DUSE_LIBBACKTRACE=ON,-DUSE_LIBBACKTRACE=OFF,libbacktrace"
 PACKAGECONFIG[minibrowser] = "-DENABLE_MINIBROWSER=ON,-DENABLE_MINIBROWSER=OFF,wayland-native wayland-protocols wpebackend-fdo"
 PACKAGECONFIG[mediasource] = "-DENABLE_MEDIA_SOURCE=ON,-DENABLE_MEDIA_SOURCE=OFF,gstreamer1.0 gstreamer1.0-plugins-good"
-PACKAGECONFIG[mediastream] = "-DENABLE_MEDIA_STREAM=ON -DUSE_GSTREAMER_TRANSCODER=OFF,-DENABLE_MEDIA_STREAM=OFF,gstreamer1.0 gstreamer1.0-plugins-bad"
+PACKAGECONFIG[mediastream] = "-DENABLE_MEDIA_STREAM=ON,-DENABLE_MEDIA_STREAM=OFF,gstreamer1.0 gstreamer1.0-plugins-bad"
 # pdfjs adds +3MB to the binary size of libWPEWebKit
 PACKAGECONFIG[pdfjs] = "-DENABLE_PDFJS=ON,-DENABLE_PDFJS=OFF,"
 
 PACKAGECONFIG[speech-synthesis] = "-DENABLE_SPEECH_SYNTHESIS=ON,-DENABLE_SPEECH_SYNTHESIS=OFF,flite"
-# Remove speech-synthesis. Flite is not available before langdale.
-PACKAGECONFIG:remove = "${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'kirkstone', 'speech-synthesis', '', d)}"
 
 PACKAGECONFIG[sysprof] = "-DUSE_SYSPROF_CAPTURE=ON, -DUSE_SYSPROF_CAPTURE=OFF,"
 PACKAGECONFIG[system-sysprof] = "-DUSE_SYSTEM_SYSPROF_CAPTURE=ON, -DUSE_SYSTEM_SYSPROF_CAPTURE=OFF, sysprof"
@@ -77,8 +74,12 @@ PACKAGECONFIG[qtwpe] = "-DENABLE_WPE_QT_API=ON ${CMAKE_QT_OECONF},-DENABLE_WPE_Q
 PACKAGECONFIG[unified-builds] = "-DENABLE_UNIFIED_BUILDS=ON,-DENABLE_UNIFIED_BUILDS=OFF,"
 PACKAGECONFIG[thunder] = "-DENABLE_THUNDER=ON,-DENABLE_THUNDER=OFF,virtual/open-cdm"
 PACKAGECONFIG[webxr] = "-DENABLE_WEBXR=ON,-DENABLE_WEBXR=OFF,openxr"
+
 # Build option for WPE API 1.1
 PACKAGECONFIG[wpe-1-1-api] = "-DENABLE_WPE_1_1_API:BOOL=ON,-DENABLE_WPE_1_1_API:BOOL=OFF,"
+
+# Build option for WPE platform API
+PACKAGECONFIG[wpe-platform] = "-DENABLE_WPE_PLATFORM=ON,-DENABLE_WPE_PLATFORM=OFF,libinput wayland-native"
 
 EXTRA_OECMAKE = " -DPORT=WPE -G Ninja"
 
@@ -125,7 +126,7 @@ ARM_INSTRUCTION_SET:armv7r = "thumb"
 ARM_INSTRUCTION_SET:armv7m = "thumb"
 ARM_INSTRUCTION_SET:armv7ve = "thumb"
 
-GSTVIDEOCONVERTSCALEPLUGIN = "${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'kirkstone langdale', 'gstreamer1.0-plugins-base-videoconvert gstreamer1.0-plugins-base-videoscale', 'gstreamer1.0-plugins-base-videoconvertscale', d)}"
+GSTVIDEOCONVERTSCALEPLUGIN = "gstreamer1.0-plugins-base-videoconvertscale"
 
 # Extra runtime depends
 RDEPENDS:${PN} += " \
