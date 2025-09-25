@@ -7,7 +7,7 @@ inputs:
   bitbake_source:
     default: 'source'
   repo_release:
-    default: 'kirkstone'
+    default: 'scarthgap'
 runs:
   using: 'composite'
   steps:
