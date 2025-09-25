@@ -1,26 +1,6 @@
 name: Build tests
 on: [pull_request]
 jobs:
-  kirkstone-repo:
-    runs-on: ubuntu-22.04
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-repo
-        with:
-          repo_release: 'kirkstone'
-
-  kirkstone-raspberrypi3-mesa-weston-wpe-2-50:
-    runs-on: self-hosted
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/actions/bitbake-build
-        with:
-          bitbake_source: 'raspberrypi3-mesa-wpe-2-50 raspberrypi3-mesa poky layers.raspberrypi.webkit conf_v3.wpe-2_50'
-          repo_release: 'kirkstone'
-    needs: kirkstone-repo
-
   scarthgap-repo:
     runs-on: ubuntu-22.04
     if: "!contains(github.event.head_commit.message, 'ci skip')"

@@ -4,7 +4,7 @@ inputs:
   repo_ref:
     default: ${{ github.ref }}
   repo_release:
-    default: 'kirkstone'
+    default: 'scarthgap'
 runs:
   using: 'composite'
   steps:

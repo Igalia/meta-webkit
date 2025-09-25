@@ -29,7 +29,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Environment (please complete the following information):**
- - yocto release: [e.g. kirkstone]
+ - yocto release: [e.g. scarthgap]
  - hardware target: [e.g. rpi4 64bits]
 
 **Additional context**
