@@ -110,6 +110,10 @@ EXTRA_OECMAKE = "\
     -G Ninja \
 "
 
+# Unless DEBUG_BUILD is enabled, pass -g1 to massively reduce the size of the
+# debug symbols (4.3GB to 700M at time of writing)
+DEBUG_FLAGS:append = "${@oe.utils.vartrue('DEBUG_BUILD', '', ' -g1', d)}"
+
 # Javascript JIT is not supported on ppc/arm < v6/RISCV/mips64
 PACKAGECONFIG:remove:powerpc = "jit"
 PACKAGECONFIG:remove:powerpc64 = "jit"
