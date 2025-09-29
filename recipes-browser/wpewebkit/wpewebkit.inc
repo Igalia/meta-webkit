@@ -22,7 +22,7 @@ inherit cmake features_check pkgconfig perlnative python3native
 
 require ${@'wpewebkit-qt6.inc'  if 'qt6-layer' in d.getVar('BBFILE_COLLECTIONS').split() else ''}
 
-export WK_USE_CCACHE="NO"
+export WK_USE_CCACHE = "NO"
 
 PACKAGECONFIG ??= "accessibility avif dfg-jit gbm gpu-process \
                    jit jpegxl libbacktrace \
