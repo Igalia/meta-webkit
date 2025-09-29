@@ -54,8 +54,6 @@ RRECOMMENDS:${PN}-bin = "adwaita-icon-theme librsvg-gtk"
 
 inherit cmake lib_package pkgconfig perlnative python3native
 
-S = "${WORKDIR}/webkitgtk-${PV}"
-
 # To build with embedded gl support -> Enable *both* "opengl" and "gles2" option
 # To build with desktop  gl support -> Enable "opengl", but disable "gles2" option
 PACKAGECONFIG ??= " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)} \

@@ -12,7 +12,12 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 DEPENDS = "brotli"
 
-S = "${WORKDIR}/git"
+# Backward compatibility with scarthgap
+python __anonymous() {
+    if not d.getVar('UNPACKDIR'):
+        d.setVar('S', d.getVar('WORKDIR') + '/git')
+}
+
 SRC_URI = "git://github.com/google/woff2.git;branch=master;protocol=https \
            file://0001-Fix-compilation-errors-by-including-cstdint.patch"
 SRCREV = "1bccf208bca986e53a647dfe4811322adb06ecf8"

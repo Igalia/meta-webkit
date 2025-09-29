@@ -12,7 +12,11 @@ SRC_URI += "git://chromium.googlesource.com/webm/libvpx;protocol=https;branch=ma
             file://libvpx-configure-support-blank-prefix.patch \
            "
 
-S = "${WORKDIR}/git"
+# Backward compatibility with scarthgap
+python __anonymous() {
+    if not d.getVar('UNPACKDIR'):
+        d.setVar('S', d.getVar('WORKDIR') + '/git')
+}
 
 # ffmpeg links with this and fails
 # sysroots/armv4t-oe-linux-gnueabi/usr/lib/libvpx.a(vpx_encoder.c.o)(.text+0xc4): unresolvable R_ARM_THM_CALL relocation against symbol `memcpy@@GLIBC_2.4'

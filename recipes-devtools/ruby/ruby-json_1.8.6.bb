@@ -9,7 +9,11 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/Ruby;md5=105fc57d3f4d3122db3291
 
 SRCREV = "7f4cfd853f2c919d854fb95548a19980feff17e8"
 
-S = "${WORKDIR}/git"
+# Backward compatibility with scarthgap
+python __anonymous() {
+    if not d.getVar('UNPACKDIR'):
+        d.setVar('S', d.getVar('WORKDIR') + '/git')
+}
 
 RUBY_GEM_NAME="json"
 RUBY_BUILD_GEMS="${RUBY_GEM_NAME}.gemspec"
