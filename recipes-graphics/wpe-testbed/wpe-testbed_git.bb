@@ -11,7 +11,11 @@ PACKAGE_ARCH = "${TUNE_PKGARCH}"
 SRCREV = "d7ac4675d0392bf843526700fdae9f0fd4c84756"
 SRC_URI = "git://git@github.com/Igalia/wpe-testbed-wayland.git;protocol=ssh;branch=main"
 
-S = "${WORKDIR}/git"
+# Backward compatibility with scarthgap
+python __anonymous() {
+    if not d.getVar('UNPACKDIR'):
+        d.setVar('S', d.getVar('WORKDIR') + '/git')
+}
 
 EXTRA_OECMAKE = ""
 

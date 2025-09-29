@@ -7,7 +7,11 @@ SRCREV = "108e4ab0da043421202e3ef64e0a38d1db8b82ee"
 
 SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=https;branch=master"
 
-S = "${WORKDIR}/git"
+# Backward compatibility with scarthgap
+python __anonymous() {
+    if not d.getVar('UNPACKDIR'):
+        d.setVar('S', d.getVar('WORKDIR') + '/git')
+}
 
 BBCLASSEXTEND += "devupstream:target"
 

@@ -4,7 +4,11 @@ BUGTRACKER = "https://github.com/libjxl/libjxl/issues"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-S = "${WORKDIR}/git"
+# Backward compatibility with scarthgap
+python __anonymous() {
+    if not d.getVar('UNPACKDIR'):
+        d.setVar('S', d.getVar('WORKDIR') + '/git')
+}
 
 SRC_URI = "git://github.com/libjxl/libjxl.git;branch=v0.8.x;protocol=https;rev=c27d499263435ac77007174e0f1cf54557cff23a \
            file://fix-riscv-build-add-missing-atomic-include.patch "

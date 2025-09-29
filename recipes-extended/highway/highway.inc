@@ -2,7 +2,11 @@ SUMMARY = "Efficient and performance-portable SIMD"
 HOMEPAGE = "https://github.com/google/highway/"
 BUGTRACKER = "https://github.com/google/highway/issues"
 
-S = "${WORKDIR}/git"
+# Backward compatibility with scarthgap
+python __anonymous() {
+    if not d.getVar('UNPACKDIR'):
+        d.setVar('S', d.getVar('WORKDIR') + '/git')
+}
 
 SRC_URI = "git://github.com/google/highway.git;protocol=https;branch=master \
            file://pr_1589.patch"
