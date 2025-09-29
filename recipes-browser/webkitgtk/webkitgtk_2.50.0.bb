@@ -159,3 +159,15 @@ do_install:append() {
 FILES:${PN} += "${libdir}/webkitgtk-${WEBKITGTK_API_VERSION}/injected-bundle/libwebkitgtkinjectedbundle.so"
 FILES:${PN}-dbg += "${libdir}/webkitgtk-${WEBKITGTK_API_VERSION}/injected-bundle/.debug/libwebkitgtkinjectedbundle.so"
 FILES:${PN}-dbg += "${libexecdir}/webkitgtk-${WEBKITGTK_API_VERSION}/.debug/*"
+
+PACKAGE_PREPROCESS_FUNCS += "src_package_preprocess"
+src_package_preprocess () {
+        # Trim build paths from comments in generated sources to ensure reproducibility
+        sed -i -e "s,${WORKDIR},,g" \
+            ${B}/JavaScriptCore/DerivedSources/*.h \
+            ${B}/JavaScriptCore/DerivedSources/yarr/*.h \
+            ${B}/JavaScriptCore/PrivateHeaders/JavaScriptCore/*.h \
+            ${B}/WebCore/DerivedSources/*.cpp \
+            ${B}/WebKitGTK/DerivedSources/webkit/*.cpp
+}
+
