@@ -29,6 +29,7 @@ PACKAGECONFIG ??= "accessibility avif dfg-jit gbm gpu-process \
                    jit jpegxl libbacktrace \
                    mediasource mediastream \
                    remote-inspector speech-synthesis \
+                   sysprof ${@' system-sysprof' if ('meta-gnome' in d.getVar('BBLAYERS').split()) and d.getVar('LAYERSERIES_CORENAMES') != 'scarthgap' else ''} \
                    unified-builds video webaudio woff2 \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
                   "
@@ -65,6 +66,8 @@ PACKAGECONFIG[speech-synthesis] = "-DENABLE_SPEECH_SYNTHESIS=ON,-DENABLE_SPEECH_
 # Remove speech-synthesis. Flite is not available before langdale.
 PACKAGECONFIG:remove = "${@bb.utils.contains_any('LAYERSERIES_CORENAMES', 'kirkstone', 'speech-synthesis', '', d)}"
 
+PACKAGECONFIG[sysprof] = "-DUSE_SYSPROF_CAPTURE=ON, -DUSE_SYSPROF_CAPTURE=OFF,"
+PACKAGECONFIG[system-sysprof] = "-DUSE_SYSTEM_SYSPROF_CAPTURE=ON, -DUSE_SYSTEM_SYSPROF_CAPTURE=OFF, sysprof"
 PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON,-DENABLE_VIDEO=OFF,gstreamer1.0 gstreamer1.0-plugins-base"
 PACKAGECONFIG[webaudio] = "-DENABLE_WEB_AUDIO=ON,-DENABLE_WEB_AUDIO=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good"
 PACKAGECONFIG[woff2] = "-DUSE_WOFF2=ON,-DUSE_WOFF2=OFF,woff2"
@@ -77,7 +80,7 @@ PACKAGECONFIG[webxr] = "-DENABLE_WEBXR=ON,-DENABLE_WEBXR=OFF,openxr"
 # Build option for WPE API 1.1
 PACKAGECONFIG[wpe-1-1-api] = "-DENABLE_WPE_1_1_API:BOOL=ON,-DENABLE_WPE_1_1_API:BOOL=OFF,"
 
-EXTRA_OECMAKE = " -DPORT=WPE -G Ninja -DUSE_SYSTEM_SYSPROF_CAPTURE=OFF"
+EXTRA_OECMAKE = " -DPORT=WPE -G Ninja"
 
 # TODO: documentation and introspection are disabled by default because the are
 # causing cross-compiling build errors
