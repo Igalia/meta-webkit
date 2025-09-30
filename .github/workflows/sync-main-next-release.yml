@@ -1,0 +1,28 @@
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  mirror_next_release:
+    runs-on: ubuntu-latest
+    name: Mirror 'main' branch to target next release branch
+    steps:
+    - name: Mirror action step
+      id: mirror
+      uses: google/mirror-branch-action@v1.0
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        source: 'main'
+        dest: 'whinlatter'
+  mirror_latest_scarthgap:
+    runs-on: ubuntu-latest
+    name: Mirror 'main' branch for latest 'scarthgap' release branch
+    steps:
+    - name: Mirror action step
+      id: mirror
+      uses: google/mirror-branch-action@v1.0
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        source: 'main'
+        dest: 'scarthgap-latest'
