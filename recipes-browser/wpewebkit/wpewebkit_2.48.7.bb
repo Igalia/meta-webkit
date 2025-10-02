@@ -5,10 +5,9 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0001-Enforce-surface-size-match-when-maximized-to-avoid-W.patch \
-           file://0002-REGRESSION-2.48.5-WPE-GTK-Does-not-compile-on-ARMv7.patch \
           "
 
-SRC_URI[tarball.sha256sum] = "01f36010705adb14404c56baf033147f7927cc7c6badec81bb141266fcdd8d0b"
+SRC_URI[tarball.sha256sum] = "cecf49844dfba7ccf53d64b32cb8cf2cbd69eb5ec9080b1c6e52f9d1ee87b690"
 
 SRCBRANCH:class-devupstream = "webkitglib/2.48"
 SRC_URI:class-devupstream = "git://github.com/WebKit/WebKit.git;protocol=https;branch=${SRCBRANCH}"
