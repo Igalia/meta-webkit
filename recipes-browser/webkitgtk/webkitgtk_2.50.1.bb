@@ -36,14 +36,8 @@ DEPENDS = "curl \
            zlib \
 "
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
-
-SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
-           file://0001-Cherry-pick-300315-main-79a0cf9b1bef-.-https-bugs.we.patch \
-           file://0002-Cherry-pick-300185-main-f0d8991bbfe3-.-https-bugs.we.patch \
-           file://fix-ftbfs-32bits.patch \
-          "
-SRC_URI[tarball.sha256sum] = "e564b8099f9a3ae32409539b290bbd2ad084e99b6d22d4aac5e51e4554df8bc2"
+SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball"
+SRC_URI[tarball.sha256sum] = "33e912ee6e3cdb4b9803715f50686af85a60af47f1cf72a6acc6a2db1bb3d9fe"
 
 RRECOMMENDS:${PN} = "${PN}-bin \
                      ca-certificates \
