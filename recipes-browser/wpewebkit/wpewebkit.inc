@@ -1,6 +1,7 @@
-SUMMARY = "WPE WebKit port pairs the WebKit engine with OpenGL-ES (OpenGL for Embedded Systems), \
-           allowing embedders to create simple and performant systems based on Web platform technologies. \
-           It is designed with hardware acceleration in mind, relying on EGL, and OpenGL ES."
+SUMMARY = "Lightweight WebKit port for embedded devices with OpenGL-ES acceleration"
+DESCRIPTION = "WPE WebKit port pairs the WebKit engine with OpenGL-ES (OpenGL for Embedded Systems), \
+               allowing embedders to create simple and performant systems based on Web platform technologies. \
+               It is designed with hardware acceleration in mind, relying on EGL, and OpenGL ES."
 HOMEPAGE = "https://trac.webkit.org/wiki/WPE"
 BUGTRACKER = "https://bugs.webkit.org/"
 LICENSE = "BSD-2-Clause & LGPL-2.0-or-later"
@@ -18,7 +19,6 @@ DEPENDS:append = " \
 "
 
 inherit cmake features_check pkgconfig perlnative python3native
-
 
 require ${@'wpewebkit-qt6.inc'  if 'qt6-layer' in d.getVar('BBFILE_COLLECTIONS').split() else ''}
 
@@ -106,8 +106,6 @@ PACKAGECONFIG:remove:loongarch64 = "jit"
 # Javascript JIT is not supported on x86
 PACKAGECONFIG:remove:x86 = "jit"
 
-PACKAGECONFIG:remove:mipsarcho32:toolchain-clang = "jit"
-
 LDFLAGS:append:riscv64 = " -pthread"
 
 FULL_OPTIMIZATION:remove = "-g"
@@ -116,8 +114,10 @@ LEAD_SONAME = "libWPEWebKit.so"
 PACKAGES =+ "${PN}-web-inspector-plugin ${PN}-qtwpe-qml-plugin"
 FILES:${PN} += "${libdir}/wpe-webkit*/injected-bundle/libWPEInjectedBundle.so"
 FILES:${PN}-web-inspector-plugin += "${datadir}/wpe-webkit-*/inspector.gresource"
+# nooelint: oelint.vars.insaneskip - ignored for convenience. We need to recheck if problem persist
 INSANE_SKIP:${PN}-web-inspector-plugin = "dev-so"
 
+# nooelint: oelint.vars.insaneskip - ignored for convenience. We need to recheck if problem persist
 INSANE_SKIP:${PN}-qtwpe-qml-plugin = "dev-so"
 
 # JSC JIT on ARMv7 is better supported with Thumb2 instruction set.
@@ -126,24 +126,21 @@ ARM_INSTRUCTION_SET:armv7r = "thumb"
 ARM_INSTRUCTION_SET:armv7m = "thumb"
 ARM_INSTRUCTION_SET:armv7ve = "thumb"
 
-GSTVIDEOCONVERTSCALEPLUGIN = "gstreamer1.0-plugins-base-videoconvertscale"
-
 # Extra runtime depends
-RDEPENDS:${PN} += " \
-    libgles2 \
-    virtual-wpebackend \
+# nooelint: oelint.vars.dependsordered - ignored for convenience
+RDEPENDS:${PN} += "\
     ${@bb.utils.contains('PACKAGECONFIG', 'remote-inspector', '${PN}-web-inspector-plugin', '', d)} \
+    ${@bb.utils.contains('PACKAGECONFIG', 'gst_gl', 'gstreamer1.0-plugins-base-opengl', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'mediasource', 'gstreamer1.0-plugins-good-isomp4', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'webaudio', 'gstreamer1.0-plugins-good-wavparse', '', d)} \
-    ${@bb.utils.contains('PACKAGECONFIG', 'gst_gl', 'gstreamer1.0-plugins-base-opengl', '', d)} \
     ${@bb.utils.contains('PACKAGECONFIG', 'video', 'gstreamer1.0-plugins-base-app \
-                                                    gstreamer1.0-plugins-base-playback \
                                                     gstreamer1.0-plugins-base-audioconvert \
                                                     gstreamer1.0-plugins-base-audioresample \
                                                     gstreamer1.0-plugins-base-gio \
-                                                    gstreamer1.0-plugins-base-volume \
-                                                    ${GSTVIDEOCONVERTSCALEPLUGIN} \
+                                                    gstreamer1.0-plugins-base-playback \
                                                     gstreamer1.0-plugins-base-typefindfunctions \
+                                                    gstreamer1.0-plugins-base-videoconvertscale \
+                                                    gstreamer1.0-plugins-base-volume \
                                                     gstreamer1.0-plugins-good-audiofx \
                                                     gstreamer1.0-plugins-good-audioparsers \
                                                     gstreamer1.0-plugins-good-autodetect \
@@ -151,14 +148,16 @@ RDEPENDS:${PN} += " \
                                                     gstreamer1.0-plugins-good-deinterlace \
                                                     gstreamer1.0-plugins-good-interleave \
                                                     ', '', d)} \
+    libgles2 \
+    virtual-wpebackend \
 "
 
-RDEPENDS:${PN}-web-inspector-plugin += " \
+RDEPENDS:${PN}-web-inspector-plugin += "\
     shared-mime-info \
 "
 
 # Extra runtime recommends
-RRECOMMENDS:${PN} += " \
+RRECOMMENDS:${PN} += "\
     ca-certificates \
     ttf-dejavu-sans \
     ttf-dejavu-sans-mono \
