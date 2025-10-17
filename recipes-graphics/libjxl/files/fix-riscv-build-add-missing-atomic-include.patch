@@ -11,6 +11,7 @@ Co-authored-by: Moritz Firsching <firsching@google.com>
  lib/jxl/enc_xyb.cc | 1 +
  1 file changed, 1 insertion(+)
 
+Signed-off-by: Carlos Alberto Lopez Perez <clopez@igalia.com>
 diff --git a/lib/jxl/enc_xyb.cc b/lib/jxl/enc_xyb.cc
 index 1ef78877..2ee0abf8 100644
 --- a/lib/jxl/enc_xyb.cc
