@@ -8,11 +8,9 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=027c71da9e4664fdf192e6ec615f4d18"
 UPSTREAM_CHECK_URI = "https://github.com/google/woff2/releases"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
-
 DEPENDS = "brotli"
 
-# Backward compatibility with scarthgap
+# nooelint: oelint.task.noanonpython - required for backward compatibility with scarthgap
 python __anonymous() {
     if not d.getVar('UNPACKDIR'):
         d.setVar('S', d.getVar('WORKDIR') + '/git')

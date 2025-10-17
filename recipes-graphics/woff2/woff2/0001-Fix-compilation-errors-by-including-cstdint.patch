@@ -11,6 +11,8 @@ This resolve errors related to undefined uint8_t type
 
 Upstream-Status: Submitted [https://github.com/google/woff2/pull/176]
 
+Signed-off-by: Pablo Saavedra <psaavedra@igalia.com>
+
 diff --git a/include/woff2/output.h b/include/woff2/output.h
 index c325f67..5c4dc4d 100644
 --- a/include/woff2/output.h
