@@ -1,37 +1,30 @@
-SUMMARY = "Cog is a small launcher designed for the WebKit WPE port. \
-           But it also allows to use the WebKit GTK port instead. \
-           Cog is small: provides no user interface, and is suitable \
-           to be used as a Web application container. Cog may be \
-           presented fullscreen depending on the WPE backend being used. \
-           "
+SUMMARY = "Small single window launcher for WPEWebKit"
+DESCRIPTION = "Cog is a small launcher designed for the WebKit WPE port. \
+               But it also allows to use the WebKit GTK port instead. \
+               Cog is small: provides no user interface, and is suitable \
+               to be used as a Web application container. Cog may be \
+               presented fullscreen depending on the WPE backend being used. \
+               "
 HOMEPAGE = "https://github.com/Igalia/cog"
 BUGTRACKER = "https://github.com/Igalia/cog/issues"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://COPYING;md5=bf1229cd7425b302d60cdb641b0ce5fb"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
-
-SRC_URI = "https://wpewebkit.org/releases/${P}.tar.xz"
-
 # Depend on wpewebkit unless the webkitgtk packageconfig option is selected.
 DEPENDS += "\
-            ${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', 'webkitgtk', 'wpewebkit', d)} \
-            ${@bb.utils.contains('PACKAGECONFIG', 'fdo', 'wayland', '', d)} \
+            glib-2.0 \
             libsoup \
-            glib-2.0 wayland-native wayland-protocols \
             libxkbcommon \
+            ${@bb.utils.contains('PACKAGECONFIG', 'fdo', 'wayland', '', d)} \
+            wayland-native wayland-protocols \
+            ${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', 'webkitgtk', 'wpewebkit', d)} \
             "
 
 DEPENDS:append:class-target = " \
             ${@bb.utils.contains('PACKAGECONFIG', 'fdo', 'wayland-native', '', d)} \
             "
 
-# At run-time cog package should depend on virtual-wpebackend unless webkitgtk+ is enabled.
-RDEPENDS:${PN} += "\
-    ${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', '', 'virtual-wpebackend', d)} \
-    xkeyboard-config \
-    wpewebkit (>= 2.42) \
-    "
+SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz"
 
 inherit pkgconfig
 
@@ -53,11 +46,20 @@ PACKAGECONFIG:class-devupstream ?= " \
 # Also libWPEBackend-default.so should go into the main package.
 FILES_SOLIBSDEV = "${libdir}/libcogcore*.so"
 
-FILES:${PN} += " \
+FILES:${PN} += "\
     ${libdir}/libcogplatform*.so \
     ${datadir}/dbus-1/system.d/com.igalia.Cog.conf \
 "
+# nooelint: oelint.vars.insaneskip - ignored for convenience
 INSANE_SKIP:${PN} = "dev-so"
+
+# At run-time cog package should depend on virtual-wpebackend unless webkitgtk+ is enabled.
+# nooelint: oelint.vars.dependsordered - ignored for convenience
+RDEPENDS:${PN} += "\
+    ${@bb.utils.contains('PACKAGECONFIG', 'webkitgtk', '', 'virtual-wpebackend', d)} \
+    xkeyboard-config \
+    wpewebkit (>= 2.42) \
+    "
 
 # Local user name starting cog with DBus system session enabled. This should be
 # set only if the dbus PACKAGECONFIG is enabled.
@@ -67,4 +69,3 @@ COG_PACKAGECONFIG := " \
     ${@bb.utils.contains('PREFERRED_PROVIDER_virtual/wpebackend', 'wpebackend-fdo', \
                          bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wl', '', d), \
                          '', d)}"
-
