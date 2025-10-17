@@ -1,3 +1,6 @@
+SUMMARY = "Package groups for runtime dependencies"
+DESCRIPTION = "Package groups used for runtime dependencies"
+
 PACKAGE_ARCH = "${TUNE_PKGARCH}"
 
 inherit packagegroup
@@ -18,17 +21,17 @@ PACKAGES = " \
 "
 
 RDEPENDS:packagegroup-wpewebkit-depends = "\
-    packagegroup-wpewebkit-depends-sys-extended \
-    packagegroup-wpewebkit-depends-perl \
-    packagegroup-wpewebkit-depends-python \
-    packagegroup-wpewebkit-depends-misc \
+    packagegroup-wpewebkit-depends-alternative \
     packagegroup-wpewebkit-depends-core \
     packagegroup-wpewebkit-depends-desktop \
-    packagegroup-wpewebkit-depends-runtime-add \
-    packagegroup-wpewebkit-depends-alternative \
-    packagegroup-wpewebkit-depends-video \
     packagegroup-wpewebkit-depends-extra \
+    packagegroup-wpewebkit-depends-misc \
+    packagegroup-wpewebkit-depends-perl \
+    packagegroup-wpewebkit-depends-python \
+    packagegroup-wpewebkit-depends-runtime-add \
+    packagegroup-wpewebkit-depends-sys-extended \
     packagegroup-wpewebkit-depends-tests \
+    packagegroup-wpewebkit-depends-video \
 "
 
 RDEPENDS:packagegroup-wpewebkit-depends-sys-extended = "\
@@ -37,8 +40,8 @@ RDEPENDS:packagegroup-wpewebkit-depends-sys-extended = "\
     hdparm \
     libaio \
     lzo \
-    tmux \
     sysstat \
+    tmux \
     unzip \
     watchdog \
     wget \
@@ -49,10 +52,10 @@ RDEPENDS:packagegroup-wpewebkit-depends-sys-extended = "\
 RDEPENDS:packagegroup-wpewebkit-depends-perl = "\
     gdbm \
     perl \
-    perl-modules \
-    perl-misc \
-    perl-pod \
     perl-dev \
+    perl-misc \
+    perl-modules \
+    perl-pod \
     zlib \
 "
 
@@ -70,17 +73,19 @@ RDEPENDS:packagegroup-wpewebkit-depends-python = "\
 STRACE = "strace"
 STRACE:riscv32 = ""
 
+# nooelint: oelint.vars.dependsordered - ignored for convenience
 RDEPENDS:packagegroup-wpewebkit-depends-misc = "\
     gettext \
     gettext-runtime \
     groff \
+    libusb1 \
     lsof \
     ${STRACE} \
-    libusb1 \
-    usbutils \
     rpm \
-    "
+    usbutils \
+"
 
+# nooelint: oelint.vars.dependsordered - ignored for convenience
 RDEPENDS:packagegroup-wpewebkit-depends-core = "\
     at \
     bash \
@@ -154,11 +159,13 @@ RDEPENDS:packagegroup-wpewebkit-depends-core = "\
     libbacktrace \
 "
 
-RDEPENDS:packagegroup-wpewebkit-depends-core:append:libc-glibc = "\
+RDEPENDS:packagegroup-wpewebkit-depends-core:append:libc-glibc = " \
     glibc \
     glibc-utils \
     localedef \
 "
+
+# nooelint: oelint.vars.dependsordered - ignored for convenience
 RDEPENDS:packagegroup-wpewebkit-depends-desktop = "\
     alsa-lib \
     atk \
@@ -178,6 +185,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-desktop = "\
     xorg-minimal-fonts \
 "
 
+# nooelint: oelint.vars.dependsordered - ignored for convenience
 RDEPENDS:packagegroup-wpewebkit-depends-runtime-add = "\
     ldd \
     e2fsprogs-mke2fs \
@@ -187,7 +195,9 @@ RDEPENDS:packagegroup-wpewebkit-depends-runtime-add = "\
     libxml-perl \
     libxml-sax-perl \
 "
-RDEPENDS:packagegroup-wpewebkit-depends-runtime-add:append:libc-glibc = "\
+
+# nooelint: oelint.vars.dependsordered - ignored for convenience
+RDEPENDS:packagegroup-wpewebkit-depends-runtime-add:append:libc-glibc = " \
     glibc-localedatas \
     glibc-gconvs \
     glibc-charmaps \
@@ -197,6 +207,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-runtime-add:append:libc-glibc = "\
     glibc-pcprofile \
 "
 
+# nooelint: oelint.vars.dependsordered - ignored for convenience
 RDEPENDS:packagegroup-wpewebkit-depends-alternative = " \
     flite \
     geoclue \
@@ -213,6 +224,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-alternative = " \
     woff2 \
 "
 
+# nooelint: oelint.vars.dependsordered - ignored for convenience
 RDEPENDS:packagegroup-wpewebkit-depends-video = " \
     gstreamer1.0 \
     gstreamer1.0-plugins-base \
@@ -244,15 +256,16 @@ RDEPENDS:packagegroup-wpewebkit-depends-video = " \
 
 RDEPENDS:packagegroup-wpewebkit-depends-extra = " \
     ca-certificates \
+    gstreamer1.0-plugins-bad-meta \
+    gstreamer1.0-plugins-base-meta \
+    gstreamer1.0-plugins-good-meta \
     shared-mime-info \
     ttf-dejavu-sans \
     ttf-dejavu-sans-mono \
     ttf-dejavu-serif \
-    gstreamer1.0-plugins-base-meta \
-    gstreamer1.0-plugins-good-meta \
-    gstreamer1.0-plugins-bad-meta \
 "
 
+# nooelint: oelint.vars.dependsordered - ignored for convenience
 RDEPENDS:packagegroup-wpewebkit-depends-tests = " \
     pkgconfig \
     p7zip \
