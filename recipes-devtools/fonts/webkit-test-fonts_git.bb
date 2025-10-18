@@ -6,10 +6,6 @@ DESCRIPTION = "This repository provides a collection of fonts used to perform \
                cross-platform WebKitGTK testing."
 HOMEPAGE = "https://github.com/WebKitGTK/webkitgtk-test-fonts"
 
-SUMMARY = ""
-DESCRIPTION = ""
-HOMEPAGE = ""
-
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE.dejavu;md5=b48ab4e9977f6f7d9eb9481bb69a219d"
 
