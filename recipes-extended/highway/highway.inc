@@ -1,26 +1,28 @@
-SUMMARY = "Efficient and performance-portable SIMD"
-HOMEPAGE = "https://github.com/google/highway/"
+SUMMARY = "Performance-portable SIMD library for C++"
+DESCRIPTION = "Highway is a C++ library that provides performance-portable, length-agnostic SIMD (Single Instruction, Multiple Data) operations with runtime dispatch."
+HOMEPAGE = "https://github.com/google/highway"
 BUGTRACKER = "https://github.com/google/highway/issues"
 
-# Backward compatibility with scarthgap
-python __anonymous() {
-    if not d.getVar('UNPACKDIR'):
-        d.setVar('S', d.getVar('WORKDIR') + '/git')
-}
+LICENSE = "Apache-2.0"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=2b42edef8fa55315f34f2370b4715ca9"
 
 SRC_URI = "git://github.com/google/highway.git;protocol=https;branch=master \
            file://pr_1589.patch"
 SRCREV = "46e365d6770f5d7a4240d8ac9d8e928a520478ea"
 
-LICENSE = "Apache-2.0"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=2b42edef8fa55315f34f2370b4715ca9"
+inherit cmake
 
+# nooelint: oelint.task.noanonpython - required for backward compatibility with scarthgap
+python __anonymous() {
+    if not d.getVar('UNPACKDIR'):
+        d.setVar('S', d.getVar('WORKDIR') + '/git')
+}
 EXTRA_OECMAKE = " -DBUILD_TESTING=OFF \
     -DHWY_WARNINGS_ARE_ERRORS=OFF \
     -DHWY_ENABLE_EXAMPLES=OFF \
     -DHWY_ENABLE_INSTALL=ON \
     -DBUILD_SHARED_LIBS=ON "
 
+# nooelint: oelint.vars.specific - ignored for convenience
 CXXFLAGS:append:arm = " -mfp16-format=ieee"
 
-inherit cmake

@@ -34,6 +34,7 @@ See the documentation from GCC for the `Inlining rules` in the links from above.
 Issues related: #1570 and #1460.
 
 Upstream-Status: Backport [https://github.com/google/highway/pull/1589]
+Signed-off-by: Carlos Alberto Lopez Perez <clopez@igalia.com>
 ---
  hwy/ops/set_macros-inl.h | 4 ----
  1 file changed, 4 deletions(-)
