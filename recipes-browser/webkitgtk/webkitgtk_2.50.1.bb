@@ -1,4 +1,10 @@
 SUMMARY = "WebKit web rendering engine for the GTK+ platform"
+DESCRIPTION = "WebKitGTK is a full-featured port of the WebKit web \
+               rendering engine designed specifically for the GTK+ \
+               platform. It enables integration of modern web \
+               content rendering into GTK-based applications, \
+               ranging from lightweight HTML/CSS rendering to full \
+               web browser functionality"
 HOMEPAGE = "http://www.webkitgtk.org/"
 BUGTRACKER = "http://bugs.webkit.org/"
 
@@ -36,33 +42,17 @@ DEPENDS = "curl \
            zlib \
 "
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
-
-SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
-           file://0001-Cherry-pick-300315-main-79a0cf9b1bef-.-https-bugs.we.patch \
-           file://0002-Cherry-pick-300185-main-f0d8991bbfe3-.-https-bugs.we.patch \
-           file://fix-ftbfs-32bits.patch \
-          "
-SRC_URI[tarball.sha256sum] = "e564b8099f9a3ae32409539b290bbd2ad084e99b6d22d4aac5e51e4554df8bc2"
-
-RRECOMMENDS:${PN} = "${PN}-bin \
-                     ca-certificates \
-                     shared-mime-info \
-                     ttf-dejavu-sans \
-                     ttf-dejavu-sans-mono \
-                     ttf-dejavu-serif \
-                     ${@bb.utils.contains('PACKAGECONFIG', 'video', 'gstreamer1.0-plugins-base-meta gstreamer1.0-plugins-good-meta gstreamer1.0-plugins-bad-meta', '', d)} \
-                     "
-RRECOMMENDS:${PN}-bin = "adwaita-icon-theme librsvg-gtk"
+SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball"
+SRC_URI[tarball.sha256sum] = "33e912ee6e3cdb4b9803715f50686af85a60af47f1cf72a6acc6a2db1bb3d9fe"
 
 inherit cmake lib_package pkgconfig perlnative python3native
 
 # To build with embedded gl support -> Enable *both* "opengl" and "gles2" option
 # To build with desktop  gl support -> Enable "opengl", but disable "gles2" option
-PACKAGECONFIG ??= " ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)} \
-                    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
-                    ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'opengl gles2 webgl', '', d)} \
-                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
+PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)} \
+                   ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
+                   ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'opengl gles2 webgl', '', d)} \
+                   ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
                    enchant \
                    gbm \
                    gtk4 \
@@ -111,7 +101,7 @@ EXTRA_OECMAKE = "\
 
 # Unless DEBUG_BUILD is enabled, pass -g1 to massively reduce the size of the
 # debug symbols (4.3GB to 700M at time of writing)
-DEBUG_FLAGS:append = "${@bb.utils.contains('LAYERSERIES_CORENAMES', 'scarthgap', oe.utils.vartrue('DEBUG_BUILD', '', ' -g1', d), '', d)}"
+DEBUG_FLAGS:append = " ${@bb.utils.contains('LAYERSERIES_CORENAMES', 'scarthgap', oe.utils.vartrue('DEBUG_BUILD', '', ' -g1', d), '', d)}"
 DEBUG_LEVELFLAG = "${@bb.utils.contains('LAYERSERIES_CORENAMES', 'scarthgap', '', '-g1', d)}"
 
 # Javascript JIT is not supported on ppc/arm < v6/RISCV/mips64
@@ -146,6 +136,21 @@ ARM_INSTRUCTION_SET:armv7r = "thumb"
 ARM_INSTRUCTION_SET:armv7m = "thumb"
 ARM_INSTRUCTION_SET:armv7ve = "thumb"
 
+FILES:${PN} += "${libdir}/webkitgtk-${WEBKITGTK_API_VERSION}/injected-bundle/libwebkitgtkinjectedbundle.so"
+FILES:${PN}-dbg += "${libdir}/webkitgtk-${WEBKITGTK_API_VERSION}/injected-bundle/.debug/libwebkitgtkinjectedbundle.so"
+FILES:${PN}-dbg += "${libexecdir}/webkitgtk-${WEBKITGTK_API_VERSION}/.debug/*"
+
+RRECOMMENDS:${PN} = "${PN}-bin \
+                     adwaita-icon-theme \
+                     ca-certificates \
+                     librsvg-gtk \
+                     shared-mime-info \
+                     ttf-dejavu-sans \
+                     ttf-dejavu-sans-mono \
+                     ttf-dejavu-serif \
+                     ${@bb.utils.contains('PACKAGECONFIG', 'video', 'gstreamer1.0-plugins-base-meta gstreamer1.0-plugins-good-meta gstreamer1.0-plugins-bad-meta', '', d)} \
+                     "
+
 WEBKITGTK_API_VERSION := "6.0"
 
 # Install MiniBrowser in PATH
@@ -155,10 +160,6 @@ do_install:append() {
         mv ${D}${libexecdir}/webkitgtk-${WEBKITGTK_API_VERSION}/MiniBrowser ${D}${bindir}
     fi
 }
-
-FILES:${PN} += "${libdir}/webkitgtk-${WEBKITGTK_API_VERSION}/injected-bundle/libwebkitgtkinjectedbundle.so"
-FILES:${PN}-dbg += "${libdir}/webkitgtk-${WEBKITGTK_API_VERSION}/injected-bundle/.debug/libwebkitgtkinjectedbundle.so"
-FILES:${PN}-dbg += "${libexecdir}/webkitgtk-${WEBKITGTK_API_VERSION}/.debug/*"
 
 PACKAGE_PREPROCESS_FUNCS += "src_package_preprocess"
 src_package_preprocess () {
