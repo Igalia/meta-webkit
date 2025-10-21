@@ -1,19 +1,16 @@
 SUMMARY = "Backend for WPE with specific support for embedded devices used on the RDK"
+DESCRIPTION = "WPEBackend-rdk serves as a modular backend for the WPE WebKit port, providing platform-specific integration for embedded devices, especially within the RDK ecosystem. It supports a variety of hardware targets through configurable backends, including Wayland-EGL, Westeros, Broadcom (Nexus, RPi), NXP i.MX6 (VIV), and a headless mode. The backend also integrates with multiple input handling systems like libinput and Wayland to process user input."
 HOMEPAGE = "https://github.com/WebPlatformForEmbedded/WPEBackend-rdk"
 BUGTRACKER = "https://github.com/WebPlatformForEmbedded/WPEBackend-rdk/issues"
 
 LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://src/wayland/display.h;;beginline=5;endline=24;md5=b1c8cb6b0857048a21b33611f01c575a"
 
-SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=git;branch=master"
-
-PROVIDES += "virtual/wpebackend"
-RPROVIDES:${PN} += "virtual-wpebackend"
-
-DEPENDS:append = " libwpe virtual/egl glib-2.0 libxkbcommon xkeyboard-config"
+DEPENDS:append = " glib-2.0 libwpe libxkbcommon virtual/egl xkeyboard-config"
 
 inherit cmake pkgconfig
 
+PROVIDES += "virtual/wpebackend"
 
 PACKAGECONFIG ?= "wayland input-libinput input-udev"
 
@@ -36,11 +33,15 @@ PACKAGECONFIG[input-libinput] = "-DUSE_INPUT_LIBINPUT=ON,-DUSE_INPUT_LIBINPUT=OF
 PACKAGECONFIG[input-udev] = "-DUSE_INPUT_UDEV=ON,-DUSE_INPUT_UDEV=OFF,udev"
 PACKAGECONFIG[input-wayland] = "-DUSE_INPUT_WAYLAND=ON,-DUSE_INPUT_WAYLAND=OFF,wayland"
 
-do_install() {
-	install -d ${D}${libdir}
-	install -m 0755 ${B}/libWPEBackend-*.so ${D}${libdir}/
-}
-
 FILES_SOLIBSDEV = ""
 FILES:${PN} += "${libdir}/libWPEBackend-default.so ${libdir}/libWPEBackend-rdk.so"
-INSANE_SKIP ="dev-so"
+
+RPROVIDES:${PN} += "virtual-wpebackend"
+
+do_install() {
+    install -d ${D}${libdir}
+    install -m 0755 ${B}/libWPEBackend-*.so ${D}${libdir}/
+}
+
+# nooelint: oelint.vars.insaneskip - ignored for convenience. We need to recheck if problem persist
+INSANE_SKIP = "dev-so"

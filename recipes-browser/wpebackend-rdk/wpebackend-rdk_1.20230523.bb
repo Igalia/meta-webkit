@@ -1,23 +1,24 @@
 require wpebackend-rdk.inc
 
-DEPENDS = "libwpe glib-2.0 libinput"
+DEPENDS += "libinput"
+
+PROVIDES:append:class-devupstream = " virtual/wpebackend"
 
 PV = "1.20221201"
-SRCREV = "108e4ab0da043421202e3ef64e0a38d1db8b82ee"
 
 SRC_URI = "git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=https;branch=master"
+SRC_URI:class-devupstream = "git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=https;branch=master"
 
-# Backward compatibility with scarthgap
+SRCREV = "108e4ab0da043421202e3ef64e0a38d1db8b82ee"
+SRCREV:class-devupstream = "108e4ab0da043421202e3ef64e0a38d1db8b82ee"
+
+RPROVIDES:${PN}:append:class-devupstream = " virtual-wpebackend"
+
+BBCLASSEXTEND += "devupstream:target"
+
+# nooelint: oelint.task.noanonpython - required for backward compatibility with scarthgap
 python __anonymous() {
     if not d.getVar('UNPACKDIR'):
         d.setVar('S', d.getVar('WORKDIR') + '/git')
 }
 
-BBCLASSEXTEND += "devupstream:target"
-
-PROVIDES:append:class-devupstream = " virtual/wpebackend"
-
-SRC_URI:class-devupstream = "git://github.com/WebPlatformForEmbedded/WPEBackend-rdk.git;protocol=https;branch=master"
-SRCREV:class-devupstream = "108e4ab0da043421202e3ef64e0a38d1db8b82ee"
-
-RPROVIDES:${PN}:append:class-devupstream = "virtual-wpebackend"
