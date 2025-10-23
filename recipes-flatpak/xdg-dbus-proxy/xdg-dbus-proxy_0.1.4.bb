@@ -1,3 +1,5 @@
+SUMMARY = "Filtering proxy for D-Bus connections"
+DESCRIPTION = "xdg-dbus-proxy is a filtering proxy for D-Bus connections, originally developed as part of the Flatpak project. It is designed to be used in sandboxed environments to safely expose D-Bus services to applications by filtering the messages that can be sent and received, thereby enhancing security."
 HOMEPAGE = "https://github.com/flatpak/xdg-dbus-proxy"
 LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
