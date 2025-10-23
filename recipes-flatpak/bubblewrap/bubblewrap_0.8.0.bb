@@ -1,4 +1,5 @@
-DESCRIPTION = "Helper binary for running applications sandboxed"
+SUMMARY = "Helper binary for running applications sandboxed"
+DESCRIPTION = "Bubblewrap is a low-level, unprivileged sandboxing utility that allows applications to be run in isolated environments. It creates a new mount namespace, giving fine-grained control over filesystem visibility. Bubblewrap can also leverage kernel features like user, IPC, PID, and network namespaces, as well as seccomp filters, to create robust sandboxes. It is a core component of container and sandboxing tools like Flatpak."
 HOMEPAGE = "https://github.com/containers/bubblewrap"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=5f30f0716dfdd0d91eb439ebec522ec2"
