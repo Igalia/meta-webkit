@@ -9,6 +9,7 @@ Fix configure to accept "--prefix=" (a blank prefix).
  build/make/configure.sh | 20 ++++++++++++++++----
  1 file changed, 16 insertions(+), 4 deletions(-)
 
+Signed-off-by: Pablo Saavedra <psaavedra@igalia.com>
 diff --git a/build/make/configure.sh b/build/make/configure.sh
 index 007e020..04d5cbf 100644
 --- a/build/make/configure.sh
