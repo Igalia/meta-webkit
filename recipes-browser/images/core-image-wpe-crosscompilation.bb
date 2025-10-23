@@ -1,7 +1,8 @@
-SUMMARY = "WPE cross-compilation image with wpebackend-fdo. \
-           This is useful for creating a SDK for cross-building WPE. \
-           The SDK for ARMv7 will default to use the traditional ISA. \
-           To use Thumb2 you have to pass the -mthumb compiler flag."
+SUMMARY = "WPE SDK image with wpebackend-fdo"
+DESCRIPTION = "WPE cross-compilation image with wpebackend-fdo. \
+               This is useful for creating a SDK for cross-building WPE. \
+               The SDK for ARMv7 will default to use the traditional ISA. \
+               To use Thumb2 you have to pass the -mthumb compiler flag."
 
 LICENSE = "BSD-2-Clause"
 

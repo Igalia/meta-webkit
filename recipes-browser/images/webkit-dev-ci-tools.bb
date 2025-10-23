@@ -1,11 +1,12 @@
-SUMMARY = "Image with all the required tools to build WPE (using the script build-webkit) \
-           and also run the tests (layout-tests, performance-tests, api-tests, etc). \
-           The SDK that gets build with 'bitbake ${IMAGENAME} -c populate_sdk' is valid \
-           for using in the host with the script build-webkit and the image itself has \
-           the tools to run the tests on the board. But the image doesn't contain \
-           webkit (wpe) itself. The purpose of this image is for using on the \
-           continous integration systems of webkit.org for WPE tests. \
-           For more info see the WebKit script named cross-toolchain-helper."
+SUMMARY = "WPE continuous integration build and test image"
+DESCRIPTION = "Image with all the required tools to build WPE (using the script build-webkit) \
+               and also run the tests (layout-tests, performance-tests, api-tests, etc). \
+               The SDK that gets build with 'bitbake ${IMAGENAME} -c populate_sdk' is valid \
+               for using in the host with the script build-webkit and the image itself has \
+               the tools to run the tests on the board. But the image doesn't contain \
+               webkit (wpe) itself. The purpose of this image is for using on the \
+               continous integration systems of webkit.org for WPE tests. \
+               For more info see the WebKit script named cross-toolchain-helper."
 
 LICENSE = "MIT"
 
@@ -17,6 +18,7 @@ SDK_XZ_COMPRESSION_LEVEL ?= "-0"
 
 # Use .xz instead of .bz2
 IMAGE_FSTYPES:append = " tar.xz wic.xz wic.bmap"
+# nooelint: oelint.vars.specific - ignored for convenience
 IMAGE_FSTYPES:remove:rpi = "tar.bz2 wic.bz2 ext3"
 
 inherit core-image features_check
@@ -24,16 +26,17 @@ inherit core-image features_check
 # Add 'dbg-pkgs' to this list or to EXTRA_IMAGE_FEATURES in local.conf if
 # you want debug symbols installed on the image. It is not added by default
 # because it increases the image size quite a bit (from 4GB to 10GB unpacked)
-IMAGE_FEATURES += " \
-                    debug-tweaks \
-                    dev-pkgs \
-                    hwcodecs \
-                    package-management \
-                    ssh-server-openssh \
-                    tools-debug \
-                    tools-profile \
-                    tools-sdk \
-                    "
+# nooelint: oelint.var.badimagefeature.debug-tweaks - This is an evaluation image
+IMAGE_FEATURES += "\
+                   debug-tweaks \
+                   dev-pkgs \
+                   hwcodecs \
+                   package-management \
+                   ssh-server-openssh \
+                   tools-debug \
+                   tools-profile \
+                   tools-sdk \
+                   "
 REQUIRED_DISTRO_FEATURES = "opengl wayland"
 
 IMAGE_LINGUAS = "en-us es-es"
@@ -91,7 +94,7 @@ IMAGE_INSTALL:append = " \
     wayland-tools \
     "
 
-# vcgencmd and related tools for the RPi (works also with opensource stack)
+# nooelint: oelint.vars.specific - vcgencmd and related tools for the RPi (works also with opensource stack)
 IMAGE_INSTALL:append:rpi = " userland"
 
 SDK_NATIVE_TOOLS = " \
@@ -128,7 +131,6 @@ IMAGE_INSTALL:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wes
 IMAGE_INSTALL:append = " ${@bb.utils.contains_any('DISTRO_FEATURES', 'x11 wayland', 'gtk4','',d)}"
 IMAGE_INSTALL:append = " ${PREFERRED_PROVIDER_virtual/wpebackend}"
 IMAGE_INSTALL:append = " packagegroup-wpewebkit-depends"
-
 
 #
 # Set a valid internal-sftp
