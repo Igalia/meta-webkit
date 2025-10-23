@@ -1,14 +1,14 @@
+SUMMARY = "Perl module for manipulating ZIP archive files"
 DESCRIPTION = "Archive::Zip - Provide an interface to ZIP archive files. \
                It provides also the crc32 binary"
-
+HOMEPAGE = "https://metacpan.org/pod/Archive::Zip"
 SECTION = "libs"
 LICENSE = "Artistic-1.0 | GPL-1.0-or-later"
-# License "Artistic-1.0 | GPL-1.0+" is also known as the "Perl" license.
 LIC_FILES_CHKSUM = "file://META.yml;;beginline=13;endline=13;md5=963ce28228347875ace682de56eef8e8"
 
 SRC_URI = "https://cpan.metacpan.org/authors/id/P/PH/PHRED/Archive-Zip-${PV}.tar.gz"
 
-# Backward compatibility with scarthgap
+# nooelint: oelint.task.noanonpython - required for backward compatibility with scarthgap
 python __anonymous() {
     if not d.getVar('UNPACKDIR'):
         d.setVar('UNPACKDIR', d.getVar('WORKDIR'))
