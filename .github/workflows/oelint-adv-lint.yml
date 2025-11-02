@@ -1,9 +1,10 @@
 name: oelint-adv-lint
 
 on:
-  workflow_dispatch:
+  pull_request:
   schedule:
     - cron: '0 0 * * 0'  # Runs every Sunday at 00:00 UTC
+  workflow_dispatch:
 
 jobs:
   lint:
@@ -15,22 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install oelint-adv
-        run: |
-          pip install --no-cache-dir oelint-adv
-
       - name: Run oelint-adv
         run: |
-          FILES=$(find . \( \
-            -name "*.bb" -o \
-            -name "*.bbappend" -o \
-            -name "*.bbclass" \
-          \) | sort -u)
-
-          # Use --color only if stdout is a terminal
-          if [ -t 1 ]; then
-            oelint-adv --color --hide info $FILES
-          else
-            oelint-adv --hide info $FILES
-          fi
+          .github/scripts/oe-linter
 
