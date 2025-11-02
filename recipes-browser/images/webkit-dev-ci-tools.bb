@@ -26,7 +26,7 @@ inherit core-image features_check
 # Add 'dbg-pkgs' to this list or to EXTRA_IMAGE_FEATURES in local.conf if
 # you want debug symbols installed on the image. It is not added by default
 # because it increases the image size quite a bit (from 4GB to 10GB unpacked)
-# nooelint: oelint.var.badimagefeature.debug-tweaks - This is an evaluation image
+# nooelint: oelint.var.badimagefeature.debug-tweaks,oelint.var.badimagefeature.tools-debug,oelint.var.badimagefeature.dev-pkgs - This is an evaluation image
 IMAGE_FEATURES += "\
                    debug-tweaks \
                    dev-pkgs \
