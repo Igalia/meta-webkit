@@ -1,31 +1,8 @@
-DEPENDS += " \
+DEPENDS += "\
     ruby-native \
-"
-RDEPENDS:${PN} += " \
-    ruby \
 "
 
 #${PN}_do_compile[depends] += "ruby-native:do_populate_sysroot"
-
-def get_rubyversion(p):
-    import re
-    from os.path import isfile
-    import subprocess
-    found_version = "SOMETHING FAILED!"
-
-    cmd = "%s/ruby" % p
-
-    if not isfile(cmd):
-       return found_version
-
-    version = subprocess.Popen([cmd, "--version"], stdout=subprocess.PIPE).communicate()[0]
-
-    r = re.compile("ruby ([0-9]+\.[0-9]+\.[0-9]+)*")
-    m = r.match(version)
-    if m:
-        found_version = m.group(1)
-
-    return found_version
 
 def get_rubygemslocation(p):
     import re
@@ -69,7 +46,29 @@ def get_rubygemsversion(p):
 
     return found_version
 
+# nooelint: oelint.vars.mispell - New variabled defined here
 RUBY_VERSION ?= "${@get_rubyversion("${STAGING_BINDIR_NATIVE}")}"
+
+def get_rubyversion(p):
+    import re
+    from os.path import isfile
+    import subprocess
+    found_version = "SOMETHING FAILED!"
+
+    cmd = "%s/ruby" % p
+
+    if not isfile(cmd):
+       return found_version
+
+    version = subprocess.Popen([cmd, "--version"], stdout=subprocess.PIPE).communicate()[0]
+
+    r = re.compile("ruby ([0-9]+\.[0-9]+\.[0-9]+)*")
+    m = r.match(version)
+    if m:
+        found_version = m.group(1)
+
+    return found_version
+
 RUBY_GEM_DIRECTORY ?= "${@get_rubygemslocation("${STAGING_BINDIR_NATIVE}")}"
 RUBY_GEM_VERSION ?= "${@get_rubygemsversion("${STAGING_BINDIR_NATIVE}")}"
 
@@ -81,7 +80,7 @@ RUBY_INSTALL_GEMS ?= "${BPN}-${BPV}.gem"
 RUBY_COMPILE_FLAGS ?= 'LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"'
 
 ruby_gen_extconf_fix() {
-	cat<<EOF>append
+    cat<<EOF>append
   RbConfig::MAKEFILE_CONFIG['CPPFLAGS'] = ENV['CPPFLAGS'] if ENV['CPPFLAGS']
   \$CPPFLAGS = ENV['CPPFLAGS'] if ENV['CPPFLAGS']
   RbConfig::MAKEFILE_CONFIG['CC'] = ENV['CC'] if ENV['CC']
@@ -89,10 +88,10 @@ ruby_gen_extconf_fix() {
   RbConfig::MAKEFILE_CONFIG['CFLAGS'] = ENV['CFLAGS'] if ENV['CFLAGS']
   RbConfig::MAKEFILE_CONFIG['CXXFLAGS'] = ENV['CXXFLAGS'] if ENV['CXXFLAGS']
 EOF
-	cat append2>>append
-	sysroot_ruby=${STAGING_INCDIR}/ruby-${RUBY_GEM_VERSION}
-	ruby_arch=`ls -1 ${sysroot_ruby} |grep -v ruby |tail -1 2> /dev/null`
-	cat<<EOF>>append
+    cat append2>>append
+    sysroot_ruby=${STAGING_INCDIR}/ruby-${RUBY_GEM_VERSION}
+    ruby_arch=`ls -1 ${sysroot_ruby} |grep -v ruby |tail -1 2> /dev/null`
+    cat<<EOF>>append
   system("perl -p -i -e 's#^topdir.*#topdir = ${sysroot_ruby}#' Makefile")
   system("perl -p -i -e 's#^hdrdir.*#hdrdir = ${sysroot_ruby}#' Makefile")
   system("perl -p -i -e 's#^arch_hdrdir.*#arch_hdrdir = ${sysroot_ruby}/\\\\\$(arch)#' Makefile")
@@ -102,7 +101,6 @@ EOF
   system("perl -p -i -e 's#^ldflags  =.*#ldflags = -L${STAGING_LIBDIR}#' Makefile")
 EOF
 }
-
 
 ruby_do_compile() {
         EXTCONF_FILES=$(find . -name extconf.rb -exec ls {} \;)
@@ -128,42 +126,46 @@ ruby_do_compile() {
 }
 
 ruby_do_install() {
-	for gem in ${RUBY_INSTALL_GEMS}; do
-		gem install --ignore-dependencies --local --env-shebang --install-dir ${D}/${libdir}/ruby/gems/${RUBY_GEM_VERSION}/ $gem
-	done
+    for gem in ${RUBY_INSTALL_GEMS}; do
+        gem install --ignore-dependencies --local --env-shebang --install-dir ${D}/${libdir}/ruby/gems/${RUBY_GEM_VERSION}/ $gem
+    done
 
-	# create symlink from the gems bin directory to /usr/bin
-	for i in ${D}/${libdir}/ruby/gems/${RUBY_GEM_VERSION}/bin/*; do
-		if [ -e "$i" ]; then
-			if [ ! -d ${D}/${bindir} ]; then mkdir -p ${D}/${bindir}; fi
-			b=`basename $i`
-			ln -sf ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/bin/$b ${D}/${bindir}/$b
-		fi
-	done
+    # create symlink from the gems bin directory to /usr/bin
+    for i in ${D}/${libdir}/ruby/gems/${RUBY_GEM_VERSION}/bin/*; do
+        if [ -e "$i" ]; then
+            if [ ! -d ${D}/${bindir} ]; then mkdir -p ${D}/${bindir}; fi
+            b=`basename $i`
+            ln -sf ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/bin/$b ${D}/${bindir}/$b
+        fi
+    done
 }
 
 EXPORT_FUNCTIONS do_compile do_install
 
 PACKAGES = "${PN}-dbg ${PN} ${PN}-doc ${PN}-dev"
 
-FILES:${PN}-dbg += " \
-        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/gems/*/*/.debug \
-        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/gems/*/*/*/.debug \
-        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/gems/*/*/*/*/.debug \
-        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/gems/*/*/*/*/*/.debug \
-        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/extensions/*/*/*/*/*/.debug \
-        "
+FILES:${PN}-dbg += "\
+    ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/gems/*/*/.debug \
+    ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/gems/*/*/*/.debug \
+    ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/gems/*/*/*/*/.debug \
+    ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/gems/*/*/*/*/*/.debug \
+    ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/extensions/*/*/*/*/*/.debug \
+"
 
-FILES:${PN} += " \
-        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/gems \
-        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/cache \
-        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/bin \
-        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/specifications \
-        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/build_info \
-        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/extensions \
-        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/plugins \
-        "
+FILES:${PN} += "\
+    ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/gems \
+    ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/cache \
+    ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/bin \
+    ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/specifications \
+    ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/build_info \
+    ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/extensions \
+    ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/plugins \
+"
 
-FILES:${PN}-doc += " \
-        ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/doc \
-        "
+FILES:${PN}-doc += "\
+    ${libdir}/ruby/gems/${RUBY_GEM_VERSION}/doc \
+"
+
+RDEPENDS:${PN} += "\
+    ruby \
+"
