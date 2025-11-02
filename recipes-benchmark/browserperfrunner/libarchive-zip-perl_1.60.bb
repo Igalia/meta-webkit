@@ -22,5 +22,4 @@ RDEPENDS:${PN} += "perl-modules"
 
 inherit cpan
 
-SRC_URI[md5sum] = "ae7c617cdf909809b9b2210e620b03ca"
 SRC_URI[sha256sum] = "eac75b05f308e860aa860c3094aa4e7915d3d31080e953e49bc9c38130f5c20b"
