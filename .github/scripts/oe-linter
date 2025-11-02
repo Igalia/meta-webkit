@@ -1,0 +1,45 @@
+#!/bin/sh
+set -e
+
+# Install oelint-adv
+pipx install oelint-adv || { echo "pipx failed, trying pip..."; pip install --no-cache-dir oelint-adv || exit 1; }
+
+# Find all relevant files, store in an array to handle spaces
+if [ -z "$OELINT_FILES" ]; then
+    OELINT_FILES=$(find . -type f \( \
+      -name "*.bb" -o \
+      -name "*.bbappend" -o \
+      -name "*.bbclass" \
+    \) | sort -u)
+fi
+
+# If no files are found, exit early
+if [ -z "$OELINT_FILES" ]; then
+  echo "No matching files found."
+  exit 0
+fi
+
+# Resolve oelint-adv absolute path via pipx for robustness
+OELINT_ADV_BIN=$(pipx list | awk '/oelint-adv/ {getline; print $2 "/oelint-adv"}' | head -n1)
+if [ ! -x "$OELINT_ADV_BIN" ]; then
+  # fallback: assume it's on PATH
+  OELINT_ADV_BIN=$(command -v oelint-adv)
+fi
+
+if [ -z "$OELINT_ADV_BIN" ]; then
+  echo "oelint-adv command not found."
+  exit 1
+fi
+
+# Decide on color argument for terminal usage
+ARG_COLOR=""
+if [ -t 1 ]; then
+    ARG_COLOR="--color"
+fi
+
+# shellcheck disable=SC2086
+$OELINT_ADV_BIN $ARG_COLOR --hide info \
+    --suppress "oelint.task.heredocs oelint.vars.mispell" \
+    --release scarthgap \
+    $OELINT_FILES
+
