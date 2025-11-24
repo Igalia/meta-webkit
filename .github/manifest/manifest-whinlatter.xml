@@ -11,7 +11,7 @@
 
   <project remote="oe" revision="master" name="meta-openembedded" path="sources/meta-openembedded"/>
 
-  <project remote="yocto" revision="master" name="poky" path="sources/poky"/>
+  <project remote="yocto" revision="f4c37762b9df1bccccdbccc3d72e79d83e67e47a" name="poky" path="sources/poky"/>
   <project remote="yocto" revision="master" name="meta-raspberrypi" path="sources/meta-raspberrypi"/>
 
   <project remote="igalia" revision="main" name="meta-webkit.git" path="sources/meta-webkit"/>
