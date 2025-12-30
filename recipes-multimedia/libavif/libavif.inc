@@ -11,7 +11,9 @@ LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c528b75b07425b5c1d2e34de98c397b5"
 
 SRC_URI = "git://github.com/AOMediaCodec/libavif.git;protocol=https;branch=main \
-           file://CVE-2025-48174.patch"
+           file://CVE-2025-48174.patch \
+           file://CVE-2025-48175.patch \
+           "
 SRCREV = "6ab53189045e7a6fe0bd93d14977b2a4f8efa5e9"
 
 # nooelint: oelint.task.noanonpython - required for backward compatibility with scarthgap
