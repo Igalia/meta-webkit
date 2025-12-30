@@ -11,7 +11,9 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=6a905a337cc228a1f68f0b5416f52a7f"
 DEPENDS:append = " brotli highway libpng lcms"
 
 SRC_URI = "git://github.com/libjxl/libjxl.git;branch=v0.8.x;protocol=https;rev=c27d499263435ac77007174e0f1cf54557cff23a \
-           file://fix-riscv-build-add-missing-atomic-include.patch"
+           file://fix-riscv-build-add-missing-atomic-include.patch \
+           file://CVE-2024-11403.patch \
+           "
 
 # nooelint: oelint.task.noanonpython - required for backward compatibility with scarthgap
 python __anonymous() {
