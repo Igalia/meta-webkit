@@ -42,10 +42,8 @@ DEPENDS = "curl \
            zlib \
 "
 
-SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball \
-           file://0001-Unreviewed-build-fix-after-298234.287-webkitglib-2.5.patch \
-"
-SRC_URI[tarball.sha256sum] = "19ab61f2d44e62cd443673943d2d5341b84d08405f67a7c37b7a77ad3550f880"
+SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball"
+SRC_URI[tarball.sha256sum] = "d3bfa473845acfab72635bada5e0d134fda6792c5b95c5c5cd141b46125bd8e4"
 
 inherit cmake lib_package pkgconfig perlnative python3native
 
