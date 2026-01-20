@@ -9,6 +9,12 @@ LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf
 
 REQUIRED_DISTRO_FEATURES = "opengl"
 
+# Kirkstones version of gcc is too old.
+TOOLCHAIN = "clang"
+
+# https://github.com/kraj/meta-clang/tree/kirkstone-clang18
+REQUIRED_VERSION_clang = "18.1.6"
+
 DEPENDS:append = " \
     libsoup \
     bison-native gperf-native harfbuzz-native libxml2-native ccache-native ninja-native ruby-native \
