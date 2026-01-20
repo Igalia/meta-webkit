@@ -157,6 +157,7 @@ RDEPENDS:packagegroup-wpewebkit-depends-core = "\
     wayland-protocols \
     openjpeg \
     libbacktrace \
+    hyphen \
 "
 
 RDEPENDS:packagegroup-wpewebkit-depends-core:append:libc-glibc = " \
