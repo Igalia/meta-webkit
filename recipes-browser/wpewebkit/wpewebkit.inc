@@ -25,7 +25,7 @@ require ${@'wpewebkit-qt6.inc'  if 'qt6-layer' in d.getVar('BBFILE_COLLECTIONS')
 export WK_USE_CCACHE = "NO"
 
 PACKAGECONFIG ??= "accessibility avif dfg-jit gbm gpu-process \
-                   jit jpegxl libbacktrace \
+                   hyphen jit jpegxl libbacktrace \
                    mediasource mediastream \
                    remote-inspector speech-synthesis \
                    sysprof ${@' system-sysprof' if ('meta-gnome' in d.getVar('BBLAYERS').split()) and d.getVar('LAYERSERIES_CORENAMES') != 'scarthgap' else ''} \
@@ -49,6 +49,7 @@ PACKAGECONFIG[gamepad] = "-DENABLE_GAMEPAD=ON,-DENABLE_GAMEPAD=OFF,libmanette"
 PACKAGECONFIG[gbm] = "-DUSE_GBM=ON,-DUSE_GBM=OFF,libdrm"
 PACKAGECONFIG[geolocation] = "-DENABLE_GEOLOCATION=ON,-DENABLE_GEOLOCATION=OFF,geoclue"
 PACKAGECONFIG[gpu-process] = "-DENABLE_GPU_PROCESS=ON,-DENABLE_GPU_PROCESS=OFF,"
+PACKAGECONFIG[hyphen] = "-DUSE_LIBHYPHEN=ON,-DUSE_LIBHYPHEN=OFF,hyphen"
 PACKAGECONFIG[introspection] = "-DENABLE_INTROSPECTION=ON,-DENABLE_INTROSPECTION=OFF, gobject-introspection-native"
 PACKAGECONFIG[jit] = "-DENABLE_JIT=ON,-DENABLE_JIT=OFF,"
 PACKAGECONFIG[jpegxl] = "-DUSE_JPEGXL=ON,-DUSE_JPEGXL=OFF,libjxl"
