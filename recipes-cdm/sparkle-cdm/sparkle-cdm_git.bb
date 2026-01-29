@@ -13,14 +13,8 @@ PROVIDES += "virtual/open-cdm"
 
 PV = "2021.0"
 
-SRC_URI = "git://github.com/Sparkle-CDM/sparkle-cdm.git;protocol=https;branch=main"
+SRC_URI = "git://github.com/Sparkle-CDM/sparkle-cdm.git;protocol=https;branch=main;destsuffix=${BP}"
 SRCREV = "ce99d205e0423ab213869da5e934c0c1cd9983a8"
-
-# nooelint: oelint.task.noanonpython - required for backward compatibility with scarthgap
-python __anonymous() {
-    if not d.getVar('UNPACKDIR'):
-        d.setVar('S', d.getVar('WORKDIR') + '/git')
-}
 
 PACKAGECONFIG ?= ""
 PACKAGECONFIG[sample-player] = "-Dsample-player=enabled,-Dsample-player=disabled,libsoup-2.4"

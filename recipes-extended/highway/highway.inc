@@ -6,17 +6,12 @@ BUGTRACKER = "https://github.com/google/highway/issues"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=2b42edef8fa55315f34f2370b4715ca9"
 
-SRC_URI = "git://github.com/google/highway.git;protocol=https;branch=master \
+SRC_URI = "git://github.com/google/highway.git;protocol=https;branch=master;destsuffix=${BP} \
            file://pr_1589.patch"
 SRCREV = "46e365d6770f5d7a4240d8ac9d8e928a520478ea"
 
 inherit cmake
 
-# nooelint: oelint.task.noanonpython - required for backward compatibility with scarthgap
-python __anonymous() {
-    if not d.getVar('UNPACKDIR'):
-        d.setVar('S', d.getVar('WORKDIR') + '/git')
-}
 EXTRA_OECMAKE = " -DBUILD_TESTING=OFF \
     -DHWY_WARNINGS_ARE_ERRORS=OFF \
     -DHWY_ENABLE_EXAMPLES=OFF \
@@ -25,4 +20,3 @@ EXTRA_OECMAKE = " -DBUILD_TESTING=OFF \
 
 # nooelint: oelint.vars.specific - ignored for convenience
 CXXFLAGS:append:arm = " -mfp16-format=ieee"
-

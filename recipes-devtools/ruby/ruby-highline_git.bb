@@ -19,18 +19,12 @@ PR = "r0"
 BPV = "1.7.3"
 PV = "${BPV}"
 
-# nooelint: oelint.task.noanonpython - required for backward compatibility with scarthgap
-python __anonymous() {
-    if not d.getVar('UNPACKDIR'):
-        d.setVar('S', d.getVar('WORKDIR') + '/git')
-}
-
 RUBY_GEM_NAME = "highline"
 RUBY_BUILD_GEMS = "${RUBY_GEM_NAME}.gemspec"
 RUBY_INSTALL_GEMS ?= "${RUBY_GEM_NAME}-${PV}.gem"
 
 SRC_URI = " \
-    git://github.com/JEG2/highline.git;protocol=https;branch=master \
+    git://github.com/JEG2/highline.git;protocol=https;branch=master;destsuffix=${BP} \
     "
 SRCREV = "327051c1c217df2880c3a53f31484f7e815e847f"
 
