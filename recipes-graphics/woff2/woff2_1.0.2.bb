@@ -10,13 +10,7 @@ UPSTREAM_CHECK_URI = "https://github.com/google/woff2/releases"
 
 DEPENDS = "brotli"
 
-# nooelint: oelint.task.noanonpython - required for backward compatibility with scarthgap
-python __anonymous() {
-    if not d.getVar('UNPACKDIR'):
-        d.setVar('S', d.getVar('WORKDIR') + '/git')
-}
-
-SRC_URI = "git://github.com/google/woff2.git;branch=master;protocol=https \
+SRC_URI = "git://github.com/google/woff2.git;branch=master;protocol=https;destsuffix=${BP} \
            file://0001-Fix-compilation-errors-by-including-cstdint.patch"
 SRCREV = "1bccf208bca986e53a647dfe4811322adb06ecf8"
 
