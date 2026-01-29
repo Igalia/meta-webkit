@@ -8,14 +8,8 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1c45a60ed9e3db41ec069e422044577e"
 DEPENDS = "virtual/egl wayland"
 
-SRC_URI = "git://github.com/clopez/waylandeglinfo.git;protocol=https;branch=master"
+SRC_URI = "git://github.com/clopez/waylandeglinfo.git;protocol=https;branch=master;destsuffix=${BP}"
 SRCREV = "b295363ab4e858fe4cfb32ee4e71a177e939b691"
 
 inherit cmake pkgconfig
-
-# nooelint: oelint.task.noanonpython - required for backward compatibility with scarthgap
-python __anonymous() {
-    if not d.getVar('UNPACKDIR'):
-        d.setVar('S', d.getVar('WORKDIR') + '/git')
-}
 
