@@ -13,16 +13,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57"
 
 DEPENDS:append = " jsoncpp"
 
-SRC_URI = "https://github.com/KhronosGroup/OpenXR-SDK/archive/refs/tags/release-${PV}.tar.gz"
+SRC_URI = "https://github.com/KhronosGroup/OpenXR-SDK/archive/refs/tags/release-${PV}.tar.gz;subdir=${BP};striplevel=1"
 SRC_URI[sha256sum] = "07e3e819af786c2a2bea16e8ec5243ce4e9d2876923112898fa4ea6dbd9bdd73"
-
-# nooelint: oelint.task.noanonpython - required for backward compatibility with scarthgap
-python __anonymous() {
-    if not d.getVar('UNPACKDIR'):
-        d.setVar('UNPACKDIR', d.getVar('WORKDIR'))
-}
-
-S = "${UNPACKDIR}/OpenXR-SDK-release-${PV}"
 
 # The CMake system of this package is a bit convoluted. It tries to enable
 # features automatically based on the dependencies it detects...
