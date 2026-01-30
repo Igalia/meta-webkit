@@ -28,7 +28,11 @@ PACKAGECONFIG ??= "accessibility avif dfg-jit gbm gpu-process \
                    hyphen jit jpegxl libbacktrace \
                    mediasource mediastream \
                    remote-inspector speech-synthesis \
-                   sysprof ${@' system-sysprof' if ('meta-gnome' in d.getVar('BBLAYERS').split()) and d.getVar('LAYERSERIES_CORENAMES') != 'scarthgap' else ''} \
+                   sysprof \
+                   ${@' system-sysprof' \
+                       if bb.utils.contains('BBFILE_COLLECTIONS', 'meta-gnome', True, False, d) \
+                       and not bb.utils.contains('LAYERSERIES_CORENAMES', 'scarthgap', True, False, d) \
+                       else '' } \
                    unified-builds video webaudio woff2 \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
                   "
