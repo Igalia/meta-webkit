@@ -3,6 +3,7 @@ require conf/include/devupstream.inc
 
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0001-Unreviewed-build-fix-after-298234.287-webkitglib-2.5.patch \
+           file://0001-Workaround-compiler-bug-for-inlining.patch \
 "
 
 SRC_URI[tarball.sha256sum] = "51a0fe5dc1fc690b839adaf473b4b70090c3ed316b21b74a35c07d6d2ef28536"
