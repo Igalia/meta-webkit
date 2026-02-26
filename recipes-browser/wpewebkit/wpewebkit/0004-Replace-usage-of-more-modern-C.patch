@@ -1,0 +1,404 @@
+From fa891874d29c701460c53989040bd21027c98ac7 Mon Sep 17 00:00:00 2001
+From: Patrick Griffis <pgriffis@igalia.com>
+Date: Wed, 25 Feb 2026 13:10:30 -0600
+Subject: [PATCH] Replace usage of more modern C++
+
+These are unsupported on the kirkstone version of clang and libstdc++.
+---
+ .../jit/SimpleRegisterAllocator.h             |  8 ++---
+ .../JavaScriptCore/runtime/LiteralParser.cpp  | 20 ++++++++++---
+ Source/JavaScriptCore/runtime/LiteralParser.h | 29 +++++++++++++------
+ Source/WTF/wtf/HashTable.h                    |  2 +-
+ Source/WTF/wtf/StdLibExtras.h                 |  2 +-
+ Source/WebCore/PAL/pal/text/EncodingTables.h  |  3 +-
+ .../atspi/AccessibilityObjectTextAtspi.cpp    |  4 +--
+ ...ParserConsumer+CSSPrimitiveValueResolver.h |  4 +--
+ .../primitives/CSSPrimitiveNumericUnits.h     |  4 +--
+ Source/WebCore/dom/DocumentFullscreen.cpp     |  3 +-
+ Source/WebCore/editing/Editing.cpp            |  4 ++-
+ .../graphics/skia/GraphicsContextSkia.cpp     |  2 +-
+ Source/WebCore/rendering/RenderElement.cpp    |  8 +++--
+ .../WebCore/rendering/RenderFlexibleBox.cpp   |  6 ++--
+ .../values/primitives/StylePrimitiveNumeric.h |  2 +-
+ .../StylePrimitiveNumericTypes+Platform.h     |  6 ++--
+ 16 files changed, 69 insertions(+), 38 deletions(-)
+
+diff --git a/Source/JavaScriptCore/jit/SimpleRegisterAllocator.h b/Source/JavaScriptCore/jit/SimpleRegisterAllocator.h
+index e95b38b5..4fc9dad9 100644
+--- a/Source/JavaScriptCore/jit/SimpleRegisterAllocator.h
++++ b/Source/JavaScriptCore/jit/SimpleRegisterAllocator.h
+@@ -46,16 +46,16 @@ class SimpleRegisterAllocator {
+     WTF_MAKE_NONCOPYABLE(SimpleRegisterAllocator);
+     WTF_FORBID_HEAP_ALLOCATION;
+ public:
+-    using Register = RegisterBank::Register;
++    using Register = typename RegisterBank::Register;
+     static_assert(std::is_same_v<Register, GPRReg> || std::is_same_v<Register, FPRReg>);
+-    using JITBackend = RegisterBank::JITBackend;
++    using JITBackend = typename RegisterBank::JITBackend;
+     static constexpr Register invalidRegister = RegisterBank::invalidRegister;
+     // Usually used by JITBackends to track where:
+     //    1) The type of binding it is (e.g. scratch vs value)
+     //    2) Where this value should be flushed to when spilled.
+-    using RegisterBinding = JITBackend::RegisterBinding;
++    using RegisterBinding = typename JITBackend::RegisterBinding;
+     using RegisterBindings = std::array<RegisterBinding, RegisterBank::numberOfRegisters>;
+-    using SpillHint = JITBackend::SpillHint;
++    using SpillHint = typename JITBackend::SpillHint;
+     static_assert(std::unsigned_integral<SpillHint>);
+     static constexpr SpillHint invalidRegisterHint = std::numeric_limits<SpillHint>::max();
+ 
+diff --git a/Source/JavaScriptCore/runtime/LiteralParser.cpp b/Source/JavaScriptCore/runtime/LiteralParser.cpp
+index 9438ca21..21d08055 100644
+--- a/Source/JavaScriptCore/runtime/LiteralParser.cpp
++++ b/Source/JavaScriptCore/runtime/LiteralParser.cpp
+@@ -63,8 +63,11 @@ inline const CharType* LiteralParser<CharType, reviverMode>::Lexer::currentToken
+ 
+ template<typename CharType, JSONReviverMode reviverMode>
+ bool LiteralParser<CharType, reviverMode>::tryJSONPParse(Vector<JSONPData>& results, bool needsFullSourceInfo)
+-    requires (reviverMode == JSONReviverMode::Disabled)
+ {
++    if constexpr (reviverMode == JSONReviverMode::Enabled) {
++        ASSERT_NOT_REACHED();
++        return false;
++    }
+     ASSERT(m_mode == JSONP);
+     VM& vm = m_globalObject->vm();
+     auto scope = DECLARE_THROW_SCOPE(vm);
+@@ -1301,8 +1304,11 @@ ALWAYS_INLINE JSValue LiteralParser<CharType, reviverMode>::parsePrimitiveValue(
+ 
+ template<typename CharType, JSONReviverMode reviverMode>
+ JSValue LiteralParser<CharType, reviverMode>::parseRecursivelyEntry(VM& vm)
+-    requires (reviverMode == JSONReviverMode::Disabled)
+ {
++    if constexpr (reviverMode == JSONReviverMode::Enabled) {
++        ASSERT_NOT_REACHED();
++        return parse(vm, StartParseExpression, nullptr);
++    }
+     ASSERT(m_mode == StrictJSON);
+     if (!Options::useRecursiveJSONParse()) [[unlikely]]
+         return parse(vm, StartParseExpression, nullptr);
+@@ -1314,8 +1320,11 @@ JSValue LiteralParser<CharType, reviverMode>::parseRecursivelyEntry(VM& vm)
+ 
+ template<typename CharType, JSONReviverMode reviverMode>
+ JSValue LiteralParser<CharType, reviverMode>::evalRecursivelyEntry(VM& vm)
+-    requires (reviverMode == JSONReviverMode::Disabled)
+ {
++    if constexpr (reviverMode == JSONReviverMode::Enabled) {
++        ASSERT_NOT_REACHED();
++        return parse(vm, StartParseStatement, nullptr);
++    }
+     ASSERT(m_mode == SloppyJSON);
+     if (!Options::useRecursiveJSONParse()) [[unlikely]]
+         return parse(vm, StartParseStatement, nullptr);
+@@ -1350,8 +1359,11 @@ JSValue LiteralParser<CharType, reviverMode>::evalRecursivelyEntry(VM& vm)
+ template<typename CharType, JSONReviverMode reviverMode>
+ template<ParserMode parserMode>
+ JSValue LiteralParser<CharType, reviverMode>::parseRecursively(VM& vm, uint8_t* stackLimit)
+-    requires (reviverMode == JSONReviverMode::Disabled)
+ {
++    if constexpr (reviverMode == JSONReviverMode::Enabled) {
++        ASSERT_NOT_REACHED();
++        return parse(vm, StartParseExpression, nullptr);
++    }
+     if (std::bit_cast<uint8_t*>(currentStackPointer()) < stackLimit) [[unlikely]]
+         return parse(vm, StartParseExpression, nullptr);
+ 
+diff --git a/Source/JavaScriptCore/runtime/LiteralParser.h b/Source/JavaScriptCore/runtime/LiteralParser.h
+index 7824f10b..a5c6bacb 100644
+--- a/Source/JavaScriptCore/runtime/LiteralParser.h
++++ b/Source/JavaScriptCore/runtime/LiteralParser.h
+@@ -150,8 +150,11 @@ public:
+     }
+     
+     JSValue tryLiteralParse()
+-        requires (reviverMode == JSONReviverMode::Disabled)
+     {
++        if constexpr (reviverMode == JSONReviverMode::Enabled) {
++            ASSERT_NOT_REACHED();
++            return { };
++        }
+         ASSERT(m_mode == StrictJSON);
+         m_lexer.next();
+         VM& vm = getVM(m_globalObject);
+@@ -162,8 +165,11 @@ public:
+     }
+ 
+     JSValue tryLiteralParse(JSONRanges* sourceRanges)
+-        requires (reviverMode == JSONReviverMode::Enabled)
+     {
++        if constexpr (reviverMode == JSONReviverMode::Disabled) {
++            ASSERT_NOT_REACHED();
++            return { };
++        }
+         ASSERT(m_mode == StrictJSON);
+         m_lexer.next();
+         JSValue result = parse(getVM(m_globalObject), StartParseExpression, sourceRanges);
+@@ -173,8 +179,11 @@ public:
+     }
+ 
+     JSValue tryEval()
+-        requires (reviverMode == JSONReviverMode::Disabled)
+     {
++        if constexpr (reviverMode == JSONReviverMode::Enabled) {
++            ASSERT_NOT_REACHED();
++            return { };
++        }
+         ASSERT(m_mode == SloppyJSON);
+         m_lexer.next();
+         VM& vm = getVM(m_globalObject);
+@@ -187,8 +196,11 @@ public:
+     }
+ 
+     JSValue tryLiteralParsePrimitiveValue()
+-        requires (reviverMode == JSONReviverMode::Disabled)
+     {
++        if constexpr (reviverMode == JSONReviverMode::Enabled) {
++            ASSERT_NOT_REACHED();
++            return { };
++        }
+         ASSERT(m_mode == StrictJSON);
+         m_lexer.next();
+         JSValue result = parsePrimitiveValue(getVM(m_globalObject));
+@@ -201,8 +213,7 @@ public:
+         return result;
+     }
+ 
+-    bool tryJSONPParse(Vector<JSONPData>&, bool needsFullSourceInfo)
+-        requires (reviverMode == JSONReviverMode::Disabled);
++    bool tryJSONPParse(Vector<JSONPData>&, bool needsFullSourceInfo);
+ 
+ private:
+     class Lexer {
+@@ -284,9 +295,9 @@ private:
+     };
+     
+     class StackGuard;
+-    JSValue parseRecursivelyEntry(VM&) requires (reviverMode == JSONReviverMode::Disabled);
+-    JSValue evalRecursivelyEntry(VM&) requires (reviverMode == JSONReviverMode::Disabled);
+-    template<ParserMode> JSValue parseRecursively(VM&, uint8_t* stackLimit) requires (reviverMode == JSONReviverMode::Disabled);
++    JSValue parseRecursivelyEntry(VM&);
++    JSValue evalRecursivelyEntry(VM&);
++    template<ParserMode> JSValue parseRecursively(VM&, uint8_t* stackLimit);
+     JSValue parse(VM&, ParserState, JSONRanges*);
+ 
+     JSValue parsePrimitiveValue(VM&);
+diff --git a/Source/WTF/wtf/HashTable.h b/Source/WTF/wtf/HashTable.h
+index 39528d92..cbd7eddb 100644
+--- a/Source/WTF/wtf/HashTable.h
++++ b/Source/WTF/wtf/HashTable.h
+@@ -1216,7 +1216,7 @@ DECLARE_ALLOCATOR_WITH_HEAP_IDENTIFIER(HashTable);
+     constexpr unsigned HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Malloc>::computeBestTableSize(unsigned keyCount)
+     {
+         unsigned bestTableSize = roundUpToPowerOfTwo(keyCount);
+-        static constexpr double minLoadRatio = 1.0 / minLoad;
++        constexpr double minLoadRatio = 1.0 / minLoad;
+ 
+         if (HashTableSizePolicy::shouldExpand(keyCount, bestTableSize))
+             bestTableSize *= 2;
+diff --git a/Source/WTF/wtf/StdLibExtras.h b/Source/WTF/wtf/StdLibExtras.h
+index 3924a702..7df93fc6 100644
+--- a/Source/WTF/wtf/StdLibExtras.h
++++ b/Source/WTF/wtf/StdLibExtras.h
+@@ -654,7 +654,7 @@ template<size_t I, typename V> bool holdsAlternative(const V& v)
+     }                                                                                \
+     template<typename T> friend const T&& get(const Self&& self)                     \
+     {                                                                                \
+-        return std::get<T>(WTFMove(self.name));                                      \
++        return std::get<T>(std::move(self.name));                                    \
+     }                                                                                \
+     template<typename T> friend std::add_pointer_t<T> get_if(Self* self)             \
+     {                                                                                \
+diff --git a/Source/WebCore/PAL/pal/text/EncodingTables.h b/Source/WebCore/PAL/pal/text/EncodingTables.h
+index 09ce0503..80ba69f4 100644
+--- a/Source/WebCore/PAL/pal/text/EncodingTables.h
++++ b/Source/WebCore/PAL/pal/text/EncodingTables.h
+@@ -129,7 +129,8 @@ template<typename CollectionType, typename KeyType> static auto findInSortedPair
+         if (key != decltype(std::begin(collection)->first)(key))
+             return { };
+     }
+-    return std::ranges::equal_range(collection, makeFirstAdapter(key), CompareFirst { });
++    auto range = std::equal_range(std::begin(collection), std::end(collection), makeFirstAdapter(key), CompareFirst { });
++    return std::span(range.first, range.second);
+ }
+ 
+ }
+diff --git a/Source/WebCore/accessibility/atspi/AccessibilityObjectTextAtspi.cpp b/Source/WebCore/accessibility/atspi/AccessibilityObjectTextAtspi.cpp
+index 016da7f5..de30b388 100644
+--- a/Source/WebCore/accessibility/atspi/AccessibilityObjectTextAtspi.cpp
++++ b/Source/WebCore/accessibility/atspi/AccessibilityObjectTextAtspi.cpp
+@@ -289,7 +289,7 @@ String AccessibilityObjectAtspi::text() const
+     if (!value.isNull())
+         return value;
+ 
+-    auto text = m_coreObject->textUnderElement(TextUnderElementMode(TextUnderElementMode::Children::IncludeAllChildren));
++    auto text = m_coreObject->textUnderElement(TextUnderElementMode { .childrenInclusion = TextUnderElementMode::Children::IncludeAllChildren });
+     if (auto* renderer = m_coreObject->renderer()) {
+         if (is<RenderListItem>(*renderer) && downcast<RenderListItem>(*renderer).markerRenderer()) {
+             if (renderer->writingMode().isBidiLTR()) {
+@@ -315,7 +315,7 @@ unsigned AccessibilityObject::getLengthForTextRange() const
+         textLength = downcast<RenderText>(*renderer).text().length();
+ 
+     if (!textLength && allowsTextRanges())
+-        textLength = textUnderElement(TextUnderElementMode(TextUnderElementMode::Children::IncludeAllChildren)).length();
++        textLength = textUnderElement(TextUnderElementMode { .childrenInclusion = TextUnderElementMode::Children::IncludeAllChildren }).length();
+ 
+     return textLength;
+ }
+diff --git a/Source/WebCore/css/parser/CSSPropertyParserConsumer+CSSPrimitiveValueResolver.h b/Source/WebCore/css/parser/CSSPropertyParserConsumer+CSSPrimitiveValueResolver.h
+index 1860fc71..ea76d302 100644
+--- a/Source/WebCore/css/parser/CSSPropertyParserConsumer+CSSPrimitiveValueResolver.h
++++ b/Source/WebCore/css/parser/CSSPropertyParserConsumer+CSSPrimitiveValueResolver.h
+@@ -68,10 +68,10 @@ struct CSSPrimitiveValueResolverBase {
+             },
+             [&](const CSS::Percentage<pR, T>& value) -> RefPtr<CSSPrimitiveValue> {
+                 return WTF::switchOn(value,
+-                    [&](const CSS::Percentage<pR, T>::Raw& raw) -> RefPtr<CSSPrimitiveValue> {
++                    [&](const typename CSS::Percentage<pR, T>::Raw& raw) -> RefPtr<CSSPrimitiveValue> {
+                         return CSSPrimitiveValue::create(raw.value / 100.0, CSSUnitType::CSS_NUMBER);
+                     },
+-                    [&](const CSS::Percentage<pR, T>::Calc& calc) -> RefPtr<CSSPrimitiveValue> {
++                    [&](const typename CSS::Percentage<pR, T>::Calc& calc) -> RefPtr<CSSPrimitiveValue> {
+                         return resolve(calc, options);
+                     }
+                 );
+diff --git a/Source/WebCore/css/values/primitives/CSSPrimitiveNumericUnits.h b/Source/WebCore/css/values/primitives/CSSPrimitiveNumericUnits.h
+index 49d0c8c3..77c186ac 100644
+--- a/Source/WebCore/css/values/primitives/CSSPrimitiveNumericUnits.h
++++ b/Source/WebCore/css/values/primitives/CSSPrimitiveNumericUnits.h
+@@ -148,8 +148,8 @@ struct ValueLiteral {
+ 
+ #define CSS_DEFINE_UNIT_LITERAL(type, name) \
+     inline namespace Literals { \
+-        consteval ValueLiteral<type> operator""_css_##name(long double value) { return ValueLiteral<type> { static_cast<double>(value) }; } \
+-        consteval ValueLiteral<type> operator""_css_##name(unsigned long long value) { return ValueLiteral<type> { static_cast<double>(value) }; } \
++        constexpr ValueLiteral<type> operator""_css_##name(long double value) { return ValueLiteral<type> { static_cast<double>(value) }; } \
++        constexpr ValueLiteral<type> operator""_css_##name(unsigned long long value) { return ValueLiteral<type> { static_cast<double>(value) }; } \
+     }
+ 
+ // MARK: - Unit Cast
+diff --git a/Source/WebCore/dom/DocumentFullscreen.cpp b/Source/WebCore/dom/DocumentFullscreen.cpp
+index 4a4e8926..bfc94097 100644
+--- a/Source/WebCore/dom/DocumentFullscreen.cpp
++++ b/Source/WebCore/dom/DocumentFullscreen.cpp
+@@ -743,7 +743,8 @@ void DocumentFullscreen::dispatchPendingEvents()
+ 
+     // Step 3:
+     while (!pendingEvents.isEmpty()) {
+-        auto [eventType, element] = pendingEvents.takeFirst();
++        auto [eventType, elementBinding] = pendingEvents.takeFirst();
++        auto& element = elementBinding;
+ 
+         // Gaining or losing fullscreen state may change viewport arguments
+         element->protectedDocument()->updateViewportArguments();
+diff --git a/Source/WebCore/editing/Editing.cpp b/Source/WebCore/editing/Editing.cpp
+index fc1671ff..028e9cfa 100644
+--- a/Source/WebCore/editing/Editing.cpp
++++ b/Source/WebCore/editing/Editing.cpp
+@@ -1506,7 +1506,9 @@ SimpleRange adjustToVisuallyContiguousRange(const SimpleRange& range)
+ 
+ EnclosingLayerInfomation computeEnclosingLayer(const SimpleRange& range)
+ {
+-    auto [start, end] = positionsForRange(range);
++    auto [startBinding, endBinding] = positionsForRange(range);
++    auto& start = startBinding;
++    auto& end = endBinding;
+ 
+     if (start.isOrphan() || end.isOrphan())
+         return { };
+diff --git a/Source/WebCore/platform/graphics/skia/GraphicsContextSkia.cpp b/Source/WebCore/platform/graphics/skia/GraphicsContextSkia.cpp
+index f58ef344..e2c05f3a 100644
+--- a/Source/WebCore/platform/graphics/skia/GraphicsContextSkia.cpp
++++ b/Source/WebCore/platform/graphics/skia/GraphicsContextSkia.cpp
+@@ -775,7 +775,7 @@ void GraphicsContextSkia::beginTransparencyLayer(CompositeOperator operation, Bl
+         return;
+ 
+     GraphicsContext::beginTransparencyLayer(operation, blendMode);
+-    m_layerStateStack.append({ CompositeMode(operation, blendMode) });
++    m_layerStateStack.append({ CompositeMode{ operation, blendMode } });
+ 
+     SkPaint paint;
+     paint.setBlendMode(toSkiaBlendMode(operation, blendMode));
+diff --git a/Source/WebCore/rendering/RenderElement.cpp b/Source/WebCore/rendering/RenderElement.cpp
+index bff35012..6cc5c79a 100644
+--- a/Source/WebCore/rendering/RenderElement.cpp
++++ b/Source/WebCore/rendering/RenderElement.cpp
+@@ -1497,7 +1497,9 @@ bool RenderElement::repaintAfterLayoutIfNeeded(SingleThreadWeakPtr<const RenderL
+     auto insetShadowExtent = Style::shadowInsetExtent(style.boxShadow());
+     auto sizeDelta = LayoutSize { absoluteValue(newOutlineBoundsRect.width() - oldOutlineBoundsRect.width()), absoluteValue(newOutlineBoundsRect.height() - oldOutlineBoundsRect.height()) };
+     if (sizeDelta.width()) {
+-        auto [shadowLeft, shadowRight] = Style::shadowHorizontalExtent(style.boxShadow());
++        auto [shadowLeftBinding, shadowRightBinding] = Style::shadowHorizontalExtent(style.boxShadow());
++        auto& shadowLeft = shadowLeftBinding;
++        auto& shadowRight = shadowRightBinding;
+ 
+         auto insetExtent = [&] {
+             // Inset "content" is inside the border box (e.g. border, negative outline and box shadow).
+@@ -1541,7 +1543,9 @@ bool RenderElement::repaintAfterLayoutIfNeeded(SingleThreadWeakPtr<const RenderL
+         }
+     }
+     if (sizeDelta.height()) {
+-        auto [shadowTop, shadowBottom] = Style::shadowVerticalExtent(style.boxShadow());
++        auto [shadowTopBinding, shadowBottomBinding] = Style::shadowVerticalExtent(style.boxShadow());
++        auto& shadowTop = shadowTopBinding;
++        auto& shadowBottom = shadowBottomBinding;
+ 
+         auto insetExtent = [&] {
+             // Inset "content" is inside the border box (e.g. border, negative outline and box shadow).
+diff --git a/Source/WebCore/rendering/RenderFlexibleBox.cpp b/Source/WebCore/rendering/RenderFlexibleBox.cpp
+index 8472987d..74190450 100644
+--- a/Source/WebCore/rendering/RenderFlexibleBox.cpp
++++ b/Source/WebCore/rendering/RenderFlexibleBox.cpp
+@@ -1100,15 +1100,15 @@ template<typename SizeType> LayoutUnit RenderFlexibleBox::computeMainSizeFromAsp
+     // `crossSize` is border-box size if box-sizing is border-box, and content-box otherwise.
+ 
+     auto crossSizeOptional = WTF::switchOn(crossSizeLength,
+-        [&](const SizeType::Fixed& fixedCrossSizeLength) -> std::optional<LayoutUnit> {
++        [&](const typename SizeType::Fixed& fixedCrossSizeLength) -> std::optional<LayoutUnit> {
+             return LayoutUnit(fixedCrossSizeLength.value);
+         },
+-        [&](const SizeType::Percentage& percentageCrossSizeLength) -> std::optional<LayoutUnit> {
++        [&](const typename SizeType::Percentage& percentageCrossSizeLength) -> std::optional<LayoutUnit> {
+             return mainAxisIsFlexItemInlineAxis(flexItem)
+                 ? flexItem.computePercentageLogicalHeight(percentageCrossSizeLength)
+                 : adjustBorderBoxLogicalWidthForBoxSizing(Style::evaluate(percentageCrossSizeLength, contentBoxWidth()));
+         },
+-        [&](const SizeType::Calc& calcCrossSizeLength) -> std::optional<LayoutUnit> {
++        [&](const typename SizeType::Calc& calcCrossSizeLength) -> std::optional<LayoutUnit> {
+             return mainAxisIsFlexItemInlineAxis(flexItem)
+                 ? flexItem.computePercentageLogicalHeight(calcCrossSizeLength)
+                 : adjustBorderBoxLogicalWidthForBoxSizing(Style::evaluate(calcCrossSizeLength, contentBoxWidth()));
+diff --git a/Source/WebCore/style/values/primitives/StylePrimitiveNumeric.h b/Source/WebCore/style/values/primitives/StylePrimitiveNumeric.h
+index 04ce001c..891fba01 100644
+--- a/Source/WebCore/style/values/primitives/StylePrimitiveNumeric.h
++++ b/Source/WebCore/style/values/primitives/StylePrimitiveNumeric.h
+@@ -84,7 +84,7 @@ private:
+     //  - any floating point value (using NaN).
+     //  - any numeric value where the minimum allowed value is greater than 0 (using 0).
+     //  - any numeric value where the minimum allowed value is equal to 0 and the minimum representable value is not zero (using -1).
+-    static consteval ResolvedValueType emptyValue()
++    static constexpr ResolvedValueType emptyValue()
+     {
+         if constexpr (std::floating_point<ResolvedValueType>)
+             return std::numeric_limits<ResolvedValueType>::quiet_NaN();
+diff --git a/Source/WebCore/style/values/primitives/StylePrimitiveNumericTypes+Platform.h b/Source/WebCore/style/values/primitives/StylePrimitiveNumericTypes+Platform.h
+index f9fc4d25..208415aa 100644
+--- a/Source/WebCore/style/values/primitives/StylePrimitiveNumericTypes+Platform.h
++++ b/Source/WebCore/style/values/primitives/StylePrimitiveNumericTypes+Platform.h
+@@ -35,13 +35,13 @@ template<auto R> struct ToPlatform<LengthPercentage<R>> {
+     auto operator()(const LengthPercentage<R>& length) -> WebCore::Length
+     {
+         return WTF::switchOn(length,
+-            [](const LengthPercentage<R>::Dimension& dimension) {
++            [](const typename LengthPercentage<R>::Dimension& dimension) {
+                 return WebCore::Length { dimension.value, WebCore::LengthType::Fixed };
+             },
+-            [](const LengthPercentage<R>::Percentage& percentage) {
++            [](const typename LengthPercentage<R>::Percentage& percentage) {
+                 return WebCore::Length { percentage.value, WebCore::LengthType::Percent };
+             },
+-            [](const LengthPercentage<R>::Calc& calc) {
++            [](const typename LengthPercentage<R>::Calc& calc) {
+                 return WebCore::Length { calc.protectedCalculation() };
+             }
+         );

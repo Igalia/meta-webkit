@@ -1,0 +1,95 @@
+From 680068929327aaa2a21826677ad820951dc3ca7d Mon Sep 17 00:00:00 2001
+From: Patrick Griffis <pgriffis@igalia.com>
+Date: Wed, 25 Feb 2026 13:08:08 -0600
+Subject: [PATCH] Remove usage of unsafe-buffer-usage with clang
+
+The kirkstone version of clang is too old for this warning.
+---
+ Source/WTF/wtf/Compiler.h                       | 12 ------------
+ Source/WTF/wtf/SIMDUTF.cpp                      |  1 -
+ Source/bmalloc/bmalloc/BCompiler.h              | 10 ----------
+ Source/bmalloc/libpas/src/libpas/pas_platform.h | 10 ----------
+ 4 files changed, 33 deletions(-)
+
+diff --git a/Source/WTF/wtf/Compiler.h b/Source/WTF/wtf/Compiler.h
+index 4bbc046c..c140224f 100644
+--- a/Source/WTF/wtf/Compiler.h
++++ b/Source/WTF/wtf/Compiler.h
+@@ -624,20 +624,8 @@
+ #define WTF_UNREACHABLE(...) __builtin_unreachable();
+ 
+ /* WTF_ALLOW_UNSAFE_BUFFER_USAGE */
+-
+-#if COMPILER(CLANG)
+-#define WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN \
+-    _Pragma("clang diagnostic push") \
+-    _Pragma("clang diagnostic ignored \"-Wunknown-warning-option\"") \
+-    _Pragma("clang diagnostic ignored \"-Wunsafe-buffer-usage\"") \
+-    _Pragma("clang diagnostic ignored \"-Wunsafe-buffer-usage-in-libc-call\"")
+-
+-#define WTF_ALLOW_UNSAFE_BUFFER_USAGE_END \
+-    _Pragma("clang diagnostic pop")
+-#else
+ #define WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
+ #define WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
+-#endif
+ 
+ /* WTF_UNSAFE_BUFFER_USAGE */
+ 
+diff --git a/Source/WTF/wtf/SIMDUTF.cpp b/Source/WTF/wtf/SIMDUTF.cpp
+index 6c8e7684..b8234f50 100644
+--- a/Source/WTF/wtf/SIMDUTF.cpp
++++ b/Source/WTF/wtf/SIMDUTF.cpp
+@@ -31,7 +31,6 @@ IGNORE_WARNINGS_BEGIN("missing-prototypes")
+ IGNORE_WARNINGS_BEGIN("cast-qual")
+ IGNORE_WARNINGS_BEGIN("cast-align")
+ IGNORE_WARNINGS_BEGIN("documentation")
+-IGNORE_WARNINGS_BEGIN("unsafe-buffer-usage")
+ 
+ #include "simdutf_impl.cpp.h"
+ 
+diff --git a/Source/bmalloc/bmalloc/BCompiler.h b/Source/bmalloc/bmalloc/BCompiler.h
+index 09bebc49..9ae966dd 100644
+--- a/Source/bmalloc/bmalloc/BCompiler.h
++++ b/Source/bmalloc/bmalloc/BCompiler.h
+@@ -114,18 +114,8 @@
+ #endif
+ 
+ /* BALLOW_UNSAFE_BUFFER_USAGE_BEGIN */
+-
+-#if BCOMPILER(CLANG)
+-#define BALLOW_UNSAFE_BUFFER_USAGE_BEGIN \
+-    _Pragma("clang diagnostic push") \
+-    _Pragma("clang diagnostic ignored \"-Wunsafe-buffer-usage\"")
+-
+-#define BALLOW_UNSAFE_BUFFER_USAGE_END \
+-    _Pragma("clang diagnostic pop")
+-#else
+ #define BALLOW_UNSAFE_BUFFER_USAGE_BEGIN
+ #define BALLOW_UNSAFE_BUFFER_USAGE_END
+-#endif
+ 
+ /* MUST_TAIL_CALL */
+ 
+diff --git a/Source/bmalloc/libpas/src/libpas/pas_platform.h b/Source/bmalloc/libpas/src/libpas/pas_platform.h
+index 79e8f8b2..ba3b7945 100644
+--- a/Source/bmalloc/libpas/src/libpas/pas_platform.h
++++ b/Source/bmalloc/libpas/src/libpas/pas_platform.h
+@@ -204,17 +204,7 @@
+ #endif
+ 
+ /* PAS_ALLOW_UNSAFE_BUFFER_USAGE */
+-
+-#if PAS_COMPILER(CLANG)
+-#define PAS_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN \
+-    _Pragma("clang diagnostic push") \
+-    _Pragma("clang diagnostic ignored \"-Wunsafe-buffer-usage\"")
+-
+-#define PAS_ALLOW_UNSAFE_BUFFER_USAGE_END \
+-    _Pragma("clang diagnostic pop")
+-#else
+ #define PAS_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
+ #define PAS_ALLOW_UNSAFE_BUFFER_USAGE_END
+-#endif
+ 
+ #endif /* PAS_PLATFORM_H */

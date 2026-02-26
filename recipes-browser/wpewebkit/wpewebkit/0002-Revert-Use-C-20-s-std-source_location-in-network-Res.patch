@@ -1,0 +1,57 @@
+From fe1b5865820c2eccfbe50d2a83b7aee9c1673ca0 Mon Sep 17 00:00:00 2001
+From: Patrick Griffis <pgriffis@igalia.com>
+Date: Wed, 25 Feb 2026 14:11:34 -0600
+Subject: [PATCH] Revert "Use C++ 20's std::source_location in
+ network/ResourceErrorBase"
+
+This reverts commit c06b00e9606cd18489303c075017a0bd868f9a5d.
+---
+ Source/WebCore/platform/network/ResourceErrorBase.cpp | 4 ++--
+ Source/WebCore/platform/network/ResourceErrorBase.h   | 7 +++++--
+ 2 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/Source/WebCore/platform/network/ResourceErrorBase.cpp b/Source/WebCore/platform/network/ResourceErrorBase.cpp
+index 7b4b0b22..f16d514e 100644
+--- a/Source/WebCore/platform/network/ResourceErrorBase.cpp
++++ b/Source/WebCore/platform/network/ResourceErrorBase.cpp
+@@ -94,13 +94,13 @@ bool ResourceErrorBase::compare(const ResourceError& a, const ResourceError& b)
+     return ResourceError::platformCompare(a, b);
+ }
+ 
+-ResourceError internalError(const URL& url, std::source_location location)
++ResourceError createInternalError(const URL& url, ASCIILiteral filename, uint32_t line, ASCIILiteral functionName)
+ {
+     // Always print internal errors to stderr so we have some chance to figure out what went wrong
+     // when an internal error occurs unexpectedly. Release logging is insufficient because internal
+     // errors occur unexpectedly and we don't want to require manual logging configuration in order
+     // to record them.
+-    WTFReportError(location.file_name(), location.line(), location.function_name(), "WebKit encountered an internal error. This is a WebKit bug.");
++    WTFReportError(filename.characters(), line, functionName.characters(), "WebKit encountered an internal error. This is a WebKit bug.");
+ 
+     return ResourceError("WebKitErrorDomain"_s, 300, url, WEB_UI_STRING("WebKit encountered an internal error", "WebKitErrorInternal description"));
+ }
+diff --git a/Source/WebCore/platform/network/ResourceErrorBase.h b/Source/WebCore/platform/network/ResourceErrorBase.h
+index b3746de9..b8590f4f 100644
+--- a/Source/WebCore/platform/network/ResourceErrorBase.h
++++ b/Source/WebCore/platform/network/ResourceErrorBase.h
+@@ -26,7 +26,6 @@
+ 
+ #pragma once
+ 
+-#include <source_location>
+ #include <wtf/TZoneMalloc.h>
+ #include <wtf/URL.h>
+ #include <wtf/text/WTFString.h>
+@@ -113,7 +112,11 @@ private:
+     const ResourceError& asResourceError() const;
+ };
+ 
+-WEBCORE_EXPORT ResourceError internalError(const URL&, std::source_location = std::source_location::current());
++// FIXME: Replace this with std::source_location when libc++ on the macOS and iOS bots is new enough to support C++ 20.
++// WEBCORE_EXPORT ResourceError internalError(const URL&, std::source_location = std::source_location::current());
++WEBCORE_EXPORT ResourceError createInternalError(const URL&, ASCIILiteral filename, uint32_t line, ASCIILiteral functionName);
++#define internalError(url) createInternalError(url, ASCIILiteral::fromLiteralUnsafe(__FILE__), __LINE__, ASCIILiteral::fromLiteralUnsafe(__FUNCTION__))
++
+ WEBCORE_EXPORT ResourceError badResponseHeadersError(const URL&);
+ 
+ inline bool operator==(const ResourceError& a, const ResourceError& b) { return ResourceErrorBase::compare(a, b); }

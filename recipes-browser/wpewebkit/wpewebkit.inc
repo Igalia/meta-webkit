@@ -114,6 +114,8 @@ PACKAGECONFIG:remove:x86 = "jit"
 
 LDFLAGS:append:riscv64 = " -pthread"
 
+EXTRA_OECMAKE:append = " -DCMAKE_SHARED_LINKER_FLAGS='-latomic'"
+
 FULL_OPTIMIZATION:remove = "-g"
 
 LEAD_SONAME = "libWPEWebKit.so"
