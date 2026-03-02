@@ -22,16 +22,16 @@ jobs:
         yocto_release: ['scarthgap', 'whinlatter']
         machine: ['raspberrypi3-mesa', 'raspberrypi4-64']
         yocto_prefix: ['TCLIBC=glibc']
-        wpe_vers: ['2_50']
+        wpe_vers: ['2_52']
         include:
           - yocto_release: scarthgap
             machine: raspberrypi4-64
             yocto_prefix: TCLIBC=musl
-            wpe_vers: 2_50
+            wpe_vers: 2_52
           - yocto_release: whinlatter
             machine: raspberrypi4-64
             yocto_prefix: TCLIBC=musl
-            wpe_vers: 2_50
+            wpe_vers: 2_52
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
@@ -49,7 +49,7 @@ jobs:
         yocto_release: ['scarthgap', 'whinlatter']
         machine: ['raspberrypi3-mesa', 'raspberrypi4-64']
         yocto_prefix: ['TCLIBC=glibc']
-        wpe_vers: ['2_50']
+        wpe_vers: ['2_52']
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
