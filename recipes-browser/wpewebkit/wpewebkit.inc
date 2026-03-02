@@ -15,7 +15,6 @@ DEPENDS:append = " \
     fontconfig freetype glib-2.0 harfbuzz icu jpeg pcre sqlite3 zlib libpng libtasn1 \
     libwebp libxml2 libxslt virtual/egl virtual/libgles2 libepoxy libgcrypt \
     unifdef-native \
-    libwpe virtual/wpebackend \
 "
 
 inherit cmake features_check pkgconfig perlnative python3native
@@ -33,12 +32,13 @@ PACKAGECONFIG ??= "accessibility avif dfg-jit gbm gpu-process \
                        if bb.utils.contains('BBFILE_COLLECTIONS', 'meta-gnome', True, False, d) \
                        and not bb.utils.contains('LAYERSERIES_CORENAMES', 'scarthgap', True, False, d) \
                        else '' } \
-                   unified-builds video webaudio woff2 \
+                   unified-builds video webaudio woff2 wpe-legacy-api \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
                   "
 
 PACKAGECONFIG[reduce-size] = "-DCMAKE_BUILD_TYPE=MinSizeRel,-DCMAKE_BUILD_TYPE=Release,,"
 PACKAGECONFIG[release-with-debug-info] = "-DCMAKE_BUILD_TYPE=RelWithDebInfo,-DCMAKE_BUILD_TYPE=Release,,"
+
 # WPE features
 PACKAGECONFIG[accessibility] = "-DUSE_ATK=ON,-DUSE_ATK=OFF,atk at-spi2-atk"
 PACKAGECONFIG[avif] = "-DUSE_AVIF=ON,-DUSE_AVIF=OFF,libavif"
@@ -59,6 +59,7 @@ PACKAGECONFIG[jit] = "-DENABLE_JIT=ON,-DENABLE_JIT=OFF,"
 PACKAGECONFIG[jpegxl] = "-DUSE_JPEGXL=ON,-DUSE_JPEGXL=OFF,libjxl"
 PACKAGECONFIG[journald] = "-DENABLE_JOURNALD_LOG=ON,-DENABLE_JOURNALD_LOG=OFF,"
 PACKAGECONFIG[lcms] = "-DUSE_LCMS=ON,-DUSE_LCMS=OFF,"
+PACKAGECONFIG[wpe-legacy-api] = "-DENABLE_WPE_LEGACY_API=ON,-DENABLE_WPE_LEGACY_API=OFF,libwpe virtual/wpebackend,"
 PACKAGECONFIG[libbacktrace] = "-DUSE_LIBBACKTRACE=ON,-DUSE_LIBBACKTRACE=OFF,libbacktrace"
 PACKAGECONFIG[minibrowser] = "-DENABLE_MINIBROWSER=ON,-DENABLE_MINIBROWSER=OFF,wayland-native wayland-protocols wpebackend-fdo"
 PACKAGECONFIG[mediasource] = "-DENABLE_MEDIA_SOURCE=ON,-DENABLE_MEDIA_SOURCE=OFF,gstreamer1.0 gstreamer1.0-plugins-good"
@@ -84,7 +85,7 @@ PACKAGECONFIG[webxr] = "-DENABLE_WEBXR=ON,-DENABLE_WEBXR=OFF,openxr"
 PACKAGECONFIG[wpe-1-1-api] = "-DENABLE_WPE_1_1_API:BOOL=ON,-DENABLE_WPE_1_1_API:BOOL=OFF,"
 
 # Build option for WPE platform API
-PACKAGECONFIG[wpe-platform] = "-DENABLE_WPE_PLATFORM=ON,-DENABLE_WPE_PLATFORM=OFF,libinput wayland-native"
+PACKAGECONFIG[wpe-platform] = "-DENABLE_WPE_PLATFORM=ON,-DENABLE_WPE_PLATFORM=OFF,libinput libxkbcommon wayland-native"
 
 EXTRA_OECMAKE = " -DPORT=WPE -G Ninja"
 
@@ -154,7 +155,6 @@ RDEPENDS:${PN} += "\
                                                     gstreamer1.0-plugins-good-interleave \
                                                     ', '', d)} \
     libgles2 \
-    virtual-wpebackend \
 "
 
 RDEPENDS:${PN}-web-inspector-plugin += "\
