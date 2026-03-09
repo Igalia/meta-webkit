@@ -6,15 +6,7 @@ SECTION = "libs"
 LICENSE = "Artistic-1.0 | GPL-1.0-or-later"
 LIC_FILES_CHKSUM = "file://META.yml;;beginline=13;endline=13;md5=963ce28228347875ace682de56eef8e8"
 
-SRC_URI = "https://cpan.metacpan.org/authors/id/P/PH/PHRED/Archive-Zip-${PV}.tar.gz"
-
-# nooelint: oelint.task.noanonpython - required for backward compatibility with scarthgap
-python __anonymous() {
-    if not d.getVar('UNPACKDIR'):
-        d.setVar('UNPACKDIR', d.getVar('WORKDIR'))
-}
-
-S = "${UNPACKDIR}/Archive-Zip-${PV}"
+SRC_URI = "https://cpan.metacpan.org/authors/id/P/PH/PHRED/Archive-Zip-${PV}.tar.gz;subdir=${BP};striplevel=1"
 
 # crc32 at least depends on perl-module-lib, perl-module-cwd, perl-module-zip* ...
 # so let's just depend on the perl-modules meta-package for simplicity.

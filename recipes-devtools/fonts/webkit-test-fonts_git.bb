@@ -14,10 +14,8 @@ PR = "r0"
 BPV = "0.0.8"
 PV = "${BPV}"
 
-SRC_URI = "git://github.com/WebKitGTK/webkitgtk-test-fonts.git;protocol=https;branch=master"
+SRC_URI = "git://github.com/WebKitGTK/webkitgtk-test-fonts.git;protocol=https;branch=master;destsuffix=${BP}"
 SRCREV = "f6382ed93932cca128c8d9edec3088f85a7592d9"
-
-S = "${WORKDIR}/git"
 
 do_configure() {
 }

@@ -8,12 +8,9 @@ inherit cmake pkgconfig
 
 DEPENDS:append = " glib-2.0-native wayland-native libdrm virtual/libgbm virtual/egl virtual/libgles2 wayland"
 
-SRC_URI = "git://git@github.com/Igalia/wpe-testbed-wayland.git;protocol=ssh;branch=main"
+SRC_URI = "git://git@github.com/Igalia/wpe-testbed-wayland.git;protocol=ssh;branch=main;destsuffix=${BP}"
 SRCREV = "d7ac4675d0392bf843526700fdae9f0fd4c84756"
-
-S = "${WORKDIR}/git"
 
 PACKAGE_ARCH = "${TUNE_PKGARCH}"
 
 EXTRA_OECMAKE = ""
-

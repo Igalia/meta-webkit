@@ -42,7 +42,7 @@ DEPENDS = "curl \
            zlib \
 "
 
-SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball"
+SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball;subdir=${BP};striplevel=1"
 SRC_URI[tarball.sha256sum] = "d3bfa473845acfab72635bada5e0d134fda6792c5b95c5c5cd141b46125bd8e4"
 
 inherit cmake lib_package pkgconfig perlnative python3native

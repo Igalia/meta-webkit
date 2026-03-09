@@ -16,10 +16,8 @@ DEPENDS += "\
     virtual/crypt \
 "
 
-SRC_URI = "git://github.com/flori/json.git;protocol=https;branch=v1.8"
+SRC_URI = "git://github.com/flori/json.git;protocol=https;branch=v1.8;destsuffix=${BP}"
 SRCREV = "7f4cfd853f2c919d854fb95548a19980feff17e8"
-
-S = "${WORKDIR}/git"
 
 RUBY_GEM_NAME = "json"
 RUBY_BUILD_GEMS = "${RUBY_GEM_NAME}.gemspec"

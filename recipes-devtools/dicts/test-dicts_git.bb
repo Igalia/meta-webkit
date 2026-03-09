@@ -9,10 +9,8 @@ PR = "r0"
 BPV = "0.0.1"
 PV = "${BPV}"
 
-SRC_URI = "git://github.com/mrobinson/webkitgtk-test-dicts.git;protocol=https;branch=master"
+SRC_URI = "git://github.com/mrobinson/webkitgtk-test-dicts.git;protocol=https;branch=master;destsuffix=${BP}"
 SRCREV = "a63aa52f09ddbf2532304a5751d22e5712299b0d"
-
-S = "${WORKDIR}/git"
 
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
