@@ -239,7 +239,8 @@ RDEPENDS:packagegroup-wpewebkit-depends-video = " \
     gstreamer1.0-plugins-base-audioconvert \
     gstreamer1.0-plugins-base-audioresample \
     gstreamer1.0-plugins-base-gio \
-    gstreamer1.0-plugins-base-videoconvertscale \
+    gstreamer1.0-plugins-base-videoconvert \
+    gstreamer1.0-plugins-base-videoscale \
     gstreamer1.0-plugins-base-volume \
     gstreamer1.0-plugins-base-typefindfunctions \
     gstreamer1.0-plugins-good-audiofx \
