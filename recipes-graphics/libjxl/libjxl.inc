@@ -19,6 +19,8 @@ SRC_URI = "git://github.com/libjxl/libjxl.git;branch=v0.8.x;protocol=https;rev=c
 python __anonymous() {
     if not d.getVar('UNPACKDIR'):
         d.setVar('S', d.getVar('WORKDIR') + '/git')
+    else:
+        d.setVar('S', d.getVar('UNPACKDIR') + '/git')
 }
 
 EXTRA_OECMAKE = " -DBUILD_TESTING=OFF \

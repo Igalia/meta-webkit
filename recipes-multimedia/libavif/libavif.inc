@@ -20,6 +20,8 @@ SRCREV = "6ab53189045e7a6fe0bd93d14977b2a4f8efa5e9"
 python __anonymous() {
     if not d.getVar('UNPACKDIR'):
         d.setVar('S', d.getVar('WORKDIR') + '/git')
+    else:
+        d.setVar('S', d.getVar('UNPACKDIR') + '/git')
 }
 
 inherit cmake

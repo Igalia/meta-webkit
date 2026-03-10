@@ -12,7 +12,13 @@ SRC_URI = "git://github.com/festvox/flite.git;protocol=https;branch=master"
 
 SRCREV = "e9e2e37c329dbe98bfeb27a1828ef9a71fa84f88"
 
-S = "${WORKDIR}/git"
+# nooelint: oelint.task.noanonpython - required for backward compatibility with scarthgap
+python __anonymous() {
+    if not d.getVar('UNPACKDIR'):
+        d.setVar('S', d.getVar('WORKDIR') + '/git')
+    else:
+        d.setVar('S', d.getVar('UNPACKDIR') + '/git')
+}
 
 EXTRA_OECONF += "--enable-shared"
 

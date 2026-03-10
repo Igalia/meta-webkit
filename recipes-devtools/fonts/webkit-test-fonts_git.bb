@@ -21,6 +21,8 @@ SRCREV = "f6382ed93932cca128c8d9edec3088f85a7592d9"
 python __anonymous() {
     if not d.getVar('UNPACKDIR'):
         d.setVar('S', d.getVar('WORKDIR') + '/git')
+    else:
+        d.setVar('S', d.getVar('UNPACKDIR') + '/git')
 }
 
 do_configure() {

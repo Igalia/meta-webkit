@@ -16,6 +16,8 @@ inherit cmake
 python __anonymous() {
     if not d.getVar('UNPACKDIR'):
         d.setVar('S', d.getVar('WORKDIR') + '/git')
+    else:
+        d.setVar('S', d.getVar('UNPACKDIR') + '/git')
 }
 EXTRA_OECMAKE = " -DBUILD_TESTING=OFF \
     -DHWY_WARNINGS_ARE_ERRORS=OFF \

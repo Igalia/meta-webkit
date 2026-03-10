@@ -15,6 +15,8 @@ SRCREV = "b41ffb53f1000ab2227c1736d8c1355aa5081c40"
 python __anonymous() {
     if not d.getVar('UNPACKDIR'):
         d.setVar('S', d.getVar('WORKDIR') + '/git')
+    else:
+        d.setVar('S', d.getVar('UNPACKDIR') + '/git')
 }
 
 # ffmpeg links with this and fails

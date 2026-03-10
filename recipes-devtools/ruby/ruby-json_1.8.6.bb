@@ -23,6 +23,8 @@ SRCREV = "7f4cfd853f2c919d854fb95548a19980feff17e8"
 python __anonymous() {
     if not d.getVar('UNPACKDIR'):
         d.setVar('S', d.getVar('WORKDIR') + '/git')
+    else:
+        d.setVar('S', d.getVar('UNPACKDIR') + '/git')
 }
 
 RUBY_GEM_NAME = "json"
