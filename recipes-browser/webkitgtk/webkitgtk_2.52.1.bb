@@ -43,7 +43,7 @@ DEPENDS = "curl \
 "
 
 SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball;subdir=${BP};striplevel=1"
-SRC_URI[tarball.sha256sum] = "b31c55f18194ac83ba08c9b93bbeffef57a7ecff7f41c874d17a9e7853dca19f"
+SRC_URI[tarball.sha256sum] = "238e7d53205b14004add7eeb4293c94d6fbf7097b3efef7cee5519e5c121a904"
 
 inherit cmake lib_package pkgconfig perlnative python3native
 
