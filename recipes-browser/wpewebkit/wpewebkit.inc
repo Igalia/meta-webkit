@@ -2,7 +2,7 @@ SUMMARY = "Lightweight WebKit port for embedded devices with OpenGL-ES accelerat
 DESCRIPTION = "WPE WebKit port pairs the WebKit engine with OpenGL-ES (OpenGL for Embedded Systems), \
                allowing embedders to create simple and performant systems based on Web platform technologies. \
                It is designed with hardware acceleration in mind, relying on EGL, and OpenGL ES."
-HOMEPAGE = "https://trac.webkit.org/wiki/WPE"
+HOMEPAGE = "https://wpewebkit.org/"
 BUGTRACKER = "https://bugs.webkit.org/"
 LICENSE = "BSD-2-Clause & LGPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf8b8a7c36b6eec80 "
