@@ -1,9 +1,10 @@
-From fa891874d29c701460c53989040bd21027c98ac7 Mon Sep 17 00:00:00 2001
+From b17b686367ee18ddea0a0bdd37a91177266d5f04 Mon Sep 17 00:00:00 2001
 From: Patrick Griffis <pgriffis@igalia.com>
 Date: Wed, 25 Feb 2026 13:10:30 -0600
 Subject: [PATCH] Replace usage of more modern C++
 
 These are unsupported on the kirkstone version of clang and libstdc++.
+
 ---
  .../jit/SimpleRegisterAllocator.h             |  8 ++---
  .../JavaScriptCore/runtime/LiteralParser.cpp  | 20 ++++++++++---
@@ -24,7 +25,7 @@ These are unsupported on the kirkstone version of clang and libstdc++.
  16 files changed, 69 insertions(+), 38 deletions(-)
 
 diff --git a/Source/JavaScriptCore/jit/SimpleRegisterAllocator.h b/Source/JavaScriptCore/jit/SimpleRegisterAllocator.h
-index e95b38b5..4fc9dad9 100644
+index e95b38b54cde..4fc9dad9bc57 100644
 --- a/Source/JavaScriptCore/jit/SimpleRegisterAllocator.h
 +++ b/Source/JavaScriptCore/jit/SimpleRegisterAllocator.h
 @@ -46,16 +46,16 @@ class SimpleRegisterAllocator {
@@ -49,7 +50,7 @@ index e95b38b5..4fc9dad9 100644
      static constexpr SpillHint invalidRegisterHint = std::numeric_limits<SpillHint>::max();
  
 diff --git a/Source/JavaScriptCore/runtime/LiteralParser.cpp b/Source/JavaScriptCore/runtime/LiteralParser.cpp
-index 9438ca21..21d08055 100644
+index 9438ca216683..21d080550107 100644
 --- a/Source/JavaScriptCore/runtime/LiteralParser.cpp
 +++ b/Source/JavaScriptCore/runtime/LiteralParser.cpp
 @@ -63,8 +63,11 @@ inline const CharType* LiteralParser<CharType, reviverMode>::Lexer::currentToken
@@ -105,7 +106,7 @@ index 9438ca21..21d08055 100644
          return parse(vm, StartParseExpression, nullptr);
  
 diff --git a/Source/JavaScriptCore/runtime/LiteralParser.h b/Source/JavaScriptCore/runtime/LiteralParser.h
-index 7824f10b..a5c6bacb 100644
+index 7824f10b13e2..a5c6bacbcef6 100644
 --- a/Source/JavaScriptCore/runtime/LiteralParser.h
 +++ b/Source/JavaScriptCore/runtime/LiteralParser.h
 @@ -150,8 +150,11 @@ public:
@@ -184,7 +185,7 @@ index 7824f10b..a5c6bacb 100644
  
      JSValue parsePrimitiveValue(VM&);
 diff --git a/Source/WTF/wtf/HashTable.h b/Source/WTF/wtf/HashTable.h
-index 39528d92..cbd7eddb 100644
+index 39528d920a24..cbd7eddb1020 100644
 --- a/Source/WTF/wtf/HashTable.h
 +++ b/Source/WTF/wtf/HashTable.h
 @@ -1216,7 +1216,7 @@ DECLARE_ALLOCATOR_WITH_HEAP_IDENTIFIER(HashTable);
@@ -197,7 +198,7 @@ index 39528d92..cbd7eddb 100644
          if (HashTableSizePolicy::shouldExpand(keyCount, bestTableSize))
              bestTableSize *= 2;
 diff --git a/Source/WTF/wtf/StdLibExtras.h b/Source/WTF/wtf/StdLibExtras.h
-index 3924a702..7df93fc6 100644
+index 3924a7021664..7df93fc62a49 100644
 --- a/Source/WTF/wtf/StdLibExtras.h
 +++ b/Source/WTF/wtf/StdLibExtras.h
 @@ -654,7 +654,7 @@ template<size_t I, typename V> bool holdsAlternative(const V& v)
@@ -210,7 +211,7 @@ index 3924a702..7df93fc6 100644
      template<typename T> friend std::add_pointer_t<T> get_if(Self* self)             \
      {                                                                                \
 diff --git a/Source/WebCore/PAL/pal/text/EncodingTables.h b/Source/WebCore/PAL/pal/text/EncodingTables.h
-index 09ce0503..80ba69f4 100644
+index 09ce05031025..80ba69f41aac 100644
 --- a/Source/WebCore/PAL/pal/text/EncodingTables.h
 +++ b/Source/WebCore/PAL/pal/text/EncodingTables.h
 @@ -129,7 +129,8 @@ template<typename CollectionType, typename KeyType> static auto findInSortedPair
@@ -224,7 +225,7 @@ index 09ce0503..80ba69f4 100644
  
  }
 diff --git a/Source/WebCore/accessibility/atspi/AccessibilityObjectTextAtspi.cpp b/Source/WebCore/accessibility/atspi/AccessibilityObjectTextAtspi.cpp
-index 016da7f5..de30b388 100644
+index 016da7f54e10..de30b3883f12 100644
 --- a/Source/WebCore/accessibility/atspi/AccessibilityObjectTextAtspi.cpp
 +++ b/Source/WebCore/accessibility/atspi/AccessibilityObjectTextAtspi.cpp
 @@ -289,7 +289,7 @@ String AccessibilityObjectAtspi::text() const
@@ -246,7 +247,7 @@ index 016da7f5..de30b388 100644
      return textLength;
  }
 diff --git a/Source/WebCore/css/parser/CSSPropertyParserConsumer+CSSPrimitiveValueResolver.h b/Source/WebCore/css/parser/CSSPropertyParserConsumer+CSSPrimitiveValueResolver.h
-index 1860fc71..ea76d302 100644
+index 1860fc7169b2..ea76d302c98f 100644
 --- a/Source/WebCore/css/parser/CSSPropertyParserConsumer+CSSPrimitiveValueResolver.h
 +++ b/Source/WebCore/css/parser/CSSPropertyParserConsumer+CSSPrimitiveValueResolver.h
 @@ -68,10 +68,10 @@ struct CSSPrimitiveValueResolverBase {
@@ -263,7 +264,7 @@ index 1860fc71..ea76d302 100644
                      }
                  );
 diff --git a/Source/WebCore/css/values/primitives/CSSPrimitiveNumericUnits.h b/Source/WebCore/css/values/primitives/CSSPrimitiveNumericUnits.h
-index 49d0c8c3..77c186ac 100644
+index 49d0c8c3fb20..77c186ac25ca 100644
 --- a/Source/WebCore/css/values/primitives/CSSPrimitiveNumericUnits.h
 +++ b/Source/WebCore/css/values/primitives/CSSPrimitiveNumericUnits.h
 @@ -148,8 +148,8 @@ struct ValueLiteral {
@@ -278,7 +279,7 @@ index 49d0c8c3..77c186ac 100644
  
  // MARK: - Unit Cast
 diff --git a/Source/WebCore/dom/DocumentFullscreen.cpp b/Source/WebCore/dom/DocumentFullscreen.cpp
-index 4a4e8926..bfc94097 100644
+index 4a4e89269cf1..bfc9409710c3 100644
 --- a/Source/WebCore/dom/DocumentFullscreen.cpp
 +++ b/Source/WebCore/dom/DocumentFullscreen.cpp
 @@ -743,7 +743,8 @@ void DocumentFullscreen::dispatchPendingEvents()
@@ -292,7 +293,7 @@ index 4a4e8926..bfc94097 100644
          // Gaining or losing fullscreen state may change viewport arguments
          element->protectedDocument()->updateViewportArguments();
 diff --git a/Source/WebCore/editing/Editing.cpp b/Source/WebCore/editing/Editing.cpp
-index fc1671ff..028e9cfa 100644
+index fc1671ff150d..028e9cfa7573 100644
 --- a/Source/WebCore/editing/Editing.cpp
 +++ b/Source/WebCore/editing/Editing.cpp
 @@ -1506,7 +1506,9 @@ SimpleRange adjustToVisuallyContiguousRange(const SimpleRange& range)
@@ -307,7 +308,7 @@ index fc1671ff..028e9cfa 100644
      if (start.isOrphan() || end.isOrphan())
          return { };
 diff --git a/Source/WebCore/platform/graphics/skia/GraphicsContextSkia.cpp b/Source/WebCore/platform/graphics/skia/GraphicsContextSkia.cpp
-index f58ef344..e2c05f3a 100644
+index f58ef344afd5..e2c05f3ae55c 100644
 --- a/Source/WebCore/platform/graphics/skia/GraphicsContextSkia.cpp
 +++ b/Source/WebCore/platform/graphics/skia/GraphicsContextSkia.cpp
 @@ -775,7 +775,7 @@ void GraphicsContextSkia::beginTransparencyLayer(CompositeOperator operation, Bl
@@ -320,7 +321,7 @@ index f58ef344..e2c05f3a 100644
      SkPaint paint;
      paint.setBlendMode(toSkiaBlendMode(operation, blendMode));
 diff --git a/Source/WebCore/rendering/RenderElement.cpp b/Source/WebCore/rendering/RenderElement.cpp
-index bff35012..6cc5c79a 100644
+index bff3501267c3..6cc5c79a01e8 100644
 --- a/Source/WebCore/rendering/RenderElement.cpp
 +++ b/Source/WebCore/rendering/RenderElement.cpp
 @@ -1497,7 +1497,9 @@ bool RenderElement::repaintAfterLayoutIfNeeded(SingleThreadWeakPtr<const RenderL
@@ -346,7 +347,7 @@ index bff35012..6cc5c79a 100644
          auto insetExtent = [&] {
              // Inset "content" is inside the border box (e.g. border, negative outline and box shadow).
 diff --git a/Source/WebCore/rendering/RenderFlexibleBox.cpp b/Source/WebCore/rendering/RenderFlexibleBox.cpp
-index 8472987d..74190450 100644
+index 8472987d737e..74190450f8e1 100644
 --- a/Source/WebCore/rendering/RenderFlexibleBox.cpp
 +++ b/Source/WebCore/rendering/RenderFlexibleBox.cpp
 @@ -1100,15 +1100,15 @@ template<typename SizeType> LayoutUnit RenderFlexibleBox::computeMainSizeFromAsp
@@ -369,7 +370,7 @@ index 8472987d..74190450 100644
                  ? flexItem.computePercentageLogicalHeight(calcCrossSizeLength)
                  : adjustBorderBoxLogicalWidthForBoxSizing(Style::evaluate(calcCrossSizeLength, contentBoxWidth()));
 diff --git a/Source/WebCore/style/values/primitives/StylePrimitiveNumeric.h b/Source/WebCore/style/values/primitives/StylePrimitiveNumeric.h
-index 04ce001c..891fba01 100644
+index 04ce001cbcc7..891fba01958d 100644
 --- a/Source/WebCore/style/values/primitives/StylePrimitiveNumeric.h
 +++ b/Source/WebCore/style/values/primitives/StylePrimitiveNumeric.h
 @@ -84,7 +84,7 @@ private:
@@ -382,7 +383,7 @@ index 04ce001c..891fba01 100644
          if constexpr (std::floating_point<ResolvedValueType>)
              return std::numeric_limits<ResolvedValueType>::quiet_NaN();
 diff --git a/Source/WebCore/style/values/primitives/StylePrimitiveNumericTypes+Platform.h b/Source/WebCore/style/values/primitives/StylePrimitiveNumericTypes+Platform.h
-index f9fc4d25..208415aa 100644
+index f9fc4d25efba..208415aade83 100644
 --- a/Source/WebCore/style/values/primitives/StylePrimitiveNumericTypes+Platform.h
 +++ b/Source/WebCore/style/values/primitives/StylePrimitiveNumericTypes+Platform.h
 @@ -35,13 +35,13 @@ template<auto R> struct ToPlatform<LengthPercentage<R>> {

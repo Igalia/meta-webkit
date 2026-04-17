@@ -1,0 +1,32 @@
+From 9381c1100dcba9ef186b0972c14b10938f7eef04 Mon Sep 17 00:00:00 2001
+From: Patrick Griffis <pgriffis@igalia.com>
+Date: Fri, 17 Apr 2026 00:00:00 +0000
+Subject: [PATCH] Fix WebKitColor aggregate initialization in tests
+
+WebKitColor is a C struct type on WPE. In C++2b mode, function-style
+construction `ColorType(...)` is rejected for aggregate structs. Use
+brace-initialization instead.
+
+---
+ Tools/TestWebKitAPI/Tests/WebKitGLib/TestWebKitWebView.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Tools/TestWebKitAPI/Tests/WebKitGLib/TestWebKitWebView.cpp b/Tools/TestWebKitAPI/Tests/WebKitGLib/TestWebKitWebView.cpp
+index d7a8646762ee..1ba9409285d8 100644
+--- a/Tools/TestWebKitAPI/Tests/WebKitGLib/TestWebKitWebView.cpp
++++ b/Tools/TestWebKitAPI/Tests/WebKitGLib/TestWebKitWebView.cpp
+@@ -1673,12 +1673,12 @@ static void testWebViewThemeColor(ThemeColorWebViewTest* test, gconstpointer)
+ 
+     g_assert_false(webkit_web_view_get_theme_color(test->m_webView.get(), &rgba));
+ 
+-    test->targetColor = ColorType(1.0, 0.0, 0.0, 1.0);
++    test->targetColor = ColorType { 1.0, 0.0, 0.0, 1.0 };
+     test->loadHtml("<html style='width: 325px; height: 615px'><meta name='theme-color' content='#FF0000' /></html>", nullptr);
+     test->waitUntilThemeColorChanged();
+     test->testThemeColorResult();
+ 
+-    test->targetColor = ColorType(0.0, 1.0, 0.0, 1.0);
++    test->targetColor = ColorType { 0.0, 1.0, 0.0, 1.0 };
+     test->loadHtml("<html style='width: 325px; height: 615px'><meta name='theme-color' content='#00FF00' /></html>", nullptr);
+     test->waitUntilThemeColorChanged();
+     test->testThemeColorResult();

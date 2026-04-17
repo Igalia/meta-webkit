@@ -1,9 +1,10 @@
-From 680068929327aaa2a21826677ad820951dc3ca7d Mon Sep 17 00:00:00 2001
+From 08f595b7ae7b9a85271dffb1ca3c3677d4f42029 Mon Sep 17 00:00:00 2001
 From: Patrick Griffis <pgriffis@igalia.com>
 Date: Wed, 25 Feb 2026 13:08:08 -0600
 Subject: [PATCH] Remove usage of unsafe-buffer-usage with clang
 
 The kirkstone version of clang is too old for this warning.
+
 ---
  Source/WTF/wtf/Compiler.h                       | 12 ------------
  Source/WTF/wtf/SIMDUTF.cpp                      |  1 -
@@ -12,7 +13,7 @@ The kirkstone version of clang is too old for this warning.
  4 files changed, 33 deletions(-)
 
 diff --git a/Source/WTF/wtf/Compiler.h b/Source/WTF/wtf/Compiler.h
-index 4bbc046c..c140224f 100644
+index 4bbc046c1cd6..c140224fe200 100644
 --- a/Source/WTF/wtf/Compiler.h
 +++ b/Source/WTF/wtf/Compiler.h
 @@ -624,20 +624,8 @@
@@ -37,7 +38,7 @@ index 4bbc046c..c140224f 100644
  /* WTF_UNSAFE_BUFFER_USAGE */
  
 diff --git a/Source/WTF/wtf/SIMDUTF.cpp b/Source/WTF/wtf/SIMDUTF.cpp
-index 6c8e7684..b8234f50 100644
+index 6c8e7684604a..b8234f50ffe7 100644
 --- a/Source/WTF/wtf/SIMDUTF.cpp
 +++ b/Source/WTF/wtf/SIMDUTF.cpp
 @@ -31,7 +31,6 @@ IGNORE_WARNINGS_BEGIN("missing-prototypes")
@@ -49,7 +50,7 @@ index 6c8e7684..b8234f50 100644
  #include "simdutf_impl.cpp.h"
  
 diff --git a/Source/bmalloc/bmalloc/BCompiler.h b/Source/bmalloc/bmalloc/BCompiler.h
-index 09bebc49..9ae966dd 100644
+index 09bebc499557..9ae966dd907d 100644
 --- a/Source/bmalloc/bmalloc/BCompiler.h
 +++ b/Source/bmalloc/bmalloc/BCompiler.h
 @@ -114,18 +114,8 @@
@@ -72,7 +73,7 @@ index 09bebc49..9ae966dd 100644
  /* MUST_TAIL_CALL */
  
 diff --git a/Source/bmalloc/libpas/src/libpas/pas_platform.h b/Source/bmalloc/libpas/src/libpas/pas_platform.h
-index 79e8f8b2..ba3b7945 100644
+index 79e8f8b2a705..ba3b794539cb 100644
 --- a/Source/bmalloc/libpas/src/libpas/pas_platform.h
 +++ b/Source/bmalloc/libpas/src/libpas/pas_platform.h
 @@ -204,17 +204,7 @@

@@ -1,4 +1,4 @@
-From 676939a3c266d5c328c8cd7b483accfc9f095ed7 Mon Sep 17 00:00:00 2001
+From f11c6061daf29be60f8c0550fec4b4bbb054a713 Mon Sep 17 00:00:00 2001
 From: Patrick Griffis <pgriffis@igalia.com>
 Date: Thu, 15 Jan 2026 13:58:52 -0600
 Subject: [PATCH] Workaround gcc inline bug
@@ -8,10 +8,10 @@ Subject: [PATCH] Workaround gcc inline bug
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Source/bmalloc/libpas/src/libpas/pas_utils_prefix.h b/Source/bmalloc/libpas/src/libpas/pas_utils_prefix.h
-index a845ed011ce3..c3affa6d3de4 100644
+index ea511e5b016e..198da47d785c 100644
 --- a/Source/bmalloc/libpas/src/libpas/pas_utils_prefix.h
 +++ b/Source/bmalloc/libpas/src/libpas/pas_utils_prefix.h
-@@ -52,7 +52,7 @@ __PAS_BEGIN_EXTERN_C;
+@@ -50,7 +50,7 @@ __PAS_BEGIN_EXTERN_C;
  #define __PAS_ALWAYS_INLINE_BUT_NOT_INLINE
  #endif
  
@@ -20,6 +20,3 @@ index a845ed011ce3..c3affa6d3de4 100644
  
  #define __PAS_NEVER_INLINE __attribute__((__noinline__))
  #define __PAS_NO_RETURN __attribute((__noreturn__))
--- 
-2.52.0
-

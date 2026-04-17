@@ -1,15 +1,16 @@
-From 3f820d4c76b983d9c988b79c8b0117a39c6f2378 Mon Sep 17 00:00:00 2001
+From ce1edd4e15b40b9e4c8ab063ce84f76b9893d879 Mon Sep 17 00:00:00 2001
 From: Patrick Griffis <pgriffis@igalia.com>
 Date: Wed, 25 Feb 2026 13:00:13 -0600
 Subject: [PATCH] Revert "[WTF] Modernize wtf/MathExtras.h"
 
 This reverts commit 38b34df1ab771b304387f2c75c6f1a775f22028f.
+
 ---
  Source/WTF/wtf/MathExtras.h | 290 ++++++++++++++++++------------------
  1 file changed, 141 insertions(+), 149 deletions(-)
 
 diff --git a/Source/WTF/wtf/MathExtras.h b/Source/WTF/wtf/MathExtras.h
-index dc1b6cb7..71e10205 100644
+index dc1b6cb79b95..71e102051921 100644
 --- a/Source/WTF/wtf/MathExtras.h
 +++ b/Source/WTF/wtf/MathExtras.h
 @@ -123,53 +123,19 @@ constexpr float grad2turn(float g) { return deg2turn(grad2deg(g)); }

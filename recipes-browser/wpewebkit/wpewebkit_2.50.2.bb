@@ -8,6 +8,8 @@ SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0002-Revert-Use-C-20-s-std-source_location-in-network-Res.patch \
            file://0003-Remove-usage-of-unsafe-buffer-usage-with-clang.patch \
            file://0004-Replace-usage-of-more-modern-C.patch \
+           file://0006-Fix-dependent-iterator-types-for-gcc.patch \
+           file://0007-Fix-WebKitColor-aggregate-initialization-in-tests.patch \
            "
 
 SRC_URI[tarball.sha256sum] = "51a0fe5dc1fc690b839adaf473b4b70090c3ed316b21b74a35c07d6d2ef28536"

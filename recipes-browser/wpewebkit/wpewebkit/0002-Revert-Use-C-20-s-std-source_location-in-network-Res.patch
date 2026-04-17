@@ -1,17 +1,18 @@
-From fe1b5865820c2eccfbe50d2a83b7aee9c1673ca0 Mon Sep 17 00:00:00 2001
+From 9de143ac13147c2cb291d9d101b3bc5ac08c0775 Mon Sep 17 00:00:00 2001
 From: Patrick Griffis <pgriffis@igalia.com>
 Date: Wed, 25 Feb 2026 14:11:34 -0600
 Subject: [PATCH] Revert "Use C++ 20's std::source_location in
  network/ResourceErrorBase"
 
 This reverts commit c06b00e9606cd18489303c075017a0bd868f9a5d.
+
 ---
  Source/WebCore/platform/network/ResourceErrorBase.cpp | 4 ++--
  Source/WebCore/platform/network/ResourceErrorBase.h   | 7 +++++--
  2 files changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/Source/WebCore/platform/network/ResourceErrorBase.cpp b/Source/WebCore/platform/network/ResourceErrorBase.cpp
-index 7b4b0b22..f16d514e 100644
+index 7b4b0b22c145..f16d514e1420 100644
 --- a/Source/WebCore/platform/network/ResourceErrorBase.cpp
 +++ b/Source/WebCore/platform/network/ResourceErrorBase.cpp
 @@ -94,13 +94,13 @@ bool ResourceErrorBase::compare(const ResourceError& a, const ResourceError& b)
@@ -31,7 +32,7 @@ index 7b4b0b22..f16d514e 100644
      return ResourceError("WebKitErrorDomain"_s, 300, url, WEB_UI_STRING("WebKit encountered an internal error", "WebKitErrorInternal description"));
  }
 diff --git a/Source/WebCore/platform/network/ResourceErrorBase.h b/Source/WebCore/platform/network/ResourceErrorBase.h
-index b3746de9..b8590f4f 100644
+index b3746de9ac28..b8590f4f4c1e 100644
 --- a/Source/WebCore/platform/network/ResourceErrorBase.h
 +++ b/Source/WebCore/platform/network/ResourceErrorBase.h
 @@ -26,7 +26,6 @@
