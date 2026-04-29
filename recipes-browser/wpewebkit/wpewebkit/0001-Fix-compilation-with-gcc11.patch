@@ -47,23 +47,6 @@ index 212cb51b7cca..22bc067549f6 100644
  }
  
  }
-diff --git a/Source/WebCore/css/CSSValue.h b/Source/WebCore/css/CSSValue.h
-index 2f013efa886c..590c04f3877f 100644
---- a/Source/WebCore/css/CSSValue.h
-+++ b/Source/WebCore/css/CSSValue.h
-@@ -316,9 +316,10 @@ inline void CSSValue::deref() const
-     unsigned tempRefCount = m_refCount - refCountIncrement;
- 
-     if (!tempRefCount) {
--IGNORE_GCC_WARNINGS_BEGIN("free-nonheap-object")
-+#pragma GCC diagnostic push
-+#pragma GCC diagnostic ignored "-Wfree-nonheap-object"
-         delete this;
--IGNORE_GCC_WARNINGS_END
-+#pragma GCC diagnostic pop
-         return;
-     }
- 
 -- 
 2.53.0
 

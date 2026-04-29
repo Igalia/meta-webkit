@@ -6,6 +6,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI = "git://github.com/WebKit/WebKit;protocol=https;branch=webkitglib/2.48 \
            file://0001-Fix-compilation-with-gcc11.patch \
            file://0001-Enforce-surface-size-match-when-maximized-to-avoid-W.patch \
+           file://0001-Fix-CSSValue-errors-on-GCC-11.patch \
            "
 
 S = "${WORKDIR}/git"
