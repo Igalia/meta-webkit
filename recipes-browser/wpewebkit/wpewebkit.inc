@@ -30,7 +30,6 @@ PACKAGECONFIG ??= "accessibility avif dfg-jit gbm gpu-process \
                    sysprof \
                    ${@' system-sysprof' \
                        if bb.utils.contains('BBFILE_COLLECTIONS', 'meta-gnome', True, False, d) \
-                       and not bb.utils.contains('LAYERSERIES_CORENAMES', 'scarthgap', True, False, d) \
                        else '' } \
                    unified-builds video webaudio woff2 wpe-legacy-api \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
