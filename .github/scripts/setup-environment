@@ -38,7 +38,7 @@ if test -d "builds/${TARGET}/conf"; then
     echo "Resetting build config at conf/"
 fi
 
-OEROOT="${BSPDIR}/sources/poky"
+OEROOT="${BSPDIR}/sources/openembedded-core"
 
 OESCRIPT="${OEROOT}/oe-init-build-env"
 if ! test -x "${OESCRIPT}"; then
