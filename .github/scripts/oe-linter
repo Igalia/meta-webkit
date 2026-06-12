@@ -40,6 +40,6 @@ fi
 # shellcheck disable=SC2086
 $OELINT_ADV_BIN $ARG_COLOR --hide info \
     --suppress "oelint.task.heredocs oelint.vars.mispell" \
-    --release scarthgap \
+    --release wrynose \
     $OELINT_FILES
 

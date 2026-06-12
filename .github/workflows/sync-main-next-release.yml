@@ -4,9 +4,9 @@ on:
       - 'main'
 
 jobs:
-  mirror_latest_scarthgap:
+  mirror_latest_wrynose:
     runs-on: ubuntu-latest
-    name: Mirror 'main' branch for latest 'scarthgap' release branch
+    name: Mirror 'main' branch for latest 'wrynose' release branch
     steps:
     - name: Mirror action step
       id: mirror
@@ -14,4 +14,4 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         source: 'main'
-        dest: 'scarthgap-latest'
+        dest: 'wrynose-latest'
