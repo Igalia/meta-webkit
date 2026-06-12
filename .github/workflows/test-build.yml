@@ -6,7 +6,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        yocto_release: ['scarthgap']
+        yocto_release: ['wrynose']
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-repo
@@ -18,12 +18,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        yocto_release: ['scarthgap']
+        yocto_release: ['wrynose']
         machine: ['raspberrypi3-mesa', 'raspberrypi4-64']
         yocto_prefix: ['TCLIBC=glibc']
         wpe_vers: ['2_52']
         include:
-          - yocto_release: scarthgap
+          - yocto_release: wrynose
             machine: raspberrypi4-64
             yocto_prefix: TCLIBC=musl
             wpe_vers: 2_52
@@ -40,7 +40,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        yocto_release: ['scarthgap']
+        yocto_release: ['wrynose']
         machine: ['raspberrypi3-mesa', 'raspberrypi4-64']
         yocto_prefix: ['TCLIBC=glibc']
         wpe_vers: ['2_52']

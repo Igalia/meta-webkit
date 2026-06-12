@@ -3,11 +3,10 @@ inputs:
     default: ''
   bitbake_target:
     default: 'cog'
-  # SOURCE: raspberrypi3-mesa-wpe-2.38 raspberrypi3-mesa poky layers.python2.raspberrypi.qt5.webkit conf_v3.wpe-2_38
   bitbake_source:
     default: 'source'
   repo_release:
-    default: 'scarthgap'
+    default: 'wrynose'
 runs:
   using: 'composite'
   steps:

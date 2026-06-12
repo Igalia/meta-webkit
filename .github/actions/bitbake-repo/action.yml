@@ -4,7 +4,7 @@ inputs:
   repo_ref:
     default: ${{ github.ref }}
   repo_release:
-    default: 'scarthgap'
+    default: 'wrynose'
 runs:
   using: 'composite'
   steps:

@@ -100,10 +100,12 @@ EXTRA_OECMAKE = "\
     -G Ninja \
 "
 
-# Unless DEBUG_BUILD is enabled, pass -g1 to massively reduce the size of the
+# Pass -g1 to massively reduce the size of the
 # debug symbols (4.3GB to 700M at time of writing)
-DEBUG_FLAGS:append = " ${@bb.utils.contains('LAYERSERIES_CORENAMES', 'scarthgap', oe.utils.vartrue('DEBUG_BUILD', '', ' -g1', d), '', d)}"
-DEBUG_LEVELFLAG = "${@bb.utils.contains('LAYERSERIES_CORENAMES', 'scarthgap', '', '-g1', d)}"
+# workaround error:
+# qemux86-64: "relocation truncated to fit: R_X86_64_32 against `.debug_info'"
+# qemuarm64: "relocation truncated to fit: R_AARCH64_ABS32 against `.debug_info'"
+DEBUG_LEVELFLAG = "-g1"
 
 # Javascript JIT is not supported on ppc/arm < v6/RISCV/mips64
 PACKAGECONFIG:remove:powerpc = "jit"
