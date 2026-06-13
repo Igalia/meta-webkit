@@ -102,8 +102,7 @@ EXTRA_OECMAKE = "\
 
 # Unless DEBUG_BUILD is enabled, pass -g1 to massively reduce the size of the
 # debug symbols (4.3GB to 700M at time of writing)
-DEBUG_FLAGS:append = " ${@bb.utils.contains('LAYERSERIES_CORENAMES', 'scarthgap', oe.utils.vartrue('DEBUG_BUILD', '', ' -g1', d), '', d)}"
-DEBUG_LEVELFLAG = "${@bb.utils.contains('LAYERSERIES_CORENAMES', 'scarthgap', '', '-g1', d)}"
+DEBUG_FLAGS:append = " ${@oe.utils.vartrue('DEBUG_BUILD', '', ' -g1', d), '', d)}"
 
 # Javascript JIT is not supported on ppc/arm < v6/RISCV/mips64
 PACKAGECONFIG:remove:powerpc = "jit"
