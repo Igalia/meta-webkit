@@ -6,6 +6,7 @@ Subject: linux-user: Guard RESOLVE_CACHED flag with preprocessor check
 Wrap RESOLVE_CACHED usage in #ifdef to avoid build errors
 
 Upstream-Status: Pending
+Signed-off-by: Pablo Saavedra <psaavedra@igalia.com>
 ---
  linux-user/strace.c | 2 ++
  1 file changed, 2 insertions(+)
