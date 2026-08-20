@@ -95,13 +95,15 @@ EXTRA_OECMAKE = " -DPORT=WPE -G Ninja"
 # If SSE code compiles, assume it runs successfully (it can't actually run
 # because of cross compiling)
 EXTRA_OECMAKE:append:x86 = " -DHAVE_SSE2_EXTENSIONS_EXITCODE=0"
-# Javascript JIT is not supported on ppc/arm < v6/RISCV/mips64
+# Javascript JIT is not supported on ppc/arm < v6/armv7/RISCV/mips64
 PACKAGECONFIG:remove:powerpc = "jit"
 PACKAGECONFIG:remove:powerpc64 = "jit"
 PACKAGECONFIG:remove:powerpc64le = "jit"
 PACKAGECONFIG:remove:armv4 = "jit"
 PACKAGECONFIG:remove:armv5 = "jit"
 PACKAGECONFIG:remove:armv6 = "jit"
+PACKAGECONFIG:remove:armv7a = "jit"
+PACKAGECONFIG:remove:armv7ve = "jit"
 PACKAGECONFIG:remove:riscv32 = "jit"
 PACKAGECONFIG:remove:riscv64 = "jit"
 PACKAGECONFIG:remove:mipsarchn64 = "jit"
