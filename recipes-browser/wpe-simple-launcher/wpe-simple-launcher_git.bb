@@ -18,7 +18,7 @@ SRCREV = "522488025d1e68d039667bd897b3e8f4ee820061"
 do_install:append() {
     install -d ${D}${bindir}
     install -m 0755 ${B}/wpe-simple-launcher ${D}${bindir}/wpe-simple-launcher
-    install -m 0755 ${S}/wpe-ctl ${D}${bindir}/wpe-ctl
-    install -m 0755 ${S}/wpe-exported-wayland ${D}${bindir}/wpe-exported-wayland
+    install -m 0755 ${UNPACKDIR}/wpe-ctl ${D}${bindir}/wpe-ctl
+    install -m 0755 ${UNPACKDIR}/wpe-exported-wayland ${D}${bindir}/wpe-exported-wayland
 }
 

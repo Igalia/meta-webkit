@@ -16,7 +16,7 @@ do_install() {
 }
 
 FILES:${PN} += "${bindir}/python"
-RDEPENDS:${PN} = "python3"
+RDEPENDS:${PN} = "python3-core"
 RCONFLICTS:${PN} = "python"
 
 BBCLASSEXTEND = "native nativesdk"
