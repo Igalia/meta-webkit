@@ -1,0 +1,54 @@
+#!/bin/sh
+
+# Disable sandboxing for WebKit (dangerous, use with caution)
+# export WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1
+
+# Lower rank of AV1 decoder to disable it
+export GST_PLUGIN_FEATURE_RANK="avdec_av1:0"
+
+# Set directory for GStreamer debug output
+# export GST_DEBUG_DUMP_DOT_DIR=/tmp/gst-out/
+# mkdir -p /tmp/gst-out
+# chmod 777 /tmp/gst-out
+
+# Temporary file to store Wayland control data
+CTL_FILE="/tmp/wpe-exported-wayland"
+
+# Enable DMA-BUF video sink in WebKit for efficient rendering.
+# WebKitDMABufVideoSink sink that is able to accept decode
+# dmabuf or raw data in a range of RGB-like or YUV formats.
+# Bug: https://bugs.webkit.org/show_bug.cgi?id=279819
+#
+# Apply workaround only if running on raspberrypi5
+if [ "$(hostname)" = "raspberrypi5" ]; then
+    export WEBKIT_GST_DMABUF_SINK_ENABLED=1
+fi
+
+# Regression in 2.48.X since
+#   [GStreamer] Add support for DMA-BUF to GL video sink
+#   https://bugs.webkit.org/show_bug.cgi?id=279672
+# XXX Reported in : https://bugs.webkit.org/show_bug.cgi?id=288464
+#
+# Apply regression workaround only if running on raspberrypi5
+if [ "$(hostname)" = "raspberrypi5" ]; then
+    export WEBKIT_GST_DISABLE_GL_SINK=1
+fi
+
+# Ensure Wayland and XDG runtime environment variables are propagated
+WESTON_PID="$(pidof -s weston-keyboard 2>/dev/null || true)"
+if [ -z "$WESTON_PID" ] || [ ! -r "/proc/$WESTON_PID/environ" ]; then
+    echo "wpe-exported-wayland: unable to read weston-keyboard environment" >&2
+    exit 1
+fi
+
+WAYLAND_DISPLAY="$(tr '\0' '\n' < "/proc/$WESTON_PID/environ" | grep -m1 '^WAYLAND_DISPLAY=')"
+XDG_RUNTIME_DIR="$(tr '\0' '\n' < "/proc/$WESTON_PID/environ" | grep -m1 '^XDG_RUNTIME_DIR=')"
+export "${WAYLAND_DISPLAY?}"
+export "${XDG_RUNTIME_DIR?}"
+
+# Check if the script is run as root and switch to the 'weston' user if needed
+if [ "$(id -u)" -eq 0 ]; then
+    su -s /bin/sh weston -c 'ctl="$1"; shift; exec /usr/bin/wpe-simple-launcher --ctrl "$ctl" "$@"' sh "$CTL_FILE" "$@"
+else
+    exec /usr/bin/wpe-simple-launcher --ctrl "$CTL_FILE" "$@"
+fi
