@@ -11,7 +11,7 @@ export GST_PLUGIN_FEATURE_RANK="avdec_av1:0"
 # mkdir -p /tmp/gst-out
 # chmod 777 /tmp/gst-out
 
-# Temporary file to store Wayland control data
+# FIFO path used for the wpe-simple-launcher --ctrl channel (see wpe-ctl)
 CTL_FILE="/tmp/wpe-exported-wayland"
 
 # Enable DMA-BUF video sink in WebKit for efficient rendering.
