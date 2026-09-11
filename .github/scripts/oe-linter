@@ -1,8 +1,17 @@
 #!/bin/sh
 set -e
 
-# Install oelint-adv
-pipx install oelint-adv || { echo "pipx failed, trying pip..."; pip install --no-cache-dir oelint-adv || exit 1; }
+# Version of oelint-adv the layer is linted against. Pinned so that CI and
+# local runs agree: a different version changes which rules fire.
+OELINT_ADV_VERSION="9.6.1"
+
+# Install oelint-adv, unless the pinned version is already there. pipx reports
+# success without doing anything when some other version is installed, so the
+# version has to be checked here for the pin to take effect.
+OELINT_ADV_INSTALLED=$(oelint-adv --version 2>/dev/null | awk '{print $NF}' || true)
+if [ "$OELINT_ADV_INSTALLED" != "$OELINT_ADV_VERSION" ]; then
+    pipx install --force "oelint-adv==$OELINT_ADV_VERSION" || { echo "pipx failed, trying pip..."; pip install --no-cache-dir "oelint-adv==$OELINT_ADV_VERSION" || exit 1; }
+fi
 
 # Find all relevant files, store in an array to handle spaces
 if [ -z "$OELINT_FILES" ]; then
