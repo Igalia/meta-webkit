@@ -23,16 +23,19 @@ require ${@'wpewebkit-qt6.inc'  if 'qt6-layer' in d.getVar('BBFILE_COLLECTIONS')
 
 export WK_USE_CCACHE = "NO"
 
-PACKAGECONFIG ??= "accessibility avif dfg-jit gbm gpu-process \
+PACKAGECONFIG ??= "accessibility avif dfg-jit gamepad gbm gpu-process \
                    hyphen jit jpegxl libbacktrace \
                    mediasource mediastream \
-                   remote-inspector speech-synthesis \
+                   remote-inspector speech-synthesis spellcheck \
                    sysprof \
                    ${@' system-sysprof' \
                        if bb.utils.contains('BBFILE_COLLECTIONS', 'meta-gnome', True, False, d) \
                        and not bb.utils.contains('LAYERSERIES_CORENAMES', 'scarthgap', True, False, d) \
                        else '' } \
-                   unified-builds video webaudio woff2 wpe-legacy-api \
+                   unified-builds video webaudio webdriver woff2 \
+                   wpe-legacy-api wpe-platform \
+                   wpe-platform-drm wpe-platform-headless \
+                   ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wpe-platform-wayland', '', d)} \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
                   "
 
@@ -58,7 +61,7 @@ PACKAGECONFIG[introspection] = "-DENABLE_INTROSPECTION=ON,-DENABLE_INTROSPECTION
 PACKAGECONFIG[jit] = "-DENABLE_JIT=ON,-DENABLE_JIT=OFF,"
 PACKAGECONFIG[jpegxl] = "-DUSE_JPEGXL=ON,-DUSE_JPEGXL=OFF,libjxl"
 PACKAGECONFIG[journald] = "-DENABLE_JOURNALD_LOG=ON,-DENABLE_JOURNALD_LOG=OFF,"
-PACKAGECONFIG[lcms] = "-DUSE_LCMS=ON,-DUSE_LCMS=OFF,"
+PACKAGECONFIG[lcms] = "-DUSE_LCMS=ON,-DUSE_LCMS=OFF,lcms"
 PACKAGECONFIG[wpe-legacy-api] = "-DENABLE_WPE_LEGACY_API=ON,-DENABLE_WPE_LEGACY_API=OFF,libwpe virtual/wpebackend,"
 PACKAGECONFIG[libbacktrace] = "-DUSE_LIBBACKTRACE=ON,-DUSE_LIBBACKTRACE=OFF,libbacktrace"
 PACKAGECONFIG[minibrowser] = "-DENABLE_MINIBROWSER=ON,-DENABLE_MINIBROWSER=OFF,wayland-native wayland-protocols wpebackend-fdo"
@@ -68,26 +71,40 @@ PACKAGECONFIG[mediastream] = "-DENABLE_MEDIA_STREAM=ON,-DENABLE_MEDIA_STREAM=OFF
 PACKAGECONFIG[pdfjs] = "-DENABLE_PDFJS=ON,-DENABLE_PDFJS=OFF,"
 
 PACKAGECONFIG[speech-synthesis] = "-DENABLE_SPEECH_SYNTHESIS=ON,-DENABLE_SPEECH_SYNTHESIS=OFF,flite"
+PACKAGECONFIG[spellcheck] = "-DENABLE_SPELLCHECK=ON,-DENABLE_SPELLCHECK=OFF,enchant2"
 
 PACKAGECONFIG[sysprof] = "-DUSE_SYSPROF_CAPTURE=ON, -DUSE_SYSPROF_CAPTURE=OFF,"
 PACKAGECONFIG[system-sysprof] = "-DUSE_SYSTEM_SYSPROF_CAPTURE=ON, -DUSE_SYSTEM_SYSPROF_CAPTURE=OFF, sysprof"
 PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON,-DENABLE_VIDEO=OFF,gstreamer1.0 gstreamer1.0-plugins-base"
 PACKAGECONFIG[webaudio] = "-DENABLE_WEB_AUDIO=ON,-DENABLE_WEB_AUDIO=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good"
+PACKAGECONFIG[webdriver] = "-DENABLE_WEBDRIVER=ON,-DENABLE_WEBDRIVER=OFF,"
 PACKAGECONFIG[woff2] = "-DUSE_WOFF2=ON,-DUSE_WOFF2=OFF,woff2"
 PACKAGECONFIG[remote-inspector] = "-DENABLE_REMOTE_INSPECTOR=ON,-DENABLE_REMOTE_INSPECTOR=OFF,"
 PACKAGECONFIG[webrtc] = "-DENABLE_WEB_RTC=ON,-DENABLE_WEB_RTC=OFF,libvpx libevent libopus openh264"
+# Requires wpe-platform: upstream has WEBKIT_OPTION_DEPEND(ENABLE_WPE_QT_API
+# ENABLE_WPE_PLATFORM), and dropping wpe-platform silently disables the Qt API.
 PACKAGECONFIG[qtwpe] = "-DENABLE_WPE_QT_API=ON ${CMAKE_QT_OECONF},-DENABLE_WPE_QT_API=OFF,qtbase-native qtbase qtdeclarative libepoxy wpebackend-fdo ${QT_BUILD_DEPS}"
 PACKAGECONFIG[unified-builds] = "-DENABLE_UNIFIED_BUILDS=ON,-DENABLE_UNIFIED_BUILDS=OFF,"
 PACKAGECONFIG[thunder] = "-DENABLE_THUNDER=ON,-DENABLE_THUNDER=OFF,virtual/open-cdm"
 PACKAGECONFIG[webxr] = "-DENABLE_WEBXR=ON,-DENABLE_WEBXR=OFF,openxr"
 
-# Build option for WPE API 1.1
+# Build option for WPE API 1.1. It conflicts with wpe-platform, so drop
+# wpe-platform from PACKAGECONFIG when enabling this one.
 PACKAGECONFIG[wpe-1-1-api] = "-DENABLE_WPE_1_1_API:BOOL=ON,-DENABLE_WPE_1_1_API:BOOL=OFF,"
 
-# Build option for WPE platform API
-PACKAGECONFIG[wpe-platform] = "-DENABLE_WPE_PLATFORM=ON,-DENABLE_WPE_PLATFORM=OFF,libinput libxkbcommon wayland-native"
+# Build options for the WPE platform API and its backends. All of them default
+# to ON upstream; the backends are kept separate so their dependencies can be
+# dropped on targets that do not need them.
+PACKAGECONFIG[wpe-platform] = "-DENABLE_WPE_PLATFORM=ON,-DENABLE_WPE_PLATFORM=OFF,libxkbcommon"
+PACKAGECONFIG[wpe-platform-drm] = "-DENABLE_WPE_PLATFORM_DRM=ON,-DENABLE_WPE_PLATFORM_DRM=OFF,libdrm libinput udev"
+PACKAGECONFIG[wpe-platform-headless] = "-DENABLE_WPE_PLATFORM_HEADLESS=ON,-DENABLE_WPE_PLATFORM_HEADLESS=OFF,"
+PACKAGECONFIG[wpe-platform-wayland] = "-DENABLE_WPE_PLATFORM_WAYLAND=ON,-DENABLE_WPE_PLATFORM_WAYLAND=OFF,wayland wayland-native wayland-protocols"
 
 EXTRA_OECMAKE = " -DPORT=WPE -G Ninja"
+
+# USE_VULKAN follows ENABLE_EXPERIMENTAL_FEATURES upstream, but it needs volk
+# and no volk recipe is available in the supported layers.
+EXTRA_OECMAKE:append = " -DUSE_VULKAN=OFF -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON"
 
 # TODO: documentation and introspection are disabled by default because the are
 # causing cross-compiling build errors

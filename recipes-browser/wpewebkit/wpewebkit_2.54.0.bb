@@ -3,8 +3,8 @@ require conf/include/devupstream.inc
 
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball"
 
-SRC_URI[tarball.sha256sum] = "01ca34cd7af880c038d35aa94482fee785a77db37b614c584475d7d43b3a2dc0"
+SRC_URI[tarball.sha256sum] = "efa9bcc3cb891c2d88f50eec710d9ccee71cbdf1040420361eb98c17355eb452"
 
-SRCBRANCH:class-devupstream = "webkitglib/2.52"
+SRCBRANCH:class-devupstream = "webkitglib/2.54"
 SRC_URI:class-devupstream = "git://github.com/WebKit/WebKit.git;protocol=https;branch=${SRCBRANCH}"
-SRCREV:class-devupstream = "eb3f22e0713f185bd676b49e88249555cf677a0a"
+SRCREV:class-devupstream = "73f39d84ea9d4071994214373efbde3665402b05"
