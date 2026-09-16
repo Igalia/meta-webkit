@@ -1,0 +1,41 @@
+From 225b3f0fd9444a1dadc2ee1e78e41f9c47010237 Mon Sep 17 00:00:00 2001
+From: Pablo Saavedra <psaavedra@igalia.com>
+Date: Thu, 2 Jul 2026 11:13:57 +0200
+Subject: [PATCH] bmalloc/libpas: avoid C stdatomic in C++ build on GCC13/Yocto
+
+* Source/bmalloc/libpas/src/libpas/pas_utils.h:
+
+The unconditional <stdatomic.h> include was added by 310886@main. Upstream
+fixed the resulting C++ breakage for xcodebuild only (312138@main), so the
+CMake build still needs this.
+
+Upstream-Status: Submitted [https://github.com/WebKit/WebKit/pull/74158]
+
+Signed-off-by: Pablo Saavedra <psaavedra@igalia.com>
+---
+ Source/bmalloc/libpas/src/libpas/pas_utils.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/Source/bmalloc/libpas/src/libpas/pas_utils.h b/Source/bmalloc/libpas/src/libpas/pas_utils.h
+index 433b26f0ad3e..d0173f53c100 100644
+--- a/Source/bmalloc/libpas/src/libpas/pas_utils.h
++++ b/Source/bmalloc/libpas/src/libpas/pas_utils.h
+@@ -42,7 +42,15 @@
+ #endif
+ 
+ #include <limits.h>
++#if defined(__cplusplus)
++/* Use C++ atomics in C++ translation units to avoid toolchain/header mode
++ * mismatches around C11 _Atomic (seen with GCC13 cross builds in Yocto). */
++#include <atomic>
++#define PAS_ATOMIC(T) std::atomic<T>
++#else
+ #include <stdatomic.h>
++#define PAS_ATOMIC(T) _Atomic(T)
++#endif
+ #include <stdbool.h>
+ #include <stdint.h>
+ #include <string.h>
+-- 
+2.43.0
+
