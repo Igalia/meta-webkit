@@ -2,7 +2,6 @@ inherit qt6-cmake
 
 CMAKE_QT_OECONF = "\
     -DUSE_QT6=ON \
-    -DENABLE_WPE_PLATFORM=ON \
 "
 
 QT_BUILD_DEPS =  "qtdeclarative-native wayland-native wayland-protocols wpebackend-fdo"
