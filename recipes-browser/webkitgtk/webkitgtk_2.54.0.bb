@@ -42,8 +42,14 @@ DEPENDS = "curl \
            zlib \
 "
 
-SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball;subdir=${BP};striplevel=1"
-SRC_URI[tarball.sha256sum] = "8a531a9abd2215936e8a8a914c077b586c0228b31d652f205286a8ec90f3364b"
+# WebDriver fails to build when both LOG_DISABLED and RELEASE_LOG_DISABLED are
+# set, which is the case for a release build without journald. Drop this patch
+# once https://github.com/WebKit/WebKit/pull/74228 lands.
+SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball;subdir=${BP};striplevel=1 \
+           file://0001-bmalloc-libpas-avoid-C-stdatomic-in-C-build.patch \
+           file://0002-WebDriver-Fix-build-when-logging-is-disabled.patch \
+           "
+SRC_URI[tarball.sha256sum] = "846fd19ccedbae1dbfe904f26dbf2d68a800a33a50caf2ad5222c8dcb3f25682"
 
 inherit cmake lib_package pkgconfig perlnative python3native
 
@@ -54,15 +60,18 @@ PACKAGECONFIG ??= "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)}
                    ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'opengl gles2 webgl', '', d)} \
                    ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'journald', '' ,d)} \
                    enchant \
+                   gamepad \
                    gbm \
                    gtk4 \
                    jit \
                    jpegxl \
+                   lcms \
                    libsecret \
                    hyphen \
                    pdfjs \
                    speech-synthesis \
                    video \
+                   webdriver \
                    woff2 \
                    "
 
@@ -75,6 +84,7 @@ PACKAGECONFIG[geoclue] = "-DENABLE_GEOLOCATION=ON,-DENABLE_GEOLOCATION=OFF,geocl
 PACKAGECONFIG[gles2] = "-DENABLE_GLES2=ON,-DENABLE_GLES2=OFF,virtual/libgles2"
 PACKAGECONFIG[gtk4] = "-DUSE_GTK4=ON,-DUSE_GTK4=OFF,gtk4"
 PACKAGECONFIG[jpegxl] = "-DUSE_JPEGXL=ON,-DUSE_JPEGXL=OFF,libjxl"
+PACKAGECONFIG[lcms] = "-DUSE_LCMS=ON,-DUSE_LCMS=OFF,lcms"
 PACKAGECONFIG[libbacktrace] = "-DUSE_LIBBACKTRACE=ON,-DUSE_LIBBACKTRACE=OFF,libbacktrace"
 PACKAGECONFIG[hyphen] = "-DUSE_LIBHYPHEN=ON,-DUSE_LIBHYPHEN=OFF,hyphen"
 PACKAGECONFIG[libsecret] = "-DUSE_LIBSECRET=ON,-DUSE_LIBSECRET=OFF,libsecret"
@@ -85,6 +95,7 @@ PACKAGECONFIG[speech-synthesis] = "-DENABLE_SPEECH_SYNTHESIS=ON,-DENABLE_SPEECH_
 PACKAGECONFIG[systemd] = "-DUSE_SYSTEMD=ON,-DUSE_SYSTEMD=OFF,systemd"
 PACKAGECONFIG[journald] = "-DENABLE_JOURNALD_LOG=ON,-DENABLE_JOURNALD_LOG=OFF,"
 PACKAGECONFIG[video] = "-DENABLE_VIDEO=ON,-DENABLE_VIDEO=OFF,gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad"
+PACKAGECONFIG[webdriver] = "-DENABLE_WEBDRIVER=ON,-DENABLE_WEBDRIVER=OFF,"
 PACKAGECONFIG[wayland] = "-DENABLE_WAYLAND_TARGET=ON,-DENABLE_WAYLAND_TARGET=OFF,wayland wayland-native"
 PACKAGECONFIG[webgl] = "-DENABLE_WEBGL=ON,-DENABLE_WEBGL=OFF,virtual/libgl"
 PACKAGECONFIG[woff2] = "-DUSE_WOFF2=ON,-DUSE_WOFF2=OFF,woff2"
@@ -93,10 +104,11 @@ PACKAGECONFIG[jit] = "-DENABLE_JIT=ON -DENABLE_C_LOOP=OFF,-DENABLE_JIT=OFF -DENA
 
 EXTRA_OECMAKE = "\
     -DPORT=GTK \
+    -DENABLE_DOCUMENTATION=OFF \
     -DENABLE_INTROSPECTION=OFF \
-    -DENABLE_GTKDOC=OFF \
     -DENABLE_MINIBROWSER=ON \
     -DUSE_SYSPROF_CAPTURE=OFF \
+    -DUSE_VULKAN=OFF \
     -G Ninja \
 "
 
