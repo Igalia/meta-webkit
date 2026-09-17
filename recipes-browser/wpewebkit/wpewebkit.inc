@@ -134,6 +134,15 @@ LDFLAGS:append:riscv64 = " -pthread"
 FULL_OPTIMIZATION:remove = "-g"
 
 LEAD_SONAME = "libWPEWebKit.so"
+
+# USE_MIMALLOC is the default on armv7, mips and riscv64. bmalloc links the
+# mimalloc objects directly (Source/bmalloc/CMakeLists.txt appends
+# $<TARGET_OBJECTS:mimalloc-obj>), so the copy that the vendored mimalloc
+# installs under ${libdir}/mimalloc-<version> is unused at runtime.
+do_install:append() {
+    rm -rf ${D}${libdir}/mimalloc-*
+}
+
 PACKAGES =+ "${PN}-web-inspector-plugin ${PN}-qtwpe-qml-plugin"
 FILES:${PN} += "${libdir}/wpe-webkit*/injected-bundle/libWPEInjectedBundle.so"
 FILES:${PN}-web-inspector-plugin += "${datadir}/wpe-webkit-*/inspector.gresource"
