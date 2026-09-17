@@ -168,12 +168,18 @@ RRECOMMENDS:${PN}-bin = "adwaita-icon-theme librsvg-gtk"
 
 WEBKITGTK_API_VERSION := "6.0"
 
-# Install MiniBrowser in PATH
 do_install:append() {
+    # Install MiniBrowser in PATH
     if test -f "${D}${libexecdir}/webkitgtk-${WEBKITGTK_API_VERSION}" ; then
         install -d ${D}${bindir}
         mv ${D}${libexecdir}/webkitgtk-${WEBKITGTK_API_VERSION}/MiniBrowser ${D}${bindir}
     fi
+
+    # USE_MIMALLOC is the default on armv7, mips and riscv64. bmalloc links the
+    # mimalloc objects directly (Source/bmalloc/CMakeLists.txt appends
+    # $<TARGET_OBJECTS:mimalloc-obj>), so the copy that the vendored mimalloc
+    # installs under ${libdir}/mimalloc-<version> is unused at runtime.
+    rm -rf ${D}${libdir}/mimalloc-*
 }
 
 PACKAGE_PREPROCESS_FUNCS += "src_package_preprocess"
