@@ -2,7 +2,7 @@ inputs:
   bitbake_prefix:
     default: ''
   bitbake_target:
-    default: 'cog'
+    default: 'wig'
   bitbake_source:
     default: 'source'
   repo_release:
