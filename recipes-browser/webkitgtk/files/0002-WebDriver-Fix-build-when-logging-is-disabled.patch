@@ -1,0 +1,53 @@
+From 15f070cb5326701a9b57d3da5f3e29544a9c4ac7 Mon Sep 17 00:00:00 2001
+From: Pablo Saavedra <psaavedra@igalia.com>
+Date: Thu, 17 Sep 2026 08:18:51 +0200
+Subject: [PATCH] [WebDriver] Build failure when logging is completely disabled
+ https://bugs.webkit.org/show_bug.cgi?id=324419
+
+Reviewed by NOBODY (OOPS!).
+
+WebDriverService::handleRequest() reads LOG_CHANNEL(WebDriverClassic).state
+directly to decide whether to install the response-timing wrapper, but the
+WebDriver log channels are only declared under
+
+    #if !LOG_DISABLED || !RELEASE_LOG_DISABLED
+
+in Source/WebDriver/Logging.h. LOG_DISABLED is !ASSERT_ENABLED, so it is 1
+in a release build, and RELEASE_LOG_DISABLED is 1 whenever none of OS_LOG,
+JOURNALD_LOG or Android logging is available, which is the case for a
+WPE release build on a system image without systemd. In that configuration
+the channel is never declared and the build fails with:
+
+    wtf/Assertions.h:187:56: error: 'LOG_CHANNEL_PREFIXWebDriverClassic'
+        was not declared in this scope
+
+* Source/WebDriver/WebDriverService.cpp:
+(WebDriver::WebDriverService::handleRequest): Only consult the
+WebDriverClassic log channel when the log channels are declared.
+
+Upstream-Status: Submitted [https://github.com/WebKit/WebKit/pull/74228]
+
+Signed-off-by: Pablo Saavedra <psaavedra@igalia.com>
+---
+ Source/WebDriver/WebDriverService.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Source/WebDriver/WebDriverService.cpp b/Source/WebDriver/WebDriverService.cpp
+--- a/Source/WebDriver/WebDriverService.cpp
++++ b/Source/WebDriver/WebDriverService.cpp
+@@ -380,6 +380,7 @@
+ void WebDriverService::handleRequest(HTTPRequestHandler::Request&& request, Function<void (HTTPRequestHandler::Response&&)>&& replyHandler)
+ {
+     Function<void (HTTPRequestHandler::Response&&)> actualReplyHandler = WTF::move(replyHandler);
++#if !LOG_DISABLED || !RELEASE_LOG_DISABLED
+     if (LOG_CHANNEL(WebDriverClassic).state != WTFLogChannelState::Off) {
+         RELEASE_LOG_INFO(WebDriverClassic, "HTTP request %s %s (body=%zu bytes)", request.method.utf8().data(), request.path.utf8().data(), request.dataLength);
+         actualReplyHandler = [startTime = MonotonicTime::now(), replyHandler = WTF::move(actualReplyHandler)](HTTPRequestHandler::Response&& response) mutable {
+@@ -387,6 +388,7 @@
+             replyHandler(WTF::move(response));
+         };
+     }
++#endif // !LOG_DISABLED || !RELEASE_LOG_DISABLED
+ 
+     auto method = toCommandHTTPMethod(request.method);
+     if (!method) {
