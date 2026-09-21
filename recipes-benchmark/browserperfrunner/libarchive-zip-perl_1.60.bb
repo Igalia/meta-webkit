@@ -15,3 +15,9 @@ RDEPENDS:${PN} += "perl-modules"
 inherit cpan
 
 SRC_URI[sha256sum] = "eac75b05f308e860aa860c3094aa4e7915d3d31080e953e49bc9c38130f5c20b"
+
+# cpan-base.bbclass builds the check regex out of the whole SRC_URI entry,
+# parameters included, so subdir=${BP} makes it define the pver group twice
+# and the regex no longer compiles. A failure here aborts the upgrade check
+# for every recipe, not just this one.
+UPSTREAM_CHECK_REGEX = "Archive-Zip-(?P<pver>\d+(\.\d+)+)\.tar\.gz"
