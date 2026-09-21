@@ -1,0 +1,239 @@
+#!/usr/bin/env bash
+#
+# Turn the results of an auto-upgrade-helper run into pull requests.
+#
+# One branch and one pull request per upgraded recipe, named
+# auh/<recipe>_<version>. Work already proposed is left alone, so the script
+# can run every night without piling up duplicates.
+
+set -euo pipefail
+
+usage() {
+    cat<<FIN
+Usage: $(basename "$0") <results directory>
+
+Creates a branch and a pull request for every recipe the auto-upgrade-helper
+upgraded successfully in that run.
+
+Environment:
+    AUH_MAX_PRS       Pull requests to open in one run. The rest wait for the
+                      next one. Default: 2.
+    AUH_DRY_RUN       '1' applies every patch locally and prints what would be
+                      proposed, without pushing or opening anything.
+    AUH_BASE          Branch to base the upgrades on. Default: main.
+    AUH_REPO_DIR      meta-webkit checkout to work in, with a remote that can
+                      be pushed to. Default: the working directory.
+    AUH_LABEL         Label to put on the pull requests. Default: auh.
+    AUH_AUTHOR        Author of the upgrade commits.
+    AUH_SIGNED_OFF_BY Who signs off the upgrade commits. Default: the author,
+                      since nobody has reviewed them at this point.
+    AUH_SKIP_COMPILE  '1' states in the commit that the upgrade was not built.
+FIN
+    exit "${1:-0}"
+}
+
+[[ "${1:-}" == "-h" || "${1:-}" == "--help" ]] && usage
+RUNDIR="${1:-${AUH_RUNDIR:-}}"
+[ -n "${RUNDIR}" ] || usage 1
+# The loop below globs the results after changing into the repository, so a
+# relative path has to be resolved while it still means what it says.
+RUNDIR="$(readlink -f "${RUNDIR}")"
+test -d "${RUNDIR}/succeed" || { echo "auh-pr: no succeed/ in ${RUNDIR}" >&2; exit 1; }
+
+AUH_MAX_PRS="${AUH_MAX_PRS:-2}"
+AUH_DRY_RUN="${AUH_DRY_RUN:-0}"
+AUH_BASE="${AUH_BASE:-main}"
+AUH_REPO_DIR="${AUH_REPO_DIR:-$(pwd)}"
+AUH_LABEL="${AUH_LABEL:-auh}"
+AUH_AUTHOR="${AUH_AUTHOR:-meta-webkit CI Bot <meta-webkit-bot@igalia.com>}"
+AUH_SIGNED_OFF_BY="${AUH_SIGNED_OFF_BY:-${AUH_AUTHOR}}"
+AUH_SKIP_COMPILE="${AUH_SKIP_COMPILE:-1}"
+
+RUN_URL="TODO"
+if [ -n "${GITHUB_SERVER_URL:-}" ] && [ -n "${GITHUB_RUN_ID:-}" ]; then
+    RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+fi
+
+log() { echo "auh-pr: $*" >&2; }
+
+cd "${AUH_REPO_DIR}"
+test -z "$(git status --porcelain)" || { log "working tree is not clean"; exit 1; }
+
+# 'git am' needs a committer of its own, which a fresh CI checkout does not
+# carry: the From: header of the patch only supplies the author.
+if [ -z "$(git config user.email || true)" ]; then
+    committer_email="${AUH_AUTHOR#*<}"
+    git config user.name "${AUH_AUTHOR%% <*}"
+    git config user.email "${committer_email%>}"
+fi
+RESTORE="$(git symbolic-ref --quiet --short HEAD || git rev-parse HEAD)"
+trap 'git checkout --quiet --force "${RESTORE}"' EXIT
+
+git fetch --quiet origin "${AUH_BASE}"
+
+# major, minor or patch, taken from which part of the version moved.
+change_type() {
+    local old="$1" new="$2"
+    if [ "${old%%.*}" != "${new%%.*}" ]; then
+        echo major
+    elif [ "$(echo "${old}" | cut -d. -f2)" != "$(echo "${new}" | cut -d. -f2)" ]; then
+        echo minor
+    else
+        echo patch
+    fi
+}
+
+commit_message() {
+    local pn="$1" old="$2" new="$3" tested="$4"
+    cat<<FIN
+${pn}: Update to version ${new}
+
+Move the recipe from ${old} to ${new}. The auto-upgrade-helper renames the
+recipe file and refreshes the source checksums, and nothing else: whatever
+the new version needs beyond that is still to be done.
+
+${tested}
+
+Change-Type: $(change_type "${old}" "${new}")
+Maintenance-Type: unreviewed-change
+Related-To: ${RUN_URL}
+Signed-off-by: ${AUH_SIGNED_OFF_BY}
+FIN
+}
+
+pr_body() {
+    local pn="$1" old="$2" new="$3" dir="$4" tested="$5"
+
+    cat<<FIN
+Automatic upgrade of \`${pn}\` from ${old} to ${new}.
+
+${tested}
+
+FIN
+
+    if test -f "${dir}/license-diff.txt"; then
+        cat<<FIN
+> [!WARNING]
+> The license checksums changed. Read the diff before merging:
+
+\`\`\`
+$(cat "${dir}/license-diff.txt")
+\`\`\`
+
+FIN
+    fi
+
+    if test -f "${dir}/email_summary"; then
+        # The summary carries the whole patch after the scissors line, and an
+        # Attachments: header pointing into the runner's filesystem.
+        cat<<FIN
+<details><summary>Upgrade helper report</summary>
+
+\`\`\`
+$(sed -n '1,/^-- >8 --$/p' "${dir}/email_summary" |
+    grep -v -e '^-- >8 --$' -e '^Attachments: ')
+\`\`\`
+
+</details>
+
+FIN
+    fi
+
+    cat<<FIN
+Produced by ${RUN_URL} from run \`$(basename "${RUNDIR}")\`.
+FIN
+}
+
+if [ "${AUH_SKIP_COMPILE}" = "1" ]; then
+    TESTED="The job did not build the upgrade, it only refreshed the
+checksums, so building it is what this pull request is for."
+else
+    TESTED="The job built the upgrade for qemux86-64."
+fi
+
+created=0
+deferred=()
+
+for dir in "${RUNDIR}"/succeed/*; do
+    test -d "${dir}" || continue
+    pn="$(basename "${dir}")"
+
+    patch="$(find -L "${dir}" -maxdepth 1 -name '0001-*.patch' | sort | head -1)"
+    if [ -z "${patch}" ]; then
+        log "${pn}: no patch in ${dir}, skipped"
+        continue
+    fi
+
+    subject="$(sed -n 's/^Subject: \[PATCH\] //p' "${patch}" | head -1)"
+    version_re='^[^:]+: upgrade (.+) -> (.+)$'
+    if [[ "${subject}" =~ ${version_re} ]]; then
+        old="${BASH_REMATCH[1]}"
+        new="${BASH_REMATCH[2]}"
+    else
+        log "${pn}: no version in '${subject}', skipped"
+        continue
+    fi
+
+    branch="auh/${pn}_${new}"
+
+    # Three guards, because one is not enough: the branch covers work in
+    # flight, the pull request search covers branches deleted after a merge or
+    # a rejection, and the tree covers an upgrade that landed some other way.
+    if git ls-remote --exit-code --heads origin "${branch}" >/dev/null 2>&1; then
+        log "${pn}: ${branch} exists, skipped"
+        continue
+    fi
+    if command -v gh >/dev/null 2>&1; then
+        if [ -n "$(gh pr list --state all --head "${branch}" --json number --jq '.[].number' 2>/dev/null)" ]; then
+            log "${pn}: a pull request for ${branch} was opened before, skipped"
+            continue
+        fi
+    fi
+    if git ls-tree -r --name-only "origin/${AUH_BASE}" | grep -q "/${pn}_${new}\.bb$"; then
+        log "${pn}: ${new} is already in ${AUH_BASE}, skipped"
+        continue
+    fi
+
+    if [ "${created}" -ge "${AUH_MAX_PRS}" ]; then
+        deferred+=("${pn} ${old} -> ${new}")
+        continue
+    fi
+
+    log "${pn}: ${old} -> ${new} on ${branch}"
+    git checkout --quiet -B "${branch}" "origin/${AUH_BASE}"
+    if ! git am --quiet "${patch}"; then
+        git am --abort || true
+        log "${pn}: the patch does not apply to ${AUH_BASE}, skipped"
+        git checkout --quiet --force "${RESTORE}"
+        git branch -D "${branch}" >/dev/null 2>&1 || true
+        continue
+    fi
+    git commit --quiet --amend --author="${AUH_AUTHOR}" \
+        -m "$(commit_message "${pn}" "${old}" "${new}" "${TESTED}")"
+
+    if [ "${AUH_DRY_RUN}" = "1" ]; then
+        echo "=== ${branch}"
+        git log -1
+        echo "--- pull request body"
+        pr_body "${pn}" "${old}" "${new}" "${dir}" "${TESTED}"
+        echo
+        git checkout --quiet --force "${RESTORE}"
+        git branch -D "${branch}" >/dev/null 2>&1 || true
+        created=$((created + 1))
+        continue
+    fi
+
+    git push --quiet origin "${branch}"
+    gh label create "${AUH_LABEL}" --description "Automatic recipe upgrade" >/dev/null 2>&1 || true
+    gh pr create --base "${AUH_BASE}" --head "${branch}" \
+        --title "${pn}: Update to version ${new}" \
+        --label "${AUH_LABEL}" \
+        --body-file <(pr_body "${pn}" "${old}" "${new}" "${dir}" "${TESTED}")
+    created=$((created + 1))
+done
+
+log "opened ${created} pull request(s), cap is ${AUH_MAX_PRS}"
+if [ "${#deferred[@]}" -gt 0 ]; then
+    log "waiting for a later run:"
+    printf 'auh-pr:   %s\n' "${deferred[@]}" >&2
+fi

@@ -1,0 +1,141 @@
+#!/usr/bin/env bash
+#
+# Run the auto-upgrade-helper over the recipes of this layer.
+#
+# Sets up (or refreshes) a repo workspace, builds an AUH configuration for it
+# and runs the upgrade attempt. Nothing is pushed and no mail is sent: the
+# result is a directory of patches that .github/scripts/auh-pr turns into pull
+# requests.
+
+set -euo pipefail
+
+usage() {
+    cat<<FIN
+Usage: $(basename "$0")
+
+Runs the auto-upgrade-helper over the meta-webkit recipes and prints the
+directory holding its results.
+
+Environment:
+    AUH_RELEASE       Yocto release to work with. Default: wrynose.
+    AUH_WORKSPACE     Repo workspace to use. Default:
+                      \$HOME/yocto-webkit-auh-\$AUH_RELEASE.
+    AUH_LAYER_URL     meta-webkit remote. Default: the Igalia repository.
+    AUH_LAYER_REF     Branch of meta-webkit to upgrade, and the branch the
+                      manifest itself is read from. Default: main.
+    AUH_RECIPES       Recipes to attempt, space separated, or 'all'.
+                      Default: all.
+    AUH_SKIP_COMPILE  '1' fetches the new sources and updates the checksums
+                      without building the result. Default: 1.
+    AUH_SRCREV        Revision of the auto-upgrade-helper to run.
+FIN
+    exit 0
+}
+
+[[ "${1:-}" == "-h" || "${1:-}" == "--help" ]] && usage
+
+AUH_RELEASE="${AUH_RELEASE:-wrynose}"
+AUH_WORKSPACE="${AUH_WORKSPACE:-$HOME/yocto-webkit-auh-$AUH_RELEASE}"
+AUH_LAYER_URL="${AUH_LAYER_URL:-https://github.com/Igalia/meta-webkit.git}"
+AUH_LAYER_REF="${AUH_LAYER_REF:-main}"
+AUH_RECIPES="${AUH_RECIPES:-all}"
+AUH_SKIP_COMPILE="${AUH_SKIP_COMPILE:-1}"
+AUH_URL="${AUH_URL:-git://git.yoctoproject.org/auto-upgrade-helper}"
+# Pinned: the helper is a tool this job depends on, not a moving part of it.
+AUH_SRCREV="${AUH_SRCREV:-9f53a4a51777f94002d129bec6a43f706f5d320a}"
+
+SCRIPTSDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFTEMPLATE="${SCRIPTSDIR}/../auh/upgrade-helper.conf.in"
+
+log() { echo "auh-run: $*" >&2; }
+
+# The workspace is kept between runs so that the downloads and the parse cache
+# stay warm, which is most of the runtime of an upgrade attempt.
+log "preparing workspace ${AUH_WORKSPACE}"
+mkdir -p "${AUH_WORKSPACE}"
+cd "${AUH_WORKSPACE}"
+
+LAYERDIR="${AUH_WORKSPACE}/sources/meta-webkit"
+
+# AUH commits to the layer and reverts afterwards, so a run interrupted halfway
+# leaves the checkout dirty. Clean it before syncing, since repo refuses to
+# update a project that carries local changes, and the job would then wedge on
+# every following night.
+if test -d "${LAYERDIR}/.git"; then
+    git -C "${LAYERDIR}" reset --hard
+    git -C "${LAYERDIR}" clean -fd
+fi
+
+repo init -u "${AUH_LAYER_URL}" \
+    -m .github/manifest/manifest-"${AUH_RELEASE}".xml -b "${AUH_LAYER_REF}"
+repo sync --force-sync
+
+# The manifest pins its own revision for the layer, so the branch passed to
+# repo only selects where the manifest comes from. Check out what was asked
+# for. The remote is named after the manifest, not necessarily 'origin'.
+LAYER_REMOTE="$(git -C "${LAYERDIR}" remote | head -1)"
+git -C "${LAYERDIR}" fetch "${LAYER_REMOTE}" "${AUH_LAYER_REF}"
+git -C "${LAYERDIR}" checkout --quiet FETCH_HEAD
+
+git -C "${LAYERDIR}" config user.name "meta-webkit CI Bot"
+git -C "${LAYERDIR}" config user.email "meta-webkit-bot@igalia.com"
+BASELINE="$(git -C "${LAYERDIR}" rev-parse HEAD)"
+
+log "fetching the auto-upgrade-helper at ${AUH_SRCREV}"
+AUHDIR="${AUH_WORKSPACE}/sources/auto-upgrade-helper"
+if ! test -d "${AUHDIR}"; then
+    git clone "${AUH_URL}" "${AUHDIR}"
+fi
+git -C "${AUHDIR}" fetch origin
+git -C "${AUHDIR}" checkout --quiet "${AUH_SRCREV}"
+
+mkdir -p "${AUH_WORKSPACE}/builds"
+# Host specific settings of the self-hosted runner, as in the build jobs.
+test -f /local-host.conf && cp /local-host.conf "${AUH_WORKSPACE}/builds/"
+
+# oe-init-build-env reads BBSERVER and friends while they are unset and returns
+# non-zero on paths that are not failures here, so the shell options have to go
+# for the duration of the sourcing.
+set +eu
+# shellcheck source=/dev/null
+source "${LAYERDIR}/.github/scripts/setup-environment" \
+    auh qemux86-64 poky layers.webkit conf_v4.auh
+set -eu
+test -n "${BUILDDIR:-}" || { log "the build environment was not set up"; exit 1; }
+
+CONF="${BUILDDIR}/upgrade-helper.conf"
+sed "s|##LAYER_DIR##|${LAYERDIR}|" "${CONFTEMPLATE}" > "${CONF}"
+
+ARGS=(-c "${CONF}" -d 4)
+if [ "${AUH_SKIP_COMPILE}" = "1" ]; then
+    ARGS+=(-s)
+fi
+
+log "upgrading: ${AUH_RECIPES}"
+set +e
+# shellcheck disable=SC2086
+"${AUHDIR}/upgrade-helper.py" "${ARGS[@]}" ${AUH_RECIPES}
+AUH_STATUS=$?
+set -e
+
+git -C "${LAYERDIR}" reset --hard "${BASELINE}"
+
+# AUH names its output after the run, so the newest directory is this run. The
+# directory is missing altogether when the helper gave up before starting.
+RUNDIR=""
+if test -d "${BUILDDIR}/upgrade-helper/meta-webkit"; then
+    RUNDIR="$(find "${BUILDDIR}/upgrade-helper/meta-webkit" -maxdepth 1 \
+        -type d -name '2*' | sort | tail -1)"
+fi
+if [ -z "${RUNDIR}" ]; then
+    log "the helper produced no results directory (exit ${AUH_STATUS})"
+    exit 1
+fi
+
+log "results in ${RUNDIR} (helper exit ${AUH_STATUS})"
+test -f "${RUNDIR}/statistics_summary" && cat "${RUNDIR}/statistics_summary" >&2
+
+if [ -n "${GITHUB_OUTPUT:-}" ]; then
+    echo "rundir=${RUNDIR}" >> "${GITHUB_OUTPUT}"
+fi
+echo "${RUNDIR}"

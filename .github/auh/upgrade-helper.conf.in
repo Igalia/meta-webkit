@@ -1,0 +1,29 @@
+#
+# Configuration for the automatic recipe upgrades.
+#
+# .github/scripts/auh-run renders this template into the build directory,
+# replacing ##LAYER_DIR## with the meta-webkit checkout the build parses. That
+# path has to be that very checkout: the auto-upgrade-helper takes the recipe
+# directory from the parsed metadata and runs 'git add' on it from layer_dir,
+# so the two pointing at different clones makes every commit fail.
+#
+# Nothing is e-mailed from CI. Results are written to
+# <builddir>/upgrade-helper/<layer>/<timestamp>/ and .github/scripts/auh-pr
+# turns the successful ones into pull requests.
+#
+
+[settings]
+layer_mode=yes
+layer_name=meta-webkit
+layer_dir=##LAYER_DIR##
+
+machines=qemux86-64
+
+# Every upgrade is measured against the same baseline: reverting each commit
+# once its patch has been extracted keeps one upgrade from breaking the next.
+commit_revert_policy=all
+
+# Both need extra configuration in local.conf and neither result is used, so
+# they only cost time here.
+buildhistory=no
+testimage=no
