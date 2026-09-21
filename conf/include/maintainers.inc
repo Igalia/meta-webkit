@@ -22,15 +22,9 @@
 # Please keep every list in alphabetical order.
 
 RECIPE_MAINTAINER:pn-browserperfrunner = "Pablo Saavedra <psaavedra@igalia.com>"
-RECIPE_MAINTAINER:pn-bubblewrap = "Pablo Saavedra <psaavedra@igalia.com>"
 RECIPE_MAINTAINER:pn-cog = "Pablo Saavedra <psaavedra@igalia.com>"
-RECIPE_MAINTAINER:pn-dav1d = "Pablo Saavedra <psaavedra@igalia.com>"
-RECIPE_MAINTAINER:pn-highway = "Pablo Saavedra <psaavedra@igalia.com>"
 RECIPE_MAINTAINER:pn-hyphen = "Pablo Saavedra <psaavedra@igalia.com>"
 RECIPE_MAINTAINER:pn-libarchive-zip-perl = "Pablo Saavedra <psaavedra@igalia.com>"
-RECIPE_MAINTAINER:pn-libavif = "Pablo Saavedra <psaavedra@igalia.com>"
-RECIPE_MAINTAINER:pn-libjxl = "Pablo Saavedra <psaavedra@igalia.com>"
-RECIPE_MAINTAINER:pn-libvpx = "Pablo Saavedra <psaavedra@igalia.com>"
 RECIPE_MAINTAINER:pn-libwpe = "Pablo Saavedra <psaavedra@igalia.com>"
 RECIPE_MAINTAINER:pn-openxr = "Pablo Saavedra <psaavedra@igalia.com>"
 RECIPE_MAINTAINER:pn-python-is-python3 = "Pablo Saavedra <psaavedra@igalia.com>"
@@ -46,7 +40,6 @@ RECIPE_MAINTAINER:pn-wpebackend-fdo = "Pablo Saavedra <psaavedra@igalia.com>"
 RECIPE_MAINTAINER:pn-wpebackend-rdk = "Pablo Saavedra <psaavedra@igalia.com>"
 RECIPE_MAINTAINER:pn-wpe-testbed = "Pablo Saavedra <psaavedra@igalia.com>"
 RECIPE_MAINTAINER:pn-wpewebkit = "Pablo Saavedra <psaavedra@igalia.com>"
-RECIPE_MAINTAINER:pn-xdg-dbus-proxy = "Pablo Saavedra <psaavedra@igalia.com>"
 
 # The WPE WebKit stack moves as a whole. The ports are updated by
 # .github/scripts/do-release.sh and the series that goes with them is pinned in
