@@ -1,0 +1,74 @@
+name: AUH nightly
+
+# Attempts a recipe upgrade every night and proposes what worked as pull
+# requests. The runner keeps its workspace between runs, so the downloads and
+# the parse cache stay warm.
+#
+# The pull requests are opened with AUH_PR_TOKEN when that secret exists.
+# GITHUB_TOKEN would work as well, but a pull request it creates does not
+# trigger other workflows, so the build tests would never run on the upgrades.
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      recipes:
+        description: "Recipes to attempt, space separated, or 'all'"
+        default: 'all'
+      max_prs:
+        description: 'Pull requests to open in this run'
+        default: '2'
+      skip_compile:
+        description: 'Refresh the checksums only (1) or build the upgrade (0)'
+        type: choice
+        options: ['1', '0']
+        default: '1'
+      dry_run:
+        description: 'Apply the patches and print the result, open nothing'
+        type: choice
+        options: ['0', '1']
+        default: '0'
+
+concurrency:
+  group: auh-nightly
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  upgrade:
+    runs-on: self-hosted
+    timeout-minutes: 360
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # auh-pr branches off the base and reads the history to tell whether
+          # an upgrade has landed already.
+          fetch-depth: 0
+          token: ${{ secrets.AUH_PR_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Run the upgrade helper
+        id: auh
+        env:
+          AUH_RECIPES: ${{ inputs.recipes || 'all' }}
+          AUH_SKIP_COMPILE: ${{ inputs.skip_compile || '1' }}
+        run: .github/scripts/auh-run
+
+      - name: Open the pull requests
+        env:
+          GH_TOKEN: ${{ secrets.AUH_PR_TOKEN || secrets.GITHUB_TOKEN }}
+          AUH_MAX_PRS: ${{ inputs.max_prs || '2' }}
+          AUH_DRY_RUN: ${{ inputs.dry_run || '0' }}
+          AUH_SKIP_COMPILE: ${{ inputs.skip_compile || '1' }}
+        run: .github/scripts/auh-pr "${{ steps.auh.outputs.rundir }}"
+
+      - name: Upload the upgrade helper results
+        if: always() && steps.auh.outputs.rundir != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: upgrade-helper-${{ github.run_id }}
+          path: ${{ steps.auh.outputs.rundir }}
