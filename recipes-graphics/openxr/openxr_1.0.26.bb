@@ -16,6 +16,9 @@ DEPENDS:append = " jsoncpp"
 SRC_URI = "https://github.com/KhronosGroup/OpenXR-SDK/archive/refs/tags/release-${PV}.tar.gz;subdir=${BP};striplevel=1"
 SRC_URI[sha256sum] = "07e3e819af786c2a2bea16e8ec5243ce4e9d2876923112898fa4ea6dbd9bdd73"
 
+UPSTREAM_CHECK_URI = "https://github.com/KhronosGroup/OpenXR-SDK/releases/"
+UPSTREAM_CHECK_REGEX = "releases/tag/release-(?P<pver>\d+(\.\d+)+)"
+
 # The CMake system of this package is a bit convoluted. It tries to enable
 # features automatically based on the dependencies it detects...
 # It also has some support for using GLESv2 but that support only gets
