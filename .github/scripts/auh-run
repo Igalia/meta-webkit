@@ -40,7 +40,9 @@ AUH_LAYER_URL="${AUH_LAYER_URL:-https://github.com/Igalia/meta-webkit.git}"
 AUH_LAYER_REF="${AUH_LAYER_REF:-main}"
 AUH_RECIPES="${AUH_RECIPES:-all}"
 AUH_SKIP_COMPILE="${AUH_SKIP_COMPILE:-1}"
-AUH_URL="${AUH_URL:-git://git.yoctoproject.org/auto-upgrade-helper}"
+# https, not git://: the git protocol wants port 9418, which is not reachable
+# from the runner. The manifest fetches the Yocto repositories the same way.
+AUH_URL="${AUH_URL:-https://git.yoctoproject.org/git/auto-upgrade-helper}"
 # Pinned: the helper is a tool this job depends on, not a moving part of it.
 AUH_SRCREV="${AUH_SRCREV:-9f53a4a51777f94002d129bec6a43f706f5d320a}"
 
@@ -83,9 +85,13 @@ BASELINE="$(git -C "${LAYERDIR}" rev-parse HEAD)"
 
 log "fetching the auto-upgrade-helper at ${AUH_SRCREV}"
 AUHDIR="${AUH_WORKSPACE}/sources/auto-upgrade-helper"
-if ! test -d "${AUHDIR}"; then
+if ! test -d "${AUHDIR}/.git"; then
+    rm -rf "${AUHDIR}"
     git clone "${AUH_URL}" "${AUHDIR}"
 fi
+# A workspace cloned before AUH_URL changed keeps the old remote, and a failed
+# clone leaves a directory behind, so neither is left to chance.
+git -C "${AUHDIR}" remote set-url origin "${AUH_URL}"
 git -C "${AUHDIR}" fetch origin
 git -C "${AUHDIR}" checkout --quiet "${AUH_SRCREV}"
 
