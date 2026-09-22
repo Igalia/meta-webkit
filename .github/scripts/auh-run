@@ -44,7 +44,10 @@ AUH_SKIP_COMPILE="${AUH_SKIP_COMPILE:-1}"
 # from the runner. The manifest fetches the Yocto repositories the same way.
 AUH_URL="${AUH_URL:-https://git.yoctoproject.org/git/auto-upgrade-helper}"
 # Pinned: the helper is a tool this job depends on, not a moving part of it.
-AUH_SRCREV="${AUH_SRCREV:-9f53a4a51777f94002d129bec6a43f706f5d320a}"
+# It has to be a revision that reads the grouped result of
+# oe.recipeutils.get_recipe_upgrade_status, which is what oe-core returns since
+# wrynose; older ones unpack a tuple and die on the first recipe.
+AUH_SRCREV="${AUH_SRCREV:-a48ff692aa65acb8fec6278c287e026b593f33aa}"
 
 SCRIPTSDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFTEMPLATE="${SCRIPTSDIR}/../auh/upgrade-helper.conf.in"

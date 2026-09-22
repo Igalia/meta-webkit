@@ -156,21 +156,31 @@ deferred=()
 
 for dir in "${RUNDIR}"/succeed/*; do
     test -d "${dir}" || continue
-    pn="$(basename "${dir}")"
+    name="$(basename "${dir}")"
+
+    # Recipes that share an include are upgraded in lockstep and the result is
+    # named after all of them. One branch cannot carry several versions, and
+    # nothing in this layer is grouped, so leave those to a human.
+    case "${name}" in
+        *,*) log "${name}: several recipes upgraded together, skipped"; continue ;;
+    esac
 
     patch="$(find -L "${dir}" -maxdepth 1 -name '0001-*.patch' | sort | head -1)"
     if [ -z "${patch}" ]; then
-        log "${pn}: no patch in ${dir}, skipped"
+        log "${name}: no patch in ${dir}, skipped"
         continue
     fi
 
+    # The recipe and both versions come from the patch: that subject is the
+    # commit message the helper wrote for the upgrade it made.
     subject="$(sed -n 's/^Subject: \[PATCH\] //p' "${patch}" | head -1)"
-    version_re='^[^:]+: upgrade (.+) -> (.+)$'
+    version_re='^([^:]+): upgrade (.+) -> (.+)$'
     if [[ "${subject}" =~ ${version_re} ]]; then
-        old="${BASH_REMATCH[1]}"
-        new="${BASH_REMATCH[2]}"
+        pn="${BASH_REMATCH[1]}"
+        old="${BASH_REMATCH[2]}"
+        new="${BASH_REMATCH[3]}"
     else
-        log "${pn}: no version in '${subject}', skipped"
+        log "${name}: no version in '${subject}', skipped"
         continue
     fi
 
