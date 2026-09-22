@@ -23,7 +23,12 @@ Environment:
     AUH_BASE          Branch to base the upgrades on. Default: main.
     AUH_REPO_DIR      meta-webkit checkout to work in, with a remote that can
                       be pushed to. Default: the working directory.
-    AUH_LABEL         Label to put on the pull requests. Default: auh.
+    AUH_LABEL         Label to put on the pull requests, created if it does
+                      not exist yet. Default: auh.
+    AUH_REPO          owner/name of the GitHub repository to open the pull
+                      requests on. Default: GITHUB_REPOSITORY, or the origin
+                      of the checkout.
+    GH_TOKEN          Token the GitHub API is called with.
     AUH_AUTHOR        Author of the upgrade commits.
     AUH_SIGNED_OFF_BY Who signs off the upgrade commits. Default: the author,
                       since nobody has reviewed them at this point.
@@ -55,6 +60,69 @@ if [ -n "${GITHUB_SERVER_URL:-}" ] && [ -n "${GITHUB_RUN_ID:-}" ]; then
 fi
 
 log() { echo "auh-pr: $*" >&2; }
+
+# GitHub is reached through its API rather than through gh, which the builders
+# do not have; python3 they do, since bitbake needs it. AUH_REPO and the token
+# come from the environment the workflow provides.
+AUH_REPO="${AUH_REPO:-${GITHUB_REPOSITORY:-}}"
+if [ -z "${AUH_REPO}" ]; then
+    AUH_REPO="$(git -C "${AUH_REPO_DIR}" remote get-url origin |
+        sed -E 's|^.*[:/]([^/]+/[^/]+?)(\.git)?$|\1|')"
+fi
+export AUH_REPO
+
+github() {
+    python3 - "$@" <<'PYEOF'
+import json, os, sys, urllib.error, urllib.request
+
+api = os.environ.get("GITHUB_API_URL", "https://api.github.com")
+repo = os.environ["AUH_REPO"]
+token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+
+
+def call(method, path, payload=None):
+    headers = {"Accept": "application/vnd.github+json",
+               "X-GitHub-Api-Version": "2022-11-28",
+               "Content-Type": "application/json"}
+    if token:
+        headers["Authorization"] = "Bearer %s" % token
+    request = urllib.request.Request(
+        "%s/repos/%s%s" % (api, repo, path), method=method, headers=headers,
+        data=json.dumps(payload).encode() if payload is not None else None)
+    with urllib.request.urlopen(request) as response:
+        return json.load(response)
+
+
+action = sys.argv[1]
+
+if action == "pr-number":
+    branch = sys.argv[2]
+    pulls = call("GET", "/pulls?state=all&head=%s:%s"
+                 % (repo.split("/")[0], branch))
+    print(pulls[0]["number"] if pulls else "")
+
+elif action == "pr-create":
+    branch, base, title, body_file, label = sys.argv[2:7]
+    with open(body_file) as f:
+        body = f.read()
+    pull = call("POST", "/pulls", {"title": title, "head": branch,
+                                   "base": base, "body": body})
+    print(pull["html_url"])
+    try:
+        call("POST", "/issues/%d/labels" % pull["number"], {"labels": [label]})
+    except urllib.error.HTTPError:
+        # The label has to exist before it can be put on anything.
+        try:
+            call("POST", "/labels", {"name": label,
+                                     "description": "Automatic recipe upgrade",
+                                     "color": "ededed"})
+            call("POST", "/issues/%d/labels" % pull["number"],
+                 {"labels": [label]})
+        except urllib.error.HTTPError as error:
+            print("auh-pr: could not label %s: %s" % (pull["number"], error),
+                  file=sys.stderr)
+PYEOF
+}
 
 cd "${AUH_REPO_DIR}"
 test -z "$(git status --porcelain)" || { log "working tree is not clean"; exit 1; }
@@ -186,18 +254,16 @@ for dir in "${RUNDIR}"/succeed/*; do
 
     branch="auh/${pn}_${new}"
 
-    # Three guards, because one is not enough: the branch covers work in
-    # flight, the pull request search covers branches deleted after a merge or
-    # a rejection, and the tree covers an upgrade that landed some other way.
-    if git ls-remote --exit-code --heads origin "${branch}" >/dev/null 2>&1; then
-        log "${pn}: ${branch} exists, skipped"
+    # A pull request for this branch in any state, merged and closed ones
+    # included, means the upgrade was proposed once already and the answer,
+    # whatever it was, stands.
+    if ! pr_number="$(github pr-number "${branch}")"; then
+        log "${pn}: could not ask about ${branch}, skipped"
         continue
     fi
-    if command -v gh >/dev/null 2>&1; then
-        if [ -n "$(gh pr list --state all --head "${branch}" --json number --jq '.[].number' 2>/dev/null)" ]; then
-            log "${pn}: a pull request for ${branch} was opened before, skipped"
-            continue
-        fi
+    if [ -n "${pr_number}" ]; then
+        log "${pn}: pull request ${pr_number} already covers ${branch}, skipped"
+        continue
     fi
     if git ls-tree -r --name-only "origin/${AUH_BASE}" | grep -q "/${pn}_${new}\.bb$"; then
         log "${pn}: ${new} is already in ${AUH_BASE}, skipped"
@@ -209,21 +275,30 @@ for dir in "${RUNDIR}"/succeed/*; do
         continue
     fi
 
+    PUSH_NEEDED=0
     log "${pn}: ${old} -> ${new} on ${branch}"
-    git checkout --quiet -B "${branch}" "origin/${AUH_BASE}"
-    if ! git am --quiet "${patch}"; then
-        git am --abort || true
-        log "${pn}: the patch does not apply to ${AUH_BASE}, skipped"
-        git checkout --quiet --force "${RESTORE}"
-        git branch -D "${branch}" >/dev/null 2>&1 || true
-        continue
+    if git ls-remote --exit-code --heads origin "${branch}" >/dev/null 2>&1; then
+        # A run that pushed the branch and then failed before opening the pull
+        # request leaves exactly this behind. Finish the job instead of walking
+        # past it for good.
+        log "${pn}: ${branch} is pushed already, opening the pull request for it"
+    else
+        git checkout --quiet -B "${branch}" "origin/${AUH_BASE}"
+        if ! git am --quiet "${patch}"; then
+            git am --abort || true
+            log "${pn}: the patch does not apply to ${AUH_BASE}, skipped"
+            git checkout --quiet --force "${RESTORE}"
+            git branch -D "${branch}" >/dev/null 2>&1 || true
+            continue
+        fi
+        git commit --quiet --amend --author="${AUH_AUTHOR}" \
+            -m "$(commit_message "${pn}" "${old}" "${new}" "${TESTED}")"
+        PUSH_NEEDED=1
     fi
-    git commit --quiet --amend --author="${AUH_AUTHOR}" \
-        -m "$(commit_message "${pn}" "${old}" "${new}" "${TESTED}")"
 
     if [ "${AUH_DRY_RUN}" = "1" ]; then
         echo "=== ${branch}"
-        git log -1
+        test "${PUSH_NEEDED:-0}" = "1" && git log -1
         echo "--- pull request body"
         pr_body "${pn}" "${old}" "${new}" "${dir}" "${TESTED}"
         echo
@@ -233,12 +308,14 @@ for dir in "${RUNDIR}"/succeed/*; do
         continue
     fi
 
-    git push --quiet origin "${branch}"
-    gh label create "${AUH_LABEL}" --description "Automatic recipe upgrade" >/dev/null 2>&1 || true
-    gh pr create --base "${AUH_BASE}" --head "${branch}" \
-        --title "${pn}: Update to version ${new}" \
-        --label "${AUH_LABEL}" \
-        --body-file <(pr_body "${pn}" "${old}" "${new}" "${dir}" "${TESTED}")
+    if [ "${PUSH_NEEDED:-0}" = "1" ]; then
+        git push --quiet origin "${branch}"
+    fi
+    body_file="$(mktemp)"
+    pr_body "${pn}" "${old}" "${new}" "${dir}" "${TESTED}" > "${body_file}"
+    github pr-create "${branch}" "${AUH_BASE}" \
+        "${pn}: Update to version ${new}" "${body_file}" "${AUH_LABEL}"
+    rm -f "${body_file}"
     created=$((created + 1))
 done
 
