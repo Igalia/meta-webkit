@@ -19,19 +19,19 @@ jobs:
       fail-fast: false
       matrix:
         yocto_release: ['wrynose']
-        machine: ['raspberrypi3-mesa', 'raspberrypi4-64']
+        machine: ['qemuarm64', 'qemuarm', 'qemux86-64']
         yocto_prefix: ['TCLIBC=glibc']
         wpe_vers: ['2_54']
         include:
           - yocto_release: wrynose
-            machine: raspberrypi4-64
+            machine: qemuarm64
             yocto_prefix: TCLIBC=musl
             wpe_vers: 2_54
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: '${{ matrix.machine }}-wpe-${{ matrix.wpe_vers }} ${{ matrix.machine }} poky layers.raspberrypi.webkit conf_v4.wpe-${{ matrix.wpe_vers }}'
+          bitbake_source: '${{ matrix.machine }}-wpe-${{ matrix.wpe_vers }} ${{ matrix.machine }} poky layers.webkit conf_v4.wpe-${{ matrix.wpe_vers }}'
           repo_release: ${{ matrix.yocto_release }}
     needs: repo
 
@@ -41,14 +41,14 @@ jobs:
       fail-fast: false
       matrix:
         yocto_release: ['wrynose']
-        machine: ['raspberrypi3-mesa', 'raspberrypi4-64']
+        machine: ['qemuarm64', 'qemuarm', 'qemux86-64']
         yocto_prefix: ['TCLIBC=glibc']
         wpe_vers: ['2_54']
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
         with:
-          bitbake_source: '${{ matrix.machine }}-wpe-${{ matrix.wpe_vers }} ${{ matrix.machine }} poky layers.raspberrypi.webkit conf_v4.wpe-${{ matrix.wpe_vers }}'
+          bitbake_source: '${{ matrix.machine }}-wpe-${{ matrix.wpe_vers }} ${{ matrix.machine }} poky layers.webkit conf_v4.wpe-${{ matrix.wpe_vers }}'
           bitbake_target: webkitgtk
           repo_release: ${{ matrix.yocto_release }}
     needs: repo

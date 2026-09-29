@@ -54,7 +54,6 @@ export BASH_SOURCE="${OESCRIPT}"
 source "${OESCRIPT}" "${BSPDIR}/builds/${TARGET}"
 
 # cp include conf files
-cp -a ${TEMPLATECONF}/machine ${BUILDDIR}/conf/
 cp -a ${TEMPLATECONF}/presets ${BUILDDIR}/conf/
 
 IFS='.' read -ra LAYERS <<< "$BBLAYERS"
