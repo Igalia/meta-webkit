@@ -32,6 +32,7 @@ jobs:
       - uses: ./.github/actions/bitbake-build
         with:
           bitbake_source: '${{ matrix.machine }}-wpe-${{ matrix.wpe_vers }} ${{ matrix.machine }} poky layers.webkit conf_v4.wpe-${{ matrix.wpe_vers }}'
+          bitbake_prefix: ${{ matrix.yocto_prefix }}
           repo_release: ${{ matrix.yocto_release }}
     needs: repo
 
@@ -50,5 +51,6 @@ jobs:
         with:
           bitbake_source: '${{ matrix.machine }}-wpe-${{ matrix.wpe_vers }} ${{ matrix.machine }} poky layers.webkit conf_v4.wpe-${{ matrix.wpe_vers }}'
           bitbake_target: webkitgtk
+          bitbake_prefix: ${{ matrix.yocto_prefix }}
           repo_release: ${{ matrix.yocto_release }}
     needs: repo
