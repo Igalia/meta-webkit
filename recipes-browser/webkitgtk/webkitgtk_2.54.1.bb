@@ -47,9 +47,8 @@ DEPENDS = "curl \
 # once https://github.com/WebKit/WebKit/pull/74228 lands.
 SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball;subdir=${BP};striplevel=1 \
            file://0001-bmalloc-libpas-avoid-C-stdatomic-in-C-build.patch \
-           file://0002-WebDriver-Fix-build-when-logging-is-disabled.patch \
            "
-SRC_URI[tarball.sha256sum] = "846fd19ccedbae1dbfe904f26dbf2d68a800a33a50caf2ad5222c8dcb3f25682"
+SRC_URI[tarball.sha256sum] = "ea0bbb02dbdbc596874a4e7ad35b66645b3e0a232bd0e4081de5ed92eb0a397d"
 
 inherit cmake lib_package pkgconfig perlnative python3native
 
