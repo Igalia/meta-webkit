@@ -12,11 +12,10 @@ require conf/include/devupstream.inc
 # once https://github.com/WebKit/WebKit/pull/74228 lands.
 SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0001-bmalloc-libpas-avoid-C-stdatomic-in-C-build.patch \
-           file://0002-WebDriver-Fix-build-when-logging-is-disabled.patch \
            "
 
-SRC_URI[tarball.sha256sum] = "efa9bcc3cb891c2d88f50eec710d9ccee71cbdf1040420361eb98c17355eb452"
+SRC_URI[tarball.sha256sum] = "0de8bdfba011f9cd63ba9a9171fa6038dd2c08237894f4082abbb821f29d3fe9"
 
 SRCBRANCH:class-devupstream = "webkitglib/2.54"
 SRC_URI:class-devupstream = "git://github.com/WebKit/WebKit.git;protocol=https;branch=${SRCBRANCH}"
-SRCREV:class-devupstream = "73f39d84ea9d4071994214373efbde3665402b05"
+SRCREV:class-devupstream = "537776966344c4982751692dd475c94124504271"
