@@ -11,19 +11,19 @@ inherit meson pkgconfig
 
 PROVIDES += "virtual/open-cdm"
 
-PV = "2021.0"
+PV = "2026.3"
 
 SRC_URI = "git://github.com/Sparkle-CDM/sparkle-cdm.git;protocol=https;branch=main;destsuffix=${BP}"
-SRCREV = "ce99d205e0423ab213869da5e934c0c1cd9983a8"
+SRCREV = "82e6c0c5bf7b253e88b668ade44c32b5deb2ea27"
 
 PACKAGECONFIG ?= ""
-PACKAGECONFIG[sample-player] = "-Dsample-player=enabled,-Dsample-player=disabled,libsoup-2.4"
+PACKAGECONFIG[sample-player] = "-Dsample-player=enabled,-Dsample-player=disabled,libsoup-3.0"
 PACKAGECONFIG[clearkey-module] = "-Dclearkey-module=enabled,-Dclearkey-module=disabled,json-glib openssl"
 
 PACKAGES =+ "${PN}-sample-player ${PN}-clearkey-module"
 
 FILES:${PN} += "${libdir}/libocdm.so \
-                ${libdir}/gstreamer-1.0/libgstsprkl.so \
+                ${libdir}/libgstsprkl.so \
 "
 FILES:${PN}-sample-player += "${bindir}/sample-player"
 FILES:${PN}-clearkey-module += "${libdir}/sparkle-cdm/libsparkle-cdm-clearkey.so"
