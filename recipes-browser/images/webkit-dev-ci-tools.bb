@@ -184,5 +184,5 @@ copy_image_boot_files_to_slash_boot() {
     done
 }
 
-ROOTFS_POSTPROCESS_COMMAND += "ssh_internal_sftp; "
-ROOTFS_POSTPROCESS_COMMAND:append:rpi = "copy_image_boot_files_to_slash_boot; "
+ROOTFS_POSTPROCESS_COMMAND += "ssh_internal_sftp"
+ROOTFS_POSTPROCESS_COMMAND:append:rpi = " copy_image_boot_files_to_slash_boot"
