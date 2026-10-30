@@ -14,8 +14,8 @@ SRC_URI = "https://wpewebkit.org/releases/${BPN}-${PV}.tar.xz;name=tarball \
            file://0001-bmalloc-libpas-avoid-C-stdatomic-in-C-build.patch \
            "
 
-SRC_URI[tarball.sha256sum] = "0de8bdfba011f9cd63ba9a9171fa6038dd2c08237894f4082abbb821f29d3fe9"
+SRC_URI[tarball.sha256sum] = "f3284e19e47fcb5ac8c63c2e1c113dbd65b2423eb8a545f5b345707829004f56"
 
 SRCBRANCH:class-devupstream = "webkitglib/2.54"
 SRC_URI:class-devupstream = "git://github.com/WebKit/WebKit.git;protocol=https;branch=${SRCBRANCH}"
-SRCREV:class-devupstream = "537776966344c4982751692dd475c94124504271"
+SRCREV:class-devupstream = "32717fabcb9dcad9aa00a54ef1f23e41ee64e849"
