@@ -3,7 +3,7 @@ set -e
 
 # Version of oelint-adv the layer is linted against. Pinned so that CI and
 # local runs agree: a different version changes which rules fire.
-OELINT_ADV_VERSION="9.6.1"
+OELINT_ADV_VERSION="9.11.3"
 
 # Install oelint-adv, unless the pinned version is already there. pipx reports
 # success without doing anything when some other version is installed, so the
@@ -49,6 +49,6 @@ fi
 # shellcheck disable=SC2086
 $OELINT_ADV_BIN $ARG_COLOR --hide info \
     --suppress "oelint.task.heredocs oelint.vars.mispell" \
-    --release wrynose \
+    --release blacksail \
     $OELINT_FILES
 
