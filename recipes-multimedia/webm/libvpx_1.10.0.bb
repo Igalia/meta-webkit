@@ -7,8 +7,17 @@ LICENSE = "BSD-3-Clause"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=d5b04755015be901744a78cc30d390d4"
 
-SRC_URI += "git://chromium.googlesource.com/webm/libvpx;protocol=https;destsuffix=${BP};branch=main \
-            file://libvpx-configure-support-blank-prefix.patch"
+SRC_URI += "\
+    git://chromium.googlesource.com/webm/libvpx;protocol=https;destsuffix=${BP};branch=main \
+    file://libvpx-configure-support-blank-prefix.patch \
+    file://CVE-2023-5217.patch \
+    file://CVE-2023-44488.patch \
+    file://CVE-2024-5197-pre1.patch \
+    file://CVE-2024-5197-1.patch \
+    file://CVE-2024-5197-2.patch \
+    file://CVE-2024-5197-3.patch \
+    file://CVE-2025-5283.patch \
+    "
 SRCREV = "b41ffb53f1000ab2227c1736d8c1355aa5081c40"
 
 # ffmpeg links with this and fails
