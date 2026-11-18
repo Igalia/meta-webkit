@@ -48,7 +48,7 @@ DEPENDS = "curl \
 SRC_URI = "https://www.webkitgtk.org/releases/webkitgtk-${PV}.tar.xz;name=tarball;subdir=${BP};striplevel=1 \
            file://0001-bmalloc-libpas-avoid-C-stdatomic-in-C-build.patch \
            "
-SRC_URI[tarball.sha256sum] = "a76345b391bef6211fb5ab6cfab2e86b285d18cda17cbb9ade595f1252b86065"
+SRC_URI[tarball.sha256sum] = "2779c1b46f88762e8400650271ba14452dc4e30b37059981552d8b562b7d0862"
 
 inherit cmake lib_package pkgconfig perlnative python3native
 
