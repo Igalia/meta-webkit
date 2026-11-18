@@ -9,12 +9,15 @@ LIC_FILES_CHKSUM = "file://Source/WebCore/LICENSE-LGPL-2.1;md5=a778a33ef338abbaf
 
 REQUIRED_DISTRO_FEATURES = "opengl"
 
+# PACKAGECONFIG[openssl] (-DUSE_OPENSSL) is not defined here because WebKit
+# 2.54 and older do not have the option; recipes for newer versions define it.
 DEPENDS:append = " \
     libsoup \
     bison-native gperf-native harfbuzz-native libxml2-native ccache-native ninja-native ruby-native \
-    fontconfig freetype glib-2.0 harfbuzz icu jpeg pcre sqlite3 zlib libpng libtasn1 \
-    libwebp libxml2 libxslt virtual/egl virtual/libgles2 libepoxy libgcrypt \
+    fontconfig freetype glib-2.0 harfbuzz icu jpeg pcre sqlite3 zlib libpng \
+    libwebp libxml2 libxslt virtual/egl virtual/libgles2 libepoxy \
     unifdef-native \
+    ${@bb.utils.contains('PACKAGECONFIG', 'openssl', 'openssl', 'libgcrypt libtasn1', d)} \
 "
 
 inherit cmake features_check pkgconfig perlnative python3native
