@@ -1,0 +1,9 @@
+#!/bin/sh
+CTL_FILE="/tmp/wpe-exported-wayland"
+
+if [ ! -p "$CTL_FILE" ]; then
+    echo "wpe-ctl: control FIFO not found: $CTL_FILE" >&2
+    exit 1
+fi
+
+printf '%s\n' "$*" >"$CTL_FILE"
