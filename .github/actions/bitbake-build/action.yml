@@ -6,7 +6,7 @@ inputs:
   bitbake_source:
     default: 'source'
   repo_release:
-    default: 'wrynose'
+    default: 'blacksail'
 runs:
   using: 'composite'
   steps:

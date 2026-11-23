@@ -17,7 +17,7 @@ Runs the auto-upgrade-helper over the meta-webkit recipes and prints the
 directory holding its results.
 
 Environment:
-    AUH_RELEASE       Yocto release to work with. Default: wrynose.
+    AUH_RELEASE       Yocto release to work with. Default: blacksail.
     AUH_WORKSPACE     Repo workspace to use. Default:
                       \$HOME/yocto-webkit-auh-\$AUH_RELEASE.
     AUH_LAYER_URL     meta-webkit remote. Default: the Igalia repository.
@@ -34,7 +34,7 @@ FIN
 
 [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]] && usage
 
-AUH_RELEASE="${AUH_RELEASE:-wrynose}"
+AUH_RELEASE="${AUH_RELEASE:-blacksail}"
 AUH_WORKSPACE="${AUH_WORKSPACE:-$HOME/yocto-webkit-auh-$AUH_RELEASE}"
 AUH_LAYER_URL="${AUH_LAYER_URL:-https://github.com/Igalia/meta-webkit.git}"
 AUH_LAYER_REF="${AUH_LAYER_REF:-main}"

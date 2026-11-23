@@ -6,7 +6,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        yocto_release: ['wrynose']
+        yocto_release: ['blacksail', 'wrynose']
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-repo
@@ -18,10 +18,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        yocto_release: ['wrynose']
+        yocto_release: ['blacksail', 'wrynose']
         machine: ['qemuarm64', 'qemuarm', 'qemux86-64']
         yocto_prefix: ['TCLIBC=glibc']
         wpe_vers: ['2_54']
+        exclude:
+          - yocto_release: blacksail
+            machine: qemuarm64
+          - yocto_release: blacksail
+            machine: qemuarm
         include:
           - yocto_release: wrynose
             machine: qemuarm64
@@ -41,10 +46,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        yocto_release: ['wrynose']
+        yocto_release: ['blacksail', 'wrynose']
         machine: ['qemuarm64', 'qemuarm', 'qemux86-64']
         yocto_prefix: ['TCLIBC=glibc']
         wpe_vers: ['2_54']
+        exclude:
+          - yocto_release: blacksail
+            machine: qemuarm64
+          - yocto_release: blacksail
+            machine: qemuarm
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/bitbake-build
